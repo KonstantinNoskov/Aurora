@@ -76,3 +76,5 @@ DerivedDataCache/*
 # External Actors
 Content/__ExternalActors__/*
 Content/__ExternalObjects__/*
+
+Assets/*
