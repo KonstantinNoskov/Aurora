@@ -14,5 +14,14 @@ void AAuroraCharacterBase::BeginPlay()
 	Super::BeginPlay();
 }
 
+#pragma region ABILITY SYSTEM
+
+UAbilitySystemComponent* AAuroraCharacterBase::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+}
+
+#pragma endregion 
+
 
 

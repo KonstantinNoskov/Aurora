@@ -28,4 +28,5 @@ public:
 	bool bHighlighted = false;
 
 #pragma endregion
+
 };

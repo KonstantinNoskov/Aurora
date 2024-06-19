@@ -3,7 +3,6 @@
 // Enhanced Input
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
-#include "Debug/DebugMacros.h"
 #include "Interfaces/Interaction/TargetInterface.h"
 
 AAuroraPlayerController::AAuroraPlayerController()
@@ -43,6 +42,7 @@ void AAuroraPlayerController::PlayerTick(float DeltaTime)
 	CursorTrace();
 }
 
+
 #pragma region INPUT
 
 void AAuroraPlayerController::SetupInputComponent()
@@ -54,8 +54,6 @@ void AAuroraPlayerController::SetupInputComponent()
 	// Move
 	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AAuroraPlayerController::Move);
 }
-
-
 
 void AAuroraPlayerController::Move(const FInputActionValue& InputActionValue)
 {
