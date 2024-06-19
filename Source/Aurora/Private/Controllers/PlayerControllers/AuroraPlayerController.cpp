@@ -86,44 +86,31 @@ void AAuroraPlayerController::CursorTrace()
 		LastActor = ThisActor;
 		ThisActor = CursorHit.GetActor();
 		
-		
 		/*	We have several cases:
 		 *	
 		 *  1. LastActor is null && ThisActor is null. (Hovering cursor over something else than enemies)
 		 *		- Do nothing
+		 *
+		 *	2. LastActor is Target && ThisActor is Target and they are the same target. (Keep hovering cursor over the same enemy)
+		 *		- Do nothing
 		 *	
-		 *  2. LastActor is null && ThisActor is Target. (Start hovering cursor over the enemy)
+		 *  3. LastActor is null && ThisActor is Target. (Start hovering cursor over the enemy)
 		 *		- HighLight this Target.
 		 *		
-		 *  3. LastActor is Target && ThisActor is null. (Stop hovering cursor over the enemy)
+		 *  4. LastActor is Target && ThisActor is null. (Stop hovering cursor over the enemy)
 		 *		- Unhighlight last Target.
 		 *		
-		 *  4. LastActor is Target && ThisActor is Target, but LastActor != ThisActor. (Different enemies)
+		 *  5. LastActor is Target && ThisActor is Target, but LastActor != ThisActor. (Different enemies)
 		 *		- Unhighlight LastActor and Highlight ThisActor.
-		 *
-		 *	5. LastActor is Target && ThisActor is Target and they are the same target. (Keep hovering cursor over the same enemy)
-		 *		- Do nothing
-		 *  
 		 */
 
-		if (!LastActor)
+		if (LastActor == ThisActor) return;							// Case #1 and Case #2
+		if (!LastActor && ThisActor) ThisActor->HighLightActor();	// Case #3
+		if (LastActor && !ThisActor) LastActor->UnHighLightActor(); // Case #4
+		if (LastActor && ThisActor && LastActor != ThisActor)		// Case #5  
 		{
-			if (ThisActor) { ThisActor->HighLightActor(); } // Case #2
-			else { } // Case #1 - Do nothing
-		}
-		else // LastActor is valid
-		{
-			if (!ThisActor) {  LastActor->UnHighLightActor(); } // Case #3
-			else
-			{
-				// Case #4
-				if (LastActor != ThisActor)
-				{
-					LastActor->UnHighLightActor();
-					ThisActor->HighLightActor();
-				}
-				else { } // Case #5 - Do nothing
-			}
+			LastActor->UnHighLightActor();
+			ThisActor->HighLightActor();
 		}
 	}
 }
