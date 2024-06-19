@@ -8,10 +8,26 @@ public class Aurora : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore"});
+		PublicDependencyModuleNames.AddRange(new string[]
+		{
+			"Core",
+			"CoreUObject", "Engine",
+			"InputCore"
+		});
 		
 		// Enhanced Input
-		PublicDependencyModuleNames.AddRange(new string[] { "EnhancedInput" });
+		PublicDependencyModuleNames.AddRange(new string[]
+		{
+			"EnhancedInput"
+		});
+		
+		// GAS
+		PublicDependencyModuleNames.AddRange(new string[]
+		{
+			"GameplayAbilities",
+			"GameplayTags",
+			"GameplayTasks"
+		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
