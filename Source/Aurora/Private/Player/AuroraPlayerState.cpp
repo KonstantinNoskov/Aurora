@@ -20,9 +20,18 @@ AAuroraPlayerState::AAuroraPlayerState()
 
 #pragma region ABILITY SYSTEM
 
-UAbilitySystemComponent* AAuroraCharacterBase::GetAbilitySystemComponent() const
+UAbilitySystemComponent* AAuroraPlayerState::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
+}
+
+void AAuroraPlayerState::BeginPlay()
+{
+	Super::BeginPlay();
+
+	const UAuroraAttributeSet* AuroraAttributeSet = Cast<UAuroraAttributeSet>(AbilitySystemComponent->GetAttributeSet(UAuroraAttributeSet::StaticClass()));
+	UAuroraAttributeSet* MutableAuroraAttributeSet = const_cast<UAuroraAttributeSet*>(AuroraAttributeSet);
+	MutableAuroraAttributeSet->SetHealth(10.f);
 }
 
 #pragma endregion}
