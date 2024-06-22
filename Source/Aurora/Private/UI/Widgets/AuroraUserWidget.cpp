@@ -1,4 +1,10 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿#include "UI/Widgets/AuroraUserWidget.h"
 
+void UAuroraUserWidget::SetWidgetController(UObject* InWidgetController)
+{
+	WidgetController = InWidgetController;
+	
+	OnWidgetControllerSet();
 
-#include "UI/Widgets/AuroraUserWidget.h"
+	
+}
