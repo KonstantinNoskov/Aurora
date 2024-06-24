@@ -19,11 +19,12 @@ void AAuroraPlayerController::BeginPlay()
 
 	// Set EnhancedInput
 	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
-	check(Subsystem);
-
-	// Set MappingContext
-	Subsystem->AddMappingContext(AuroraMappingContext, 0);
-
+	if(Subsystem)
+	{
+		// Set MappingContext
+		Subsystem->AddMappingContext(AuroraMappingContext, 0);	
+	}
+	
 	// Mouse Cursor
 	bShowMouseCursor = true;
 	DefaultMouseCursor = EMouseCursor::Default;

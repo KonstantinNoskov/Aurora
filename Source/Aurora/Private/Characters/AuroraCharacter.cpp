@@ -2,9 +2,11 @@
 
 #include "AbilitySystemComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Controllers/PlayerControllers/AuroraPlayerController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Player/AuroraPlayerState.h"
+#include "UI/HUD/AuroraHUD.h"
 
 AAuroraCharacter::AAuroraCharacter()
 {
@@ -58,7 +60,7 @@ void AAuroraCharacter::PossessedBy(AController* NewController)
 void AAuroraCharacter::InitAbilityActorInfo()
 {
 	// Aurora player state valid check
-	TObjectPtr<AAuroraPlayerState> AuroraPlayerState = GetPlayerState<AAuroraPlayerState>();
+	AAuroraPlayerState* AuroraPlayerState = GetPlayerState<AAuroraPlayerState>();
 	check(AuroraPlayerState);
 
 	// Set Ability actor info
@@ -69,6 +71,15 @@ void AAuroraCharacter::InitAbilityActorInfo()
 
 	// Set Attribute set
 	AttributeSet = AuroraPlayerState->GetAttributeSet();
+
+	//
+	if (AAuroraPlayerController* AuroraPlayerController = Cast<AAuroraPlayerController>(GetController()))
+	{
+		if (AAuroraHUD* AuroraHUD = Cast<AAuroraHUD>(AuroraPlayerController->GetHUD()))
+		{
+			AuroraHUD->InitOverlay(AuroraPlayerController, AuroraPlayerState, AbilitySystemComponent, AttributeSet);
+		}
+	}
 }
 
 void AAuroraCharacter::OnRep_PlayerState()
