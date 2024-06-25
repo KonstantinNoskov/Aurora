@@ -31,7 +31,7 @@ void AAuroraPlayerState::BeginPlay()
 
 	const UAuroraAttributeSet* AuroraAttributeSet = Cast<UAuroraAttributeSet>(AbilitySystemComponent->GetAttributeSet(UAuroraAttributeSet::StaticClass()));
 	UAuroraAttributeSet* MutableAuroraAttributeSet = const_cast<UAuroraAttributeSet*>(AuroraAttributeSet);
-	MutableAuroraAttributeSet->SetHealth(10.f);
+	//MutableAuroraAttributeSet->SetHealth(10.f);
 }
 
 #pragma endregion}

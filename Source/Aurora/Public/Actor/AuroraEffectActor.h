@@ -30,4 +30,10 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UStaticMeshComponent> Mesh;
+
+	UPROPERTY(EditAnywhere, Category = "Effect properties", meta = (AllowPrivateAccess = "true"))
+	float EffectValue = 25.f;
+
+	UPROPERTY(EditAnywhere, Category = "Effect properties", meta = (AllowPrivateAccess = "true"))
+	float ManaValue = 10.f;
 };

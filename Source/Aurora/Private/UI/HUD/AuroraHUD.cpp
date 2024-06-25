@@ -4,6 +4,19 @@
 #include "UI/WidgetController/OverlayWidgetController.h"
 #include "UI/Widgets/AuroraUserWidget.h"
 
+UOverlayWidgetController* AAuroraHUD::GetOverlayWidgetController(const FWidgetControllerParams& WCParams)
+{
+	if (!OverlayWidgetController)
+	{
+		OverlayWidgetController = NewObject<UOverlayWidgetController>(this, OverlayWidgetControllerClass);
+		OverlayWidgetController->SetWidgetControllerParams(WCParams);
+		OverlayWidgetController->BindCallbacksToDependencies();
+
+		return OverlayWidgetController;
+	}
+
+	return OverlayWidgetController; 
+}
 
 void AAuroraHUD::InitOverlay(APlayerController* PC, APlayerState* PS,
 	UAbilitySystemComponent* ASC, UAttributeSet* AS)
@@ -18,19 +31,6 @@ void AAuroraHUD::InitOverlay(APlayerController* PC, APlayerState* PS,
 	UOverlayWidgetController* WidgetController = GetOverlayWidgetController(WidgetControllerParams);
 
 	OverlayWidget->SetWidgetController(WidgetController);
-	
+	WidgetController->BroadcastInitialValues();
 	Widget->AddToViewport();	
-}
-
-UOverlayWidgetController* AAuroraHUD::GetOverlayWidgetController(const FWidgetControllerParams& WCParams)
-{
-	if (!OverlayWidgetController)
-	{
-		OverlayWidgetController = NewObject<UOverlayWidgetController>(this, OverlayWidgetControllerClass);
-		OverlayWidgetController->SetWidgetControllerParams(WCParams);
-
-		return OverlayWidgetController;
-	}
-
-	return OverlayWidgetController; 
 }

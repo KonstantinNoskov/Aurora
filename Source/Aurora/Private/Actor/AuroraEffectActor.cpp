@@ -35,7 +35,8 @@ void AAuroraEffectActor::OnOverlap(UPrimitiveComponent* OverlappedComponent, AAc
 		const UAuroraAttributeSet* AuroraAttributeSet = Cast<UAuroraAttributeSet>(ASCInterface->GetAbilitySystemComponent()->GetAttributeSet(UAuroraAttributeSet::StaticClass()));
 		
 		UAuroraAttributeSet* MutableAuroraAttributeSet = const_cast<UAuroraAttributeSet*>(AuroraAttributeSet);
-		MutableAuroraAttributeSet->SetHealth(AuroraAttributeSet->GetHealth() + 25.f);
+		MutableAuroraAttributeSet->SetHealth(AuroraAttributeSet->GetHealth() + EffectValue);
+		MutableAuroraAttributeSet->SetMana(AuroraAttributeSet->GetMana() + ManaValue);
 		Destroy();
 	}
 }

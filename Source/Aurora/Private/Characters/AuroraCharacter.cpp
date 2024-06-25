@@ -61,8 +61,9 @@ void AAuroraCharacter::InitAbilityActorInfo()
 {
 	// Aurora player state valid check
 	AAuroraPlayerState* AuroraPlayerState = GetPlayerState<AAuroraPlayerState>();
-	check(AuroraPlayerState);
-
+	
+	checkf(AuroraPlayerState, TEXT("AuroraPlayerState not set. Checkout for Auto Posses Player paramater in Pawn settings."));
+	
 	// Set Ability actor info
 	AuroraPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(AuroraPlayerState, this);
 
