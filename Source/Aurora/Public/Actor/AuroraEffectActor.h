@@ -69,7 +69,7 @@ protected:
 	void ApplyEffectToTarget(AActor* TargetActor, TSubclassOf<UGameplayEffect> GameplayEffectClass); 
 
 	UFUNCTION(BlueprintCallable)
-	void OnOverlap(AActor* TargetActor);
+	void OnOverlap(AActor* TargetActor); 
 
 	/*
 	 *  Applies effect to target OnEndOverlap Event for Instant, Duration and Infinite effect if exists.
