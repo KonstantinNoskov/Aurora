@@ -7,6 +7,8 @@
 
 AAuroraPlayerState::AAuroraPlayerState()
 {
+	NetUpdateFrequency = 100.f;
+	
 	// Ability system component
 	AbilitySystemComponent = CreateDefaultSubobject<UAuroraAbilitySystemComponent>("AbilitySystemComponent");
 	AbilitySystemComponent->SetIsReplicated(true);
@@ -14,8 +16,6 @@ AAuroraPlayerState::AAuroraPlayerState()
 
 	// Attribute set
 	AttributeSet = CreateDefaultSubobject<UAuroraAttributeSet>("AttributeSet");
-	
-	NetUpdateFrequency = 100.f;
 }
 
 #pragma region ABILITY SYSTEM
@@ -28,10 +28,9 @@ UAbilitySystemComponent* AAuroraPlayerState::GetAbilitySystemComponent() const
 void AAuroraPlayerState::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	const UAuroraAttributeSet* AuroraAttributeSet = Cast<UAuroraAttributeSet>(AbilitySystemComponent->GetAttributeSet(UAuroraAttributeSet::StaticClass()));
 	UAuroraAttributeSet* MutableAuroraAttributeSet = const_cast<UAuroraAttributeSet*>(AuroraAttributeSet);
-	//MutableAuroraAttributeSet->SetHealth(10.f);
 }
 
 #pragma endregion}
