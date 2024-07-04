@@ -1,6 +1,8 @@
 ﻿#include "UI/WidgetController/OverlayWidgetController.h"
 
+#include "AbilitySystem/AuroraAbilitySystemComponent.h"
 #include "AbilitySystem/AuroraAttributeSet.h"
+#include "Debug/DebugMacros.h"
 
 void UOverlayWidgetController::BroadcastInitialValues()
 {
@@ -21,46 +23,62 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 
 	// Health 
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
-		AuroraAttributeSet->GetHealthAttribute()).AddUObject(this, &UOverlayWidgetController::HealthChanged);
-
-	// Max Health
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
-		AuroraAttributeSet->GetMaxHealthAttribute()).AddUObject(this, &UOverlayWidgetController::MaxHealthChanged);
-
-	// Health 
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
-		AuroraAttributeSet->GetManaAttribute()).AddUObject(this, &UOverlayWidgetController::ManaChanged);
-
-	// Max Health
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
-		AuroraAttributeSet->GetMaxManaAttribute()).AddUObject(this, &UOverlayWidgetController::MaxManaChanged);
-}
-
-
-#pragma region HEALTH
-
-void UOverlayWidgetController::HealthChanged(const FOnAttributeChangeData& Data) const 
-{
-	OnHealthChanged.Broadcast(Data.NewValue);
-}
+		AuroraAttributeSet->GetHealthAttribute()).AddLambda
+		(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnHealthChanged.Broadcast(Data.NewValue);
+			}
+		);
 	
-void UOverlayWidgetController::MaxHealthChanged(const FOnAttributeChangeData& Data) const
-{
-	OnMaxHealthChanged.Broadcast(Data.NewValue);
+	// Max Health
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
+		AuroraAttributeSet->GetMaxHealthAttribute()).AddLambda
+		(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnMaxHealthChanged.Broadcast(Data.NewValue);
+			}
+		);
+	
+	// Mana 
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
+		AuroraAttributeSet->GetManaAttribute()).AddLambda
+		(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnManaChanged.Broadcast(Data.NewValue);
+			}
+		);
+
+	// Max Mana
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
+		AuroraAttributeSet->GetMaxManaAttribute()).AddLambda
+		(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnMaxManaChanged.Broadcast(Data.NewValue);
+			}
+		);
+
+	// On Ability tags applied
+	Cast<UAuroraAbilitySystemComponent>(AbilitySystemComponent)->OnEffectAssetTagsApplied.AddLambda
+	(
+		[this](const FGameplayTagContainer& AssetTags)
+		{
+			for (const FGameplayTag& Tag : AssetTags)
+			{
+				// For example, say that Tag = Message.HealthPotion
+				// "Message.HealthPotion".MatchesTag("Message") will return True, "Message".MatchesTag("Message.HealthPotion") will return False
+				
+				FGameplayTag MessageTag = FGameplayTag::RequestGameplayTag(FName("Message"));
+				if (Tag.MatchesTag(MessageTag))
+				{
+					const FUIWidgetRow* Row = GetDataTableRowByTag<FUIWidgetRow>(MessageWidgetDataTable, Tag);
+					MessageWidgetRowDelegate.Broadcast(*Row);
+				}
+			}
+		}	
+	);
 }
 
-#pragma endregion
-
-#pragma region MANA
-
-void UOverlayWidgetController::ManaChanged(const FOnAttributeChangeData& Data) const
-{
-	OnManaChanged.Broadcast(Data.NewValue);
-}
-
-void UOverlayWidgetController::MaxManaChanged(const FOnAttributeChangeData& Data) const
-{
-	OnMaxManaChanged.Broadcast(Data.NewValue);
-}
-
-#pragma endregion

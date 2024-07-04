@@ -37,7 +37,10 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UAttributeSet> AttributeSet;
-
+	
+	virtual void InitAbilityActorInfo();
+	
+	
 public:
 	
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;

@@ -2,6 +2,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "Debug/DebugMacros.h"
 
 AAuroraEffectActor::AAuroraEffectActor()
 {
@@ -20,6 +21,7 @@ void AAuroraEffectActor::BeginPlay()
 void AAuroraEffectActor::ApplyEffectToTarget(AActor* TargetActor, TSubclassOf<UGameplayEffect> GameplayEffectClass)
 {
 	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
+	
 	if (!TargetASC) return;
 
 	// Valid gameplay effect class should be set. 
@@ -29,17 +31,14 @@ void AAuroraEffectActor::ApplyEffectToTarget(AActor* TargetActor, TSubclassOf<UG
 		UE_LOG(LogTemp, Warning, TEXT("GameplayEffectClass not set."))
 		return;
 	}
-
-
+	
 	// Effect context init. 
 	FGameplayEffectContextHandle EffectContextHandle = TargetASC->MakeEffectContext();
 	EffectContextHandle.AddSourceObject(this);
 	
 	const FGameplayEffectSpecHandle EffectSpecHandle = TargetASC->MakeOutgoingSpec(GameplayEffectClass, ActorLevel, EffectContextHandle);
-
-	// Apply effect to target actor and store it as active effect.   
-	//const FActiveGameplayEffectHandle ActiveEffectHandle = TargetASC->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
-	FActiveGameplayEffectHandle ActiveEffectHandle = TargetASC->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
+	// Apply effect to target actor and store it as an active effect.   
+	const FActiveGameplayEffectHandle ActiveEffectHandle = TargetASC->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
 	
 	// If effect has an infinite duration, we should store the references to actor's ability systems affected by active effect 
 	// in case we want to remove the effects later. 
@@ -48,14 +47,18 @@ void AAuroraEffectActor::ApplyEffectToTarget(AActor* TargetActor, TSubclassOf<UG
 	{
 		ActiveEffectHandlesMap.Add(ActiveEffectHandle, TargetASC);
 	}
+	
 }
 
 void AAuroraEffectActor::OnOverlap(AActor* TargetActor)
 {
-	// 
+	//
+	
 	if (InstantEffectApplicationPolicy == EEffectApplicationPolicy::ApplyOnOverlap)
 	{
+		
 		ApplyEffectToTarget(TargetActor, InstantGameplayEffectClass);
+		
 	}
 
 	if (DurationEffectApplicationPolicy == EEffectApplicationPolicy::ApplyOnOverlap)
@@ -67,6 +70,7 @@ void AAuroraEffectActor::OnOverlap(AActor* TargetActor)
 	{
 		ApplyEffectToTarget(TargetActor, InfiniteGameplayEffectClass);
 	}
+	
 }
 
 
@@ -93,10 +97,10 @@ void AAuroraEffectActor::OnEndOverlap(AActor* TargetActor)
 		UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
 		if (!IsValid(TargetASC)) return;
 
-		// Stores EffectHandles we're about to remove
+		// Stores an EffectHandles we're about to remove
 		TArray<FActiveGameplayEffectHandle> HandlesToRemove;
 
-		// We can't remove objects we're looping through safely so we add the active effects to the array to remove it after.
+		// We can't remove an objects we're looping through safely so we add the active effects to the array to remove them after.
 		for	(TTuple<FActiveGameplayEffectHandle, UAbilitySystemComponent*> HandlePair : ActiveEffectHandlesMap)
 		{
 			if (TargetASC == HandlePair.Value)

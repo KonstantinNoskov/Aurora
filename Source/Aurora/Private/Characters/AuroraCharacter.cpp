@@ -1,8 +1,10 @@
 ﻿#include "Characters/AuroraCharacter.h"
 
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/AuroraAbilitySystemComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Controllers/PlayerControllers/AuroraPlayerController.h"
+#include "Debug/DebugMacros.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Player/AuroraPlayerState.h"
@@ -51,7 +53,6 @@ void AAuroraCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 void AAuroraCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
-	
 	InitAbilityActorInfo();
 }
 
@@ -59,14 +60,18 @@ void AAuroraCharacter::PossessedBy(AController* NewController)
 
 void AAuroraCharacter::InitAbilityActorInfo()
 {
+	
 	// Aurora player state valid check
 	AAuroraPlayerState* AuroraPlayerState = GetPlayerState<AAuroraPlayerState>();
 	
-	checkf(AuroraPlayerState, TEXT("AuroraPlayerState not set. Checkout for Auto Posses Player paramater in Pawn settings."));
+	//checkf(AuroraPlayerState, TEXT("AuroraPlayerState not set. Checkout for Auto Posses Player paramater in Pawn settings."));
+	if (!AuroraPlayerState) return;
 	
 	// Set Ability actor info
 	AuroraPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(AuroraPlayerState, this);
+	Cast<UAuroraAbilitySystemComponent>(AuroraPlayerState->GetAbilitySystemComponent())->AbilityActorInfoSet();;
 
+	
 	// Set AbilitySystemComponent
 	AbilitySystemComponent = AuroraPlayerState->GetAbilitySystemComponent();
 

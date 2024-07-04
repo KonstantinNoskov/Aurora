@@ -51,10 +51,10 @@
 #define DEBUG_MESSAGE_VECTOR_COLOR(Vector, Color)	if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.f, Color, FString::Printf(TEXT("%s"), Vector);
 
 // Strings
-#define DEBUG_MESSAGE_STRING(StringValue)							if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("%s"), StringValue));
-#define DEBUG_MESSAGE_STRING_SingleFrame(StringValue)				if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Yellow, FString::Printf(TEXT("%s"), StringValue));
-#define DEBUG_MESSAGE_STRING_COLOR (StringValue, Color)				if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.f, Color, FString::Printf(TEXT("%s"), StringValue));
-#define DEBUG_MESSAGE_STRING_COLOR_SingleFrame(StringValue, Color)	if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 0.f, Color, FString::Printf(TEXT("%s"), StringValue));
+#define DEBUG_MESSAGE_STRING(StringValue)							if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("%s"), *StringValue));
+#define DEBUG_MESSAGE_STRING_SingleFrame(StringValue)				if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Yellow, FString::Printf(TEXT("%s"), *StringValue));
+#define DEBUG_MESSAGE_STRING_COLOR (StringValue, Color)				if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.f, Color, FString::Printf(TEXT("%s"), *StringValue));
+#define DEBUG_MESSAGE_STRING_COLOR_SingleFrame(StringValue, Color)	if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 0.f, Color, FString::Printf(TEXT("%s"), *StringValue));
 
 // Text
 #define DEBUG_MESSAGE_TEXT(TextValue)							if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT(TextValue)));

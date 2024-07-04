@@ -19,10 +19,15 @@ protected:
 public:
 	virtual void Tick(float DeltaTime) override;
 
+protected:
+
+	virtual void InitAbilityActorInfo() override;
+
 #pragma region TARGET INTERFACE
 	
 	virtual void HighLightActor() override;
 	virtual void UnHighLightActor() override;
+	
 
 	UPROPERTY(BlueprintReadOnly)
 	bool bHighlighted = false;

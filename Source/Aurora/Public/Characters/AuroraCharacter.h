@@ -40,7 +40,7 @@ private:
 #pragma region ABILITY SYSTEM
 
 	UFUNCTION()
-	void InitAbilityActorInfo();
+	virtual void InitAbilityActorInfo() override;
 	
 #pragma endregion
 };
