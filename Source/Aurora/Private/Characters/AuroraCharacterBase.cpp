@@ -16,7 +16,7 @@ void AAuroraCharacterBase::BeginPlay()
 
 #pragma region ABILITY SYSTEM
 
-void AAuroraCharacterBase::InitAbilityActorInfo(){}
+//void AAuroraCharacterBase::InitAbilityActorInfo(){}
 
 UAbilitySystemComponent* AAuroraCharacterBase::GetAbilitySystemComponent() const
 {

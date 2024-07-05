@@ -19,7 +19,6 @@ public:
 	
 	AAuroraCharacterBase();
 
-
 protected:
 
 	virtual void BeginPlay() override;

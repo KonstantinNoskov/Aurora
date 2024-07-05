@@ -1,6 +1,6 @@
 ﻿#include "Characters/AuroraCharacter.h"
 
-#include "AbilitySystemComponent.h"
+//#include "AbilitySystemComponent.h"
 #include "AbilitySystem/AuroraAbilitySystemComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Controllers/PlayerControllers/AuroraPlayerController.h"
@@ -69,7 +69,7 @@ void AAuroraCharacter::InitAbilityActorInfo()
 	
 	// Set Ability actor info
 	AuroraPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(AuroraPlayerState, this);
-	Cast<UAuroraAbilitySystemComponent>(AuroraPlayerState->GetAbilitySystemComponent())->AbilityActorInfoSet();;
+	Cast<UAuroraAbilitySystemComponent>(AuroraPlayerState->GetAbilitySystemComponent())->AbilityActorInfoSet();
 
 	
 	// Set AbilitySystemComponent
