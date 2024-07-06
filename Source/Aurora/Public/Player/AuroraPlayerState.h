@@ -6,7 +6,6 @@
 #include "AuroraPlayerState.generated.h"
 
 // Ability System
-class UAbilitySystemComponent;
 class UAttributeSet;
 
 UCLASS()

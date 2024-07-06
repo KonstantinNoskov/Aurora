@@ -20,9 +20,10 @@ AAuroraPlayerState::AAuroraPlayerState()
 
 #pragma region ABILITY SYSTEM
 
+
 UAbilitySystemComponent* AAuroraPlayerState::GetAbilitySystemComponent() const
 {
-	return AbilitySystemComponent;
+	return AbilitySystemComponent; 
 }
 
 void AAuroraPlayerState::BeginPlay()

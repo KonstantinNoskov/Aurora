@@ -1,5 +1,7 @@
 ﻿#include "Aurora/Public/Characters/AuroraCharacterBase.h"
 
+
+
 AAuroraCharacterBase::AAuroraCharacterBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -16,12 +18,17 @@ void AAuroraCharacterBase::BeginPlay()
 
 #pragma region ABILITY SYSTEM
 
-//void AAuroraCharacterBase::InitAbilityActorInfo(){}
+void AAuroraCharacterBase::InitAbilityActorInfo()
+{
+	//
+}
+
 
 UAbilitySystemComponent* AAuroraCharacterBase::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
 }
+
 
 #pragma endregion 
 

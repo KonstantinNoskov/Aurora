@@ -8,13 +8,13 @@
 
 // Ability System
 class UAttributeSet;
-class UAbilitySystemComponent;
+//class UAbilitySystemComponent;
 
 UCLASS(Abstract)
 class AURORA_API AAuroraCharacterBase : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
-
+	
 public:
 	
 	AAuroraCharacterBase();

@@ -1,6 +1,6 @@
 ﻿#include "Characters/AuroraCharacter.h"
 
-//#include "AbilitySystemComponent.h"
+#include "AbilitySystemComponent.h"
 #include "AbilitySystem/AuroraAbilitySystemComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Controllers/PlayerControllers/AuroraPlayerController.h"
