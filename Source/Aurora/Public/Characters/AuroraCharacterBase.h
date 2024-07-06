@@ -8,7 +8,6 @@
 
 // Ability System
 class UAttributeSet;
-//class UAbilitySystemComponent;
 
 UCLASS(Abstract)
 class AURORA_API AAuroraCharacterBase : public ACharacter, public IAbilitySystemInterface
