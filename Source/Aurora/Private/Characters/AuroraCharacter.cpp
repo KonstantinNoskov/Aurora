@@ -69,16 +69,15 @@ void AAuroraCharacter::InitAbilityActorInfo()
 	
 	// Set Ability actor info
 	AuroraPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(AuroraPlayerState, this);
+	
 	Cast<UAuroraAbilitySystemComponent>(AuroraPlayerState->GetAbilitySystemComponent())->AbilityActorInfoSet();
-
 	
 	// Set AbilitySystemComponent
 	AbilitySystemComponent = AuroraPlayerState->GetAbilitySystemComponent();
 
 	// Set Attribute set
 	AttributeSet = AuroraPlayerState->GetAttributeSet();
-
-	//
+	
 	if (AAuroraPlayerController* AuroraPlayerController = Cast<AAuroraPlayerController>(GetController()))
 	{
 		if (AAuroraHUD* AuroraHUD = Cast<AAuroraHUD>(AuroraPlayerController->GetHUD()))
@@ -86,6 +85,9 @@ void AAuroraCharacter::InitAbilityActorInfo()
 			AuroraHUD->InitOverlay(AuroraPlayerController, AuroraPlayerState, AbilitySystemComponent, AttributeSet);
 		}
 	}
+
+	// Set primary attributes
+	InitializePrimaryAttribute();
 }
 
 void AAuroraCharacter::OnRep_PlayerState()

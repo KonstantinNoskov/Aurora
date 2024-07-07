@@ -1,5 +1,6 @@
 ﻿#include "Aurora/Public/Characters/AuroraCharacterBase.h"
 
+#include "AbilitySystemComponent.h"
 
 
 AAuroraCharacterBase::AAuroraCharacterBase()
@@ -23,14 +24,25 @@ void AAuroraCharacterBase::InitAbilityActorInfo()
 	//
 }
 
-
 UAbilitySystemComponent* AAuroraCharacterBase::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
 }
 
+#pragma endregion
 
-#pragma endregion 
+#pragma region PRIMARY ATTRIBUTES
 
+void AAuroraCharacterBase::InitializePrimaryAttribute() const
+{
+	if (AbilitySystemComponent && DefaultPrimaryAttributes)
+	{
+		const FGameplayEffectContextHandle ContextHandle = AbilitySystemComponent->MakeEffectContext();
+		const FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(DefaultPrimaryAttributes, 1.f, ContextHandle);
+		AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), AbilitySystemComponent);
+	}
+}
+
+#pragma endregion
 
 

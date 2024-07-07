@@ -6,6 +6,7 @@
 #include "AuroraCharacterBase.generated.h"
 
 
+class UGameplayEffect;
 // Ability System
 class UAttributeSet;
 
@@ -37,8 +38,21 @@ protected:
 	TObjectPtr<UAttributeSet> AttributeSet;
 	
 	virtual void InitAbilityActorInfo();
+
+
+#pragma region PRIMARY ATTRIBUTES
+
+protected:
 	
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
+	TSubclassOf<UGameplayEffect> DefaultPrimaryAttributes;
+
+	UFUNCTION()
+	void InitializePrimaryAttribute() const;
+
+#pragma endregion
 	
+
 public:
 	
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
