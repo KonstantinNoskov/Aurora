@@ -9,13 +9,11 @@ AAuroraEffectActor::AAuroraEffectActor()
 	PrimaryActorTick.bCanEverTick = false;
 
 	SetRootComponent(CreateDefaultSubobject<USceneComponent>("SceneRoot"));
-	
 }
 
 void AAuroraEffectActor::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 void AAuroraEffectActor::ApplyEffectToTarget(AActor* TargetActor, TSubclassOf<UGameplayEffect> GameplayEffectClass)
@@ -47,7 +45,6 @@ void AAuroraEffectActor::ApplyEffectToTarget(AActor* TargetActor, TSubclassOf<UG
 	{
 		ActiveEffectHandlesMap.Add(ActiveEffectHandle, TargetASC);
 	}
-	
 }
 
 void AAuroraEffectActor::OnOverlap(AActor* TargetActor)
@@ -56,9 +53,7 @@ void AAuroraEffectActor::OnOverlap(AActor* TargetActor)
 	
 	if (InstantEffectApplicationPolicy == EEffectApplicationPolicy::ApplyOnOverlap)
 	{
-		
 		ApplyEffectToTarget(TargetActor, InstantGameplayEffectClass);
-		
 	}
 
 	if (DurationEffectApplicationPolicy == EEffectApplicationPolicy::ApplyOnOverlap)
@@ -70,23 +65,21 @@ void AAuroraEffectActor::OnOverlap(AActor* TargetActor)
 	{
 		ApplyEffectToTarget(TargetActor, InfiniteGameplayEffectClass);
 	}
-	
 }
 
 
 void AAuroraEffectActor::OnEndOverlap(AActor* TargetActor)
 {
-	
 	if (InstantEffectApplicationPolicy == EEffectApplicationPolicy::ApplyOnEndOverlap)
 	{
 		ApplyEffectToTarget(TargetActor, InstantGameplayEffectClass);
 	}
-
+	
 	if (DurationEffectApplicationPolicy == EEffectApplicationPolicy::ApplyOnEndOverlap)
 	{
 		ApplyEffectToTarget(TargetActor, DurationGameplayEffectClass);
 	}
-
+	
 	if (InfiniteEffectApplicationPolicy == EEffectApplicationPolicy::ApplyOnEndOverlap)
 	{
 		ApplyEffectToTarget(TargetActor, InfiniteGameplayEffectClass);
