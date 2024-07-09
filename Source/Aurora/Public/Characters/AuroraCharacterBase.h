@@ -3,15 +3,16 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
+#include "Interfaces/Interaction/CombatInterface.h"
 #include "AuroraCharacterBase.generated.h"
 
-
-class UGameplayEffect;
 // Ability System
 class UAttributeSet;
+class UGameplayEffect;
+
 
 UCLASS(Abstract)
-class AURORA_API AAuroraCharacterBase : public ACharacter, public IAbilitySystemInterface
+class AURORA_API AAuroraCharacterBase : public ACharacter, public IAbilitySystemInterface, public ICombatInterface
 {
 	GENERATED_BODY()
 	
@@ -24,6 +25,7 @@ protected:
 	virtual void BeginPlay() override;
 
 protected:
+	
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
 
@@ -38,7 +40,17 @@ protected:
 	TObjectPtr<UAttributeSet> AttributeSet;
 	
 	virtual void InitAbilityActorInfo();
+	
+	UFUNCTION()
+	void InitializeDefaultAttributes() const;
 
+public:
+
+	UFUNCTION()
+	void ApplyEffectToSelf(const TSubclassOf<UGameplayEffect>& GameplayEffectClass, const float Level) const;
+	
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	FORCEINLINE TObjectPtr<UAttributeSet> GetAttributeSet() const { return AttributeSet; }  
 
 #pragma region PRIMARY ATTRIBUTES
 
@@ -47,16 +59,22 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
 	TSubclassOf<UGameplayEffect> DefaultPrimaryAttributes;
 
-	UFUNCTION()
-	void InitializePrimaryAttribute() const;
 
 #pragma endregion
-	
+#pragma region SECONDARY ATTRIBUTES
 
-public:
+protected:
 	
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-	FORCEINLINE TObjectPtr<UAttributeSet> GetAttributeSet() const { return AttributeSet; }  
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
+	TSubclassOf<UGameplayEffect> DefaultSecondaryAttributes;
+
+#pragma endregion
+#pragma region VITAL ATTRIBUTES
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
+	TSubclassOf<UGameplayEffect> DefaultVitalAttributes;
+	
+#pragma endregion
 
 #pragma endregion
 

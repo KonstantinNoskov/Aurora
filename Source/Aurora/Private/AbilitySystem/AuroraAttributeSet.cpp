@@ -9,35 +9,36 @@
 
 UAuroraAttributeSet::UAuroraAttributeSet()
 {
-	InitHealth(10.f);
-	InitMaxHealth(100.f);
-	InitMana(10.f);
-	InitMaxMana(50.f);
+	
 }
 
 void UAuroraAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	// Health
-	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, Health, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
+	// Vital Attributes
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, Health,					COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, Mana,					COND_None, REPNOTIFY_Always);
+	
+	// Primary Attributes
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, Strength,				COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, Intelligence,			COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, Resilience,				COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, Vigor,					COND_None, REPNOTIFY_Always);
 
-	// Mana
-	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, Mana, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, MaxMana, COND_None, REPNOTIFY_Always);
-
-	// Strength
-	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, Strength, COND_None, REPNOTIFY_Always);
-
-	// Intelligence
-	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, Intelligence, COND_None, REPNOTIFY_Always);
-
-	// Resilience
-	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, Resilience, COND_None, REPNOTIFY_Always);
-
-	// Vigor
-	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, Vigor, COND_None, REPNOTIFY_Always);
+	// Secondary Attributes
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, MaxHealth,				COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, MaxMana,				COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, Armor,					COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, ArmorPenetration,		COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, BlockChance,			COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, CriticalHitChance,		COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, CriticalHitDamage,		COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, CriticalHitResistance,	COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, HealthRegeneration,		COND_None, REPNOTIFY_Always);	
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, ManaRegeneration,		COND_None, REPNOTIFY_Always);	
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, MaxHealth,				COND_None, REPNOTIFY_Always);	
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, MaxMana,				COND_None, REPNOTIFY_Always);
 }
 
 void UAuroraAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
@@ -54,7 +55,6 @@ void UAuroraAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute
 		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxMana());
 	}
 }
-
 void UAuroraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
@@ -73,7 +73,6 @@ void UAuroraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCall
 	}
 	
 }
-
 void UAuroraAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const
 {
 	// Source = causer of the effect, Target = target of the effect (owner of this AS)
@@ -117,10 +116,6 @@ void UAuroraAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth) 
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuroraAttributeSet, Health, OldHealth);
 }
-void UAuroraAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuroraAttributeSet, MaxHealth, OldMaxHealth);
-}
 
 #pragma endregion
 #pragma region MANA
@@ -128,11 +123,6 @@ void UAuroraAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHe
 void UAuroraAttributeSet::OnRep_Mana(const FGameplayAttributeData& OldMana) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuroraAttributeSet, Mana, OldMana);
-}
-
-void UAuroraAttributeSet::OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuroraAttributeSet, MaxMana, OldMaxMana);
 }
 
 #pragma endregion
@@ -145,20 +135,71 @@ void UAuroraAttributeSet::OnRep_Strength(const FGameplayAttributeData& OldStreng
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuroraAttributeSet, Strength, OldStrength);
 }
-
 void UAuroraAttributeSet::OnRep_Intelligence(const FGameplayAttributeData& OldIntelligence) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuroraAttributeSet, Intelligence, OldIntelligence);
 }
-
 void UAuroraAttributeSet::OnRep_Resilience(const FGameplayAttributeData& OldResilience) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuroraAttributeSet, Resilience, OldResilience);
 }
-
 void UAuroraAttributeSet::OnRep_Vigor(const FGameplayAttributeData& OldVigor) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuroraAttributeSet, Vigor, OldVigor);
+}
+
+#pragma endregion
+
+#pragma region SECONDARY ATTRIBUTES
+
+void UAuroraAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuroraAttributeSet, MaxHealth, OldMaxHealth);
+}
+
+void UAuroraAttributeSet::OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana) const 
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuroraAttributeSet, MaxMana, OldMaxMana); 
+}
+
+void UAuroraAttributeSet::OnRep_Armor(const FGameplayAttributeData& OldArmor) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuroraAttributeSet, Armor, OldArmor);
+}
+
+void UAuroraAttributeSet::OnRep_ArmorPenetration(const FGameplayAttributeData& OldArmorPenetration) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuroraAttributeSet, ArmorPenetration, OldArmorPenetration);
+}
+
+void UAuroraAttributeSet::OnRep_BlockChance(const FGameplayAttributeData& OldBlockChance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuroraAttributeSet, BlockChance, OldBlockChance);
+}
+
+void UAuroraAttributeSet::OnRep_CriticalHitChance(const FGameplayAttributeData& OldCriticalHitChance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuroraAttributeSet, CriticalHitChance, OldCriticalHitChance);
+}
+
+void UAuroraAttributeSet::OnRep_CriticalHitDamage(const FGameplayAttributeData& OldCriticalHitDamage) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuroraAttributeSet, CriticalHitDamage, OldCriticalHitDamage);
+}
+
+void UAuroraAttributeSet::OnRep_CriticalHitResistance(const FGameplayAttributeData& OldCriticalHitResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuroraAttributeSet, CriticalHitResistance, OldCriticalHitResistance);
+}
+
+void UAuroraAttributeSet::OnRep_HealthRegeneration(const FGameplayAttributeData& OldHealthRegeneration) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuroraAttributeSet, HealthRegeneration, OldHealthRegeneration);
+}
+
+void UAuroraAttributeSet::OnRep_ManaRegeneration(const FGameplayAttributeData& OldManaRegeneration) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuroraAttributeSet, ManaRegeneration, OldManaRegeneration);
 }
 
 #pragma endregion

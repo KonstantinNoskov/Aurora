@@ -16,6 +16,11 @@ class AURORA_API AAuroraPlayerState : public APlayerState, public IAbilitySystem
 public:
 	AAuroraPlayerState();
 
+protected:
+	virtual void BeginPlay() override;
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	
 #pragma region ABILITY SYSTEM
 
 protected:
@@ -31,9 +36,18 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	FORCEINLINE TObjectPtr<UAttributeSet> GetAttributeSet() const { return AttributeSet; }
 
-protected:
-	virtual void BeginPlay() override;
-
 #pragma endregion
+
+private:
+
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_Level)
+	int32 Level = 1;
+
+	UFUNCTION()
+	void OnRep_Level(int32 OldLevel);
+
+public:
+	
+	FORCEINLINE int32 GetPlayerLevel() const { return Level; }
 	
 };

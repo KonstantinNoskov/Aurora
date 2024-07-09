@@ -67,7 +67,6 @@ void AAuroraEffectActor::OnOverlap(AActor* TargetActor)
 	}
 }
 
-
 void AAuroraEffectActor::OnEndOverlap(AActor* TargetActor)
 {
 	if (InstantEffectApplicationPolicy == EEffectApplicationPolicy::ApplyOnEndOverlap)

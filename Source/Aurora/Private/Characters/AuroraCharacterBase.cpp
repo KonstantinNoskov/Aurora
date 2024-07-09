@@ -1,6 +1,7 @@
 ﻿#include "Aurora/Public/Characters/AuroraCharacterBase.h"
 
 #include "AbilitySystemComponent.h"
+#include "Debug/DebugMacros.h"
 
 
 AAuroraCharacterBase::AAuroraCharacterBase()
@@ -21,7 +22,26 @@ void AAuroraCharacterBase::BeginPlay()
 
 void AAuroraCharacterBase::InitAbilityActorInfo()
 {
-	//
+	// Logic is defined in child classes.
+}
+
+void AAuroraCharacterBase::ApplyEffectToSelf(const TSubclassOf<UGameplayEffect>& GameplayEffectClass, const float Level) const
+{
+	check(IsValid(GetAbilitySystemComponent()));
+	check(GameplayEffectClass);
+	
+	FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
+	ContextHandle.AddSourceObject(this);
+	
+	FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(GameplayEffectClass, Level, ContextHandle);
+	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), GetAbilitySystemComponent());
+}
+
+void AAuroraCharacterBase::InitializeDefaultAttributes() const
+{
+	ApplyEffectToSelf(DefaultPrimaryAttributes, 1.f);
+	ApplyEffectToSelf(DefaultSecondaryAttributes, 1.f);
+	ApplyEffectToSelf(DefaultVitalAttributes, 1.f);
 }
 
 UAbilitySystemComponent* AAuroraCharacterBase::GetAbilitySystemComponent() const
@@ -30,19 +50,4 @@ UAbilitySystemComponent* AAuroraCharacterBase::GetAbilitySystemComponent() const
 }
 
 #pragma endregion
-
-#pragma region PRIMARY ATTRIBUTES
-
-void AAuroraCharacterBase::InitializePrimaryAttribute() const
-{
-	if (AbilitySystemComponent && DefaultPrimaryAttributes)
-	{
-		const FGameplayEffectContextHandle ContextHandle = AbilitySystemComponent->MakeEffectContext();
-		const FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(DefaultPrimaryAttributes, 1.f, ContextHandle);
-		AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), AbilitySystemComponent);
-	}
-}
-
-#pragma endregion
-
 

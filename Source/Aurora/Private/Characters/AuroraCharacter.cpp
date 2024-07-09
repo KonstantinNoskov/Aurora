@@ -67,15 +67,15 @@ void AAuroraCharacter::InitAbilityActorInfo()
 	//checkf(AuroraPlayerState, TEXT("AuroraPlayerState not set. Checkout for Auto Posses Player paramater in Pawn settings."));
 	if (!AuroraPlayerState) return;
 	
-	// Set Ability actor info
+	// Set ability actor info
 	AuroraPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(AuroraPlayerState, this);
 	
 	Cast<UAuroraAbilitySystemComponent>(AuroraPlayerState->GetAbilitySystemComponent())->AbilityActorInfoSet();
 	
-	// Set AbilitySystemComponent
+	// Set abilitySystemComponent
 	AbilitySystemComponent = AuroraPlayerState->GetAbilitySystemComponent();
 
-	// Set Attribute set
+	// Set attribute set
 	AttributeSet = AuroraPlayerState->GetAttributeSet();
 	
 	if (AAuroraPlayerController* AuroraPlayerController = Cast<AAuroraPlayerController>(GetController()))
@@ -86,8 +86,16 @@ void AAuroraCharacter::InitAbilityActorInfo()
 		}
 	}
 
-	// Set primary attributes
-	InitializePrimaryAttribute();
+	// Set default attributes
+	InitializeDefaultAttributes();
+}
+
+int32 AAuroraCharacter::GetPlayerLevel()
+{
+	const AAuroraPlayerState* AuroraPlayerState = GetPlayerState<AAuroraPlayerState>();
+	checkf(AuroraPlayerState, TEXT("AuroraCharacter.cpp - Aurora playerstate is null!"))
+
+	return  AuroraPlayerState->GetPlayerLevel();
 }
 
 void AAuroraCharacter::OnRep_PlayerState()

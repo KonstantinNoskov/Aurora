@@ -43,4 +43,12 @@ private:
 	virtual void InitAbilityActorInfo() override;
 	
 #pragma endregion
+
+
+#pragma region COMBAT INTERFACE
+
+	UFUNCTION()
+	virtual int32 GetPlayerLevel() override;
+	
+#pragma endregion
 };

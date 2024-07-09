@@ -34,4 +34,18 @@ protected:
 
 #pragma endregion
 
+protected:
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
+	int32 Level = 1;
+
+#pragma region COMBAT INTERFACE
+
+public:
+
+  FORCEINLINE virtual int32 GetPlayerLevel() override { return Level; }
+	
+#pragma endregion
+
+	
 };

@@ -3,7 +3,7 @@
 // Ability System
 #include "AbilitySystem/AuroraAbilitySystemComponent.h"
 #include "AbilitySystem/AuroraAttributeSet.h"
-#include "Characters/AuroraCharacterBase.h"
+#include "Net/UnrealNetwork.h"
 
 AAuroraPlayerState::AAuroraPlayerState()
 {
@@ -18,6 +18,20 @@ AAuroraPlayerState::AAuroraPlayerState()
 	AttributeSet = CreateDefaultSubobject<UAuroraAttributeSet>("AttributeSet");
 }
 
+
+void AAuroraPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AAuroraPlayerState, Level)	
+}
+
+void AAuroraPlayerState::BeginPlay()
+{
+	Super::BeginPlay();
+	
+}
+
 #pragma region ABILITY SYSTEM
 
 
@@ -26,11 +40,8 @@ UAbilitySystemComponent* AAuroraPlayerState::GetAbilitySystemComponent() const
 	return AbilitySystemComponent; 
 }
 
-void AAuroraPlayerState::BeginPlay()
+void AAuroraPlayerState::OnRep_Level(int32 OldLevel)
 {
-	Super::BeginPlay();
-	
 	
 }
-
-#pragma endregion}
+#pragma endregion
