@@ -83,6 +83,7 @@ void AAuroraCharacter::InitAbilityActorInfo()
 		if (AAuroraHUD* AuroraHUD = Cast<AAuroraHUD>(AuroraPlayerController->GetHUD()))
 		{
 			AuroraHUD->InitOverlay(AuroraPlayerController, AuroraPlayerState, AbilitySystemComponent, AttributeSet);
+			AuroraHUD->InitAttributeMenu(AuroraPlayerController, AuroraPlayerState, AbilitySystemComponent, AttributeSet);
 		}
 	}
 

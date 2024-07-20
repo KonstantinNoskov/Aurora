@@ -8,6 +8,9 @@
 class UAttributeSet;
 class UAbilitySystemComponent;
 
+// Attribute Changed
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangedSignature, float, NewAttributeValue);
+
 USTRUCT(BlueprintType)
 struct FWidgetControllerParams
 {
@@ -56,7 +59,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetWidgetControllerParams(const FWidgetControllerParams& WCParams);
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	virtual void BroadcastInitialValues();
 
 	UFUNCTION(BlueprintCallable, Category = "Widget Controller")

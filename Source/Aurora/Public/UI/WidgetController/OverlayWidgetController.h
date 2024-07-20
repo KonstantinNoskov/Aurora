@@ -24,8 +24,6 @@ struct FUIWidgetRow : public FTableRowBase
 	UTexture2D* Image = nullptr;
 };
 
-// Attribute Changed
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangedSignature, float, NewAttributeValue);
 
 // Widget Row
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageWidgetRowSignature, FUIWidgetRow, Row) ;
@@ -41,7 +39,8 @@ public:
 	virtual void BroadcastInitialValues() override;
 	virtual void BindCallbacksToDependencies() override;
 
-
+#pragma region OVERLAY MESSAGES 
+	
 protected:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Widget Data")
@@ -52,6 +51,8 @@ protected:
 
 	UPROPERTY(BlueprintAssignable, Category = "GAS | Messages")
 	FMessageWidgetRowSignature MessageWidgetRowDelegate;
+
+#pragma endregion
 
 #pragma region HEALTH
 
@@ -80,13 +81,11 @@ public:
 	FOnAttributeChangedSignature OnMaxManaChanged;
 
 #pragma endregion
+
+
 };
 
-template <typename T>
-T* UOverlayWidgetController::GetDataTableRowByTag(UDataTable* DataTable, const FGameplayTag& Tag)
-{	
-	return DataTable->FindRow<T>(Tag.GetTagName(), TEXT(""));
-}
+
 
 
 

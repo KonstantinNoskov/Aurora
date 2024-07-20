@@ -16,12 +16,11 @@ void UOverlayWidgetController::BroadcastInitialValues()
 }
 
 // Bind callbacks to attribute changed events 
-
 void UOverlayWidgetController::BindCallbacksToDependencies()
 {
 	const UAuroraAttributeSet* AuroraAttributeSet = CastChecked<UAuroraAttributeSet>(AttributeSet);
-
-	// Health 
+	
+	// On Health changed
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
 		AuroraAttributeSet->GetHealthAttribute()).AddLambda
 		(
@@ -31,7 +30,7 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 			}
 		);
 	
-	// Max Health
+	// On Max Health changed
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
 		AuroraAttributeSet->GetMaxHealthAttribute()).AddLambda
 		(
@@ -41,7 +40,7 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 			}
 		);
 	
-	// Mana 
+	// On Mana changed 
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
 		AuroraAttributeSet->GetManaAttribute()).AddLambda
 		(
@@ -51,7 +50,7 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 			}
 		);
 
-	// Max Mana
+	// On Max Mana changed
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
 		AuroraAttributeSet->GetMaxManaAttribute()).AddLambda
 		(
@@ -61,7 +60,7 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 			}
 		);
 
-	// On Ability tags applied
+	// On Ability tags applied 
 	Cast<UAuroraAbilitySystemComponent>(AbilitySystemComponent)->OnEffectAssetTagsApplied.AddLambda
 	(
 		[this](const FGameplayTagContainer& AssetTags)
@@ -82,3 +81,8 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 	);
 }
 
+template <typename T>
+T* UOverlayWidgetController::GetDataTableRowByTag(UDataTable* DataTable, const FGameplayTag& Tag)
+{	
+	return DataTable->FindRow<T>(Tag.GetTagName(), TEXT(""));
+}

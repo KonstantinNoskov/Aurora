@@ -5,7 +5,6 @@
 #include "AttributeSet.h"
 #include "AuroraAttributeSet.generated.h"
 
-
 #define ATTRIBUTE_ACCESSORS(ClassName, PropertyName) \
 	GAMEPLAYATTRIBUTE_PROPERTY_GETTER(ClassName, PropertyName) \
 	GAMEPLAYATTRIBUTE_VALUE_GETTER(PropertyName) \
@@ -47,6 +46,9 @@ struct FEffectProperties
 	FGameplayEffectContextHandle EffectContextHandle;
 };
 
+// Static Function pointer template
+template<class T>
+using TStaticFuncPtr = typename TBaseStaticDelegateInstance<T, FDefaultDelegateUserPolicy>::FFuncPtr;
 
 UCLASS()
 class AURORA_API UAuroraAttributeSet : public UAttributeSet
@@ -60,7 +62,10 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
-
+		
+	// [GameplayTag - Gameplay Attribute] Map
+	TMap<FGameplayTag, TStaticFuncPtr<FGameplayAttribute()>> TagsToAttributes;
+	
 #pragma region EFFECT PROPS
 	
 public:

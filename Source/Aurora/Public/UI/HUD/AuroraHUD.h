@@ -4,6 +4,7 @@
 #include "GameFramework/HUD.h"
 #include "AuroraHUD.generated.h"
 
+class UAttributeMenuWidgetController;
 class UAbilitySystemComponent;
 class UAttributeSet;
 
@@ -17,26 +18,56 @@ class AURORA_API AAuroraHUD : public AHUD
 {
 	GENERATED_BODY()
 
-public:
+private:
+
+#pragma region OVERLAY WIDGET CONTROLLER
 	
+	UPROPERTY(EditAnywhere, Category = "Overlay")
+	TSubclassOf<UAuroraUserWidget> OverlayWidgetClass;
+
 	UPROPERTY()
 	TObjectPtr<UAuroraUserWidget> OverlayWidget;
-
-private:
+	
+	UPROPERTY(EditAnywhere, Category = "Overlay")
+	TSubclassOf<UOverlayWidgetController> OverlayWidgetControllerClass;
 
 	UPROPERTY()
 	TObjectPtr<UOverlayWidgetController> OverlayWidgetController;
-	
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UOverlayWidgetController> OverlayWidgetControllerClass;
-	
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UAuroraUserWidget> OverlayWidgetClass;
 
 public:
-
-	void InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS);
 	
 	UFUNCTION()
 	UOverlayWidgetController* GetOverlayWidgetController(const FWidgetControllerParams& WidgetControllerParams);
+
+	void InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS);
+	
+#pragma endregion	
+
+#pragma region ATTRIBUTE MENU WIDGET CONTROLLER
+	
+	UPROPERTY(EditAnywhere, Category = "Attribute Menu")
+	TSubclassOf<UAuroraUserWidget> AttributeMenuWidgetClass;
+	
+	UPROPERTY()
+	TObjectPtr<UAuroraUserWidget> AttributeMenuWidget;
+	
+	UPROPERTY(EditAnywhere, Category = "Attribute Menu")
+	TSubclassOf<UAttributeMenuWidgetController> AttributeMenuWidgetControllerClass;
+
+	UPROPERTY()
+	TObjectPtr<UAttributeMenuWidgetController> AttributeMenuWidgetController;
+
+public:
+	
+	UFUNCTION()
+	UAttributeMenuWidgetController* GetAttributeMenuWidgetController(const FWidgetControllerParams& WidgetControllerParams);
+
+	void InitAttributeMenu(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS);
+	
+#pragma endregion
+
+
+
+	
+
 };

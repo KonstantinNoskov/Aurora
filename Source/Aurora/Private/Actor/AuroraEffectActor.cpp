@@ -17,7 +17,7 @@ void AAuroraEffectActor::BeginPlay()
 }
 
 void AAuroraEffectActor::ApplyEffectToTarget(AActor* TargetActor, TSubclassOf<UGameplayEffect> GameplayEffectClass)
-{
+ {
 	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
 	
 	if (!TargetASC) return;
@@ -35,6 +35,7 @@ void AAuroraEffectActor::ApplyEffectToTarget(AActor* TargetActor, TSubclassOf<UG
 	EffectContextHandle.AddSourceObject(this);
 	
 	const FGameplayEffectSpecHandle EffectSpecHandle = TargetASC->MakeOutgoingSpec(GameplayEffectClass, ActorLevel, EffectContextHandle);
+
 	// Apply effect to target actor and store it as an active effect.   
 	const FActiveGameplayEffectHandle ActiveEffectHandle = TargetASC->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
 	
@@ -46,7 +47,6 @@ void AAuroraEffectActor::ApplyEffectToTarget(AActor* TargetActor, TSubclassOf<UG
 		ActiveEffectHandlesMap.Add(ActiveEffectHandle, TargetASC);
 	}
 }
-
 void AAuroraEffectActor::OnOverlap(AActor* TargetActor)
 {
 	//
@@ -66,7 +66,6 @@ void AAuroraEffectActor::OnOverlap(AActor* TargetActor)
 		ApplyEffectToTarget(TargetActor, InfiniteGameplayEffectClass);
 	}
 }
-
 void AAuroraEffectActor::OnEndOverlap(AActor* TargetActor)
 {
 	if (InstantEffectApplicationPolicy == EEffectApplicationPolicy::ApplyOnEndOverlap)
