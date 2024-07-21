@@ -1,6 +1,7 @@
 ﻿#include "Aurora/Public/Characters/AuroraCharacterBase.h"
 
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/AuroraAbilitySystemComponent.h"
 #include "Debug/DebugMacros.h"
 
 
@@ -36,18 +37,28 @@ void AAuroraCharacterBase::ApplyEffectToSelf(const TSubclassOf<UGameplayEffect>&
 	FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(GameplayEffectClass, Level, ContextHandle);
 	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), GetAbilitySystemComponent());
 }
-
 void AAuroraCharacterBase::InitializeDefaultAttributes() const
 {
 	ApplyEffectToSelf(DefaultPrimaryAttributes, 1.f);
 	ApplyEffectToSelf(DefaultSecondaryAttributes, 1.f);
 	ApplyEffectToSelf(DefaultVitalAttributes, 1.f);
 }
-
 UAbilitySystemComponent* AAuroraCharacterBase::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
 }
+
+#pragma region ABILITITES
+
+void AAuroraCharacterBase::AddCharacterAbilities()
+{
+	UAuroraAbilitySystemComponent* AuroraASC = CastChecked<UAuroraAbilitySystemComponent>(AbilitySystemComponent);
+	if (!HasAuthority()) return;
+
+	AuroraASC->AddCharacterAbilities(StartupAbilities);
+}
+
+#pragma endregion
 
 #pragma endregion
 

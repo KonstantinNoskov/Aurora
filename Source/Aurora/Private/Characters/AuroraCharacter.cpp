@@ -54,6 +54,7 @@ void AAuroraCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 	InitAbilityActorInfo();
+	AddCharacterAbilities();
 }
 
 #pragma region ABILITY SYSTEM
