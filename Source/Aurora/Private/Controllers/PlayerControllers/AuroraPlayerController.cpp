@@ -1,8 +1,11 @@
 ﻿#include "Controllers/PlayerControllers/AuroraPlayerController.h"
 
 // Enhanced Input
+#include "AbilitySystemBlueprintLibrary.h"
 #include "EnhancedInputSubsystems.h"
-#include "EnhancedInputComponent.h"
+#include "AbilitySystem/AuroraAbilitySystemComponent.h"
+#include "Debug/DebugMacros.h"
+#include "Input/AuroraInputComponent.h"
 #include "Interfaces/Interaction/TargetInterface.h"
 
 AAuroraPlayerController::AAuroraPlayerController()
@@ -43,18 +46,20 @@ void AAuroraPlayerController::PlayerTick(float DeltaTime)
 	CursorTrace();
 }
 
-
 #pragma region INPUT
 
 void AAuroraPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
-	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
+	UAuroraInputComponent* AuroraInputComponent = CastChecked<UAuroraInputComponent>(InputComponent);
 
 	// Move
-	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AAuroraPlayerController::Move);
+	AuroraInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AAuroraPlayerController::Move);
+
+	AuroraInputComponent->BindAbilityActions(InputConfig, this, &ThisClass::AbilityInputTagPressed, &ThisClass::AbilityInputTagReleased, &ThisClass::AbilityInputTagHeld);
 }
+
 
 void AAuroraPlayerController::Move(const FInputActionValue& InputActionValue)
 {
@@ -71,6 +76,39 @@ void AAuroraPlayerController::Move(const FInputActionValue& InputActionValue)
 		ControlledPawn->AddMovementInput(ForwardDirection,	InputAxisVector.Y);
 		ControlledPawn->AddMovementInput(RightDirection,	InputAxisVector.X);
 	}
+}
+
+#pragma endregion
+
+#pragma region ABILITIES
+
+UAuroraAbilitySystemComponent* AAuroraPlayerController::GetASC()
+{
+	if (!AuroraAbilitySystemComponent)
+	{
+		AuroraAbilitySystemComponent = Cast<UAuroraAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn<APawn>()));  
+	}
+
+	return AuroraAbilitySystemComponent;
+}
+
+void AAuroraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
+{
+	//DEBUG_MESSAGE_STRING_COLOR_KEY(InputTag.ToString(), FColor::Green, 1)
+}
+
+void AAuroraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
+{
+	if (!GetASC()) return;
+	
+	GetASC()->AbilityInputTagReleased(InputTag);
+}
+
+void AAuroraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
+{
+	if (!GetASC()) return;
+	
+	GetASC()->AbilityInputTagHeld(InputTag);
 }
 
 #pragma endregion

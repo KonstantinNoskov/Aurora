@@ -32,6 +32,10 @@ UAuroraAttributeSet::UAuroraAttributeSet()
 	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_CriticalHitDamage,		GetCriticalHitDamageAttribute);
 	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_CriticalHitResistance,	GetCriticalHitResistanceAttribute);
 
+	// Vital
+	TagsToAttributes.Add(GameplayTags.Attributes_Vital_Health,						GetHealthAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Vital_Mana,						GetManaAttribute);
+
 #pragma endregion
 }
 
@@ -50,8 +54,6 @@ void UAuroraAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, Vigor,					COND_None, REPNOTIFY_Always);
 
 	// Secondary Attributes
-	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, MaxHealth,				COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, MaxMana,				COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, Armor,					COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, ArmorPenetration,		COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, BlockChance,			COND_None, REPNOTIFY_Always);
