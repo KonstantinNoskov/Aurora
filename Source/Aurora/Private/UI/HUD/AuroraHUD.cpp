@@ -1,6 +1,7 @@
 ﻿#include "UI/HUD/AuroraHUD.h"
 
 #include "Blueprint/UserWidget.h"
+#include "Debug/DebugMacros.h"
 #include "UI/WidgetController/AttributeMenuWidgetController.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
 #include "UI/Widgets/AuroraUserWidget.h"
@@ -21,7 +22,8 @@ void AAuroraHUD::InitOverlay(APlayerController* PC, APlayerState* PS,
 
 	OverlayWidget->SetWidgetController(WidgetController);
 	WidgetController->BroadcastInitialValues();
-	Widget->AddToViewport();	
+	Widget->AddToViewport();
+	
 }
 
 UOverlayWidgetController* AAuroraHUD::GetOverlayWidgetController(const FWidgetControllerParams& WCParams)
@@ -32,6 +34,7 @@ UOverlayWidgetController* AAuroraHUD::GetOverlayWidgetController(const FWidgetCo
 		OverlayWidgetController->SetWidgetControllerParams(WCParams);
 		OverlayWidgetController->BindCallbacksToDependencies();
 	}
+
 
 	return OverlayWidgetController; 
 }

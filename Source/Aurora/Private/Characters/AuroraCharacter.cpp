@@ -38,6 +38,8 @@ AAuroraCharacter::AAuroraCharacter()
 void AAuroraCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	
 }
 
 void AAuroraCharacter::Tick(float DeltaTime)
@@ -55,6 +57,8 @@ void AAuroraCharacter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 	InitAbilityActorInfo();
 	AddCharacterAbilities();
+
+
 }
 
 #pragma region ABILITY SYSTEM
@@ -87,6 +91,8 @@ void AAuroraCharacter::InitAbilityActorInfo()
 			AuroraHUD->InitAttributeMenu(AuroraPlayerController, AuroraPlayerState, AbilitySystemComponent, AttributeSet);
 		}
 	}
+
+
 
 	// Set default attributes
 	InitializeDefaultAttributes();

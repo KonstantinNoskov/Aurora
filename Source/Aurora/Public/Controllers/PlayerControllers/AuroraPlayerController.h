@@ -7,7 +7,9 @@
 #include "AuroraPlayerController.generated.h"
 
 
+class USplineComponent;
 class UAuroraAbilitySystemComponent;
+
 // Input
 struct FInputActionValue;
 class UInputAction;
@@ -23,7 +25,6 @@ public:
 	AAuroraPlayerController();
 	
 	virtual void PlayerTick(float DeltaTime) override;
-
 
 protected:
 	virtual void BeginPlay() override;
@@ -42,8 +43,6 @@ private:
 	void Move(const FInputActionValue& InputActionValue);
 
 #pragma endregion
-
-
 #pragma region ABILITIES
 
 private:
@@ -67,12 +66,40 @@ private:
 	void AbilityInputTagHeld(FGameplayTag InputTag);
 	
 #pragma endregion
-	
+#pragma region MOVEMENT NAVIGATION
 
+	UPROPERTY()
+	FVector CachedDestination = FVector::Zero();
+
+	UPROPERTY()
+	float FollowTime = 0.f;
+
+	UPROPERTY()
+	float ShortPressThreshold = .5f;
+
+	UPROPERTY()
+	bool bAutoRunning = false;
+
+	UPROPERTY(EditDefaultsOnly)
+	float AutoRunAcceptanceRadius = 50.f;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USplineComponent> Spline;
+
+	UPROPERTY()
+	bool bTargeting = false;
+
+private:
+
+	void AutoRun();
+	
+#pragma endregion
+	
 	void CursorTrace();
 	
 	TScriptInterface<ITargetInterface> LastActor;
 	TScriptInterface<ITargetInterface> ThisActor;
 
+	FHitResult CursorHit;
 	
 };

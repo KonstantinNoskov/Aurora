@@ -36,6 +36,12 @@ public class Aurora : ModuleRules
 			"SlateCore",
 			"UMG"
 		});
+		
+		// Navigation
+		PrivateDependencyModuleNames.AddRange(new string[]
+		{
+			"NavigationSystem"
+		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 		
