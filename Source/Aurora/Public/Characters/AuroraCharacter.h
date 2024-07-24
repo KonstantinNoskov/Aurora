@@ -41,7 +41,7 @@ private:
 
 	UFUNCTION()
 	virtual void InitAbilityActorInfo() override;
-	
+
 #pragma endregion
 
 

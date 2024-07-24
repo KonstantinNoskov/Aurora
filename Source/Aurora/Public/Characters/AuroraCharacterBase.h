@@ -7,6 +7,7 @@
 #include "AuroraCharacterBase.generated.h"
 
 class UGameplayAbility;
+
 // Ability System
 class UAttributeSet;
 class UGameplayEffect;

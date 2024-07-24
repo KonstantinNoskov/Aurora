@@ -33,8 +33,8 @@ UAuroraAttributeSet::UAuroraAttributeSet()
 	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_CriticalHitResistance,	GetCriticalHitResistanceAttribute);
 
 	// Vital
-	TagsToAttributes.Add(GameplayTags.Attributes_Vital_Health,						GetHealthAttribute);
-	TagsToAttributes.Add(GameplayTags.Attributes_Vital_Mana,						GetManaAttribute);
+	/*TagsToAttributes.Add(GameplayTags.Attributes_Vital_Health,						GetHealthAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Vital_Mana,						GetManaAttribute);*/
 
 #pragma endregion
 }

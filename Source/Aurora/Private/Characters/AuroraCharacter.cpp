@@ -38,8 +38,6 @@ AAuroraCharacter::AAuroraCharacter()
 void AAuroraCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	
 }
 
 void AAuroraCharacter::Tick(float DeltaTime)
@@ -55,22 +53,20 @@ void AAuroraCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 void AAuroraCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
+
 	InitAbilityActorInfo();
 	AddCharacterAbilities();
-
-
 }
 
 #pragma region ABILITY SYSTEM
 
 void AAuroraCharacter::InitAbilityActorInfo()
 {
-	
 	// Aurora player state valid check
 	AAuroraPlayerState* AuroraPlayerState = GetPlayerState<AAuroraPlayerState>();
 	
-	//checkf(AuroraPlayerState, TEXT("AuroraPlayerState not set. Checkout for Auto Posses Player paramater in Pawn settings."));
-	if (!AuroraPlayerState) return;
+	checkf(AuroraPlayerState, TEXT("AuroraPlayerState not set. Checkout for Auto Posses Player paramater in Pawn settings."));
+	//if (!AuroraPlayerState) return;
 	
 	// Set ability actor info
 	AuroraPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(AuroraPlayerState, this);
@@ -89,18 +85,28 @@ void AAuroraCharacter::InitAbilityActorInfo()
 		{
 			AuroraHUD->InitOverlay(AuroraPlayerController, AuroraPlayerState, AbilitySystemComponent, AttributeSet);
 			AuroraHUD->InitAttributeMenu(AuroraPlayerController, AuroraPlayerState, AbilitySystemComponent, AttributeSet);
+
+			if (HasAuthority() && IsLocallyControlled())
+			{
+				DEBUG_MESSAGE_STRING(GetPlayerState()->GetName())
+				DEBUG_MESSAGE_STRING(AuroraHUD->GetName())
+			}
+			else
+			{
+				DEBUG_MESSAGE_STRING(GetPlayerState()->GetName())
+				DEBUG_MESSAGE_STRING(AuroraHUD->GetName())
+			}
 		}
+		
 	}
-
-
-
+	
 	// Set default attributes
 	InitializeDefaultAttributes();
 }
 
 int32 AAuroraCharacter::GetPlayerLevel()
 {
-	const AAuroraPlayerState* AuroraPlayerState = GetPlayerState<AAuroraPlayerState>();
+	AAuroraPlayerState* AuroraPlayerState = GetPlayerState<AAuroraPlayerState>();
 	checkf(AuroraPlayerState, TEXT("AuroraCharacter.cpp - Aurora playerstate is null!"))
 
 	return  AuroraPlayerState->GetPlayerLevel();
@@ -109,7 +115,9 @@ int32 AAuroraCharacter::GetPlayerLevel()
 void AAuroraCharacter::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
-	
+
+	InitAbilityActorInfo();
+	//AddCharacterAbilities();
 }
 
 #pragma endregion
