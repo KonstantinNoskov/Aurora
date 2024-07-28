@@ -85,17 +85,6 @@ void AAuroraCharacter::InitAbilityActorInfo()
 		{
 			AuroraHUD->InitOverlay(AuroraPlayerController, AuroraPlayerState, AbilitySystemComponent, AttributeSet);
 			AuroraHUD->InitAttributeMenu(AuroraPlayerController, AuroraPlayerState, AbilitySystemComponent, AttributeSet);
-
-			if (HasAuthority() && IsLocallyControlled())
-			{
-				DEBUG_MESSAGE_STRING(GetPlayerState()->GetName())
-				DEBUG_MESSAGE_STRING(AuroraHUD->GetName())
-			}
-			else
-			{
-				DEBUG_MESSAGE_STRING(GetPlayerState()->GetName())
-				DEBUG_MESSAGE_STRING(AuroraHUD->GetName())
-			}
 		}
 		
 	}
@@ -117,7 +106,6 @@ void AAuroraCharacter::OnRep_PlayerState()
 	Super::OnRep_PlayerState();
 
 	InitAbilityActorInfo();
-	//AddCharacterAbilities();
 }
 
 #pragma endregion

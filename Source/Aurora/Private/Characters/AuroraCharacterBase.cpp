@@ -62,3 +62,12 @@ void AAuroraCharacterBase::AddCharacterAbilities()
 
 #pragma endregion
 
+#pragma region COMBAT
+
+FVector AAuroraCharacterBase::GetCombatSocketLocation()
+{
+	check(Weapon)
+	return Weapon->GetSocketLocation(WeaponTipSocketName);
+}
+
+#pragma endregion

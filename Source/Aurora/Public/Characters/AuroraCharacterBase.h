@@ -27,9 +27,18 @@ protected:
 	virtual void BeginPlay() override;
 
 protected:
+
+#pragma region COMBAT
 	
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	FName WeaponTipSocketName;
+	
+	virtual FVector GetCombatSocketLocation() override;
+
+#pragma endregion
 
 #pragma region ABILITY SYSTEM
 
@@ -97,5 +106,7 @@ protected:
 #pragma endregion
 
 #pragma endregion
+
+	
 
 };

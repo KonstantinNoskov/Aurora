@@ -112,7 +112,7 @@ void AAuroraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 	if (InputTag.MatchesTagExact(FAuroraGameplayTags::Get().InputTag_LMB))
 	{
 		bTargeting = ThisActor ? true : false;
-		bAutoRunning = false;	
+		bAutoRunning = false;
 	}
 }
 
@@ -190,7 +190,6 @@ void AAuroraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 				for (const FVector& PointLoc : NavPath->PathPoints)
 				{
 					Spline->AddSplinePoint(PointLoc, ESplineCoordinateSpace::World);
-					DEBUG_DRAW_SPHERE(PointLoc);
 				}
 
 				CachedDestination = NavPath->PathPoints[NavPath->PathPoints.Num() - 1];
@@ -207,7 +206,6 @@ void AAuroraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 void AAuroraPlayerController::AutoRun()
 {
 	if (!bAutoRunning) return;
-	UE_LOG(LogTemp, Warning, TEXT("AAuroraPlayerController::AutoRun()"))
 	
 	if (APawn* ControllerPawn = GetPawn())
 	{
