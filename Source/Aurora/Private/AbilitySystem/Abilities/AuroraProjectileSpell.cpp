@@ -9,8 +9,11 @@ void UAuroraProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Ha
                                              const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+}
 
-	const bool bIsServer = HasAuthority(&ActivationInfo); 
+void UAuroraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocation)
+{
+	const bool bIsServer = GetAvatarActorFromActorInfo()->HasAuthority(); 
 	
 	if (!bIsServer) return;
 
@@ -18,9 +21,12 @@ void UAuroraProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 	if (CombatInterface)
 	{
 		const FVector SocketLocation = CombatInterface->GetCombatSocketLocation();
-
+		FRotator Rotation = (ProjectileTargetLocation - SocketLocation).Rotation();
+		Rotation.Pitch = 0.f;
+		
 		FTransform SpawnTransform;
 		SpawnTransform.SetLocation(SocketLocation);
+		SpawnTransform.SetRotation(Rotation.Quaternion());
 
 		// TODO: Set the Projectile Rotation
 		

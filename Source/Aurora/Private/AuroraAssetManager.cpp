@@ -1,5 +1,6 @@
 ﻿#include "AuroraAssetManager.h"
 
+#include "AbilitySystemGlobals.h"
 #include "AuroraGameplayTags.h"
 
 UAuroraAssetManager& UAuroraAssetManager::Get()
@@ -15,4 +16,5 @@ void UAuroraAssetManager::StartInitialLoading()
 	Super::StartInitialLoading();
 
 	FAuroraGameplayTags::InitializeNativeGameplayTags();
+	UAbilitySystemGlobals::Get().InitGlobalData();
 }

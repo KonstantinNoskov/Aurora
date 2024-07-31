@@ -71,10 +71,11 @@ void AAuroraPlayerController::SetupInputComponent()
 
 	// Move
 	AuroraInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AAuroraPlayerController::Move);
-
+	AuroraInputComponent->BindAction(ShiftAction, ETriggerEvent::Started, this, &AAuroraPlayerController::ShiftPressed);
+	AuroraInputComponent->BindAction(ShiftAction, ETriggerEvent::Completed, this, &AAuroraPlayerController::ShiftReleased);
+	
 	AuroraInputComponent->BindAbilityActions(InputConfig, this, &ThisClass::AbilityInputTagPressed, &ThisClass::AbilityInputTagReleased, &ThisClass::AbilityInputTagHeld);
 }
-
 
 void AAuroraPlayerController::Move(const FInputActionValue& InputActionValue)
 {
@@ -129,7 +130,7 @@ void AAuroraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 	}
 
 	// Case #2: Holding LMB over target object (enemy, barrel, etc.). Try to use ability bind to LMB
-	if (bTargeting)
+	if (bTargeting || bShiftKeyDown)
 	{
 		if (GetASC())
 		{
@@ -167,16 +168,13 @@ void AAuroraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 		return;
 	}
 
-	// Case #2: 
-	if (bTargeting)
+	if (GetASC())
 	{
-		if (GetASC())
-		{
-			GetASC()->AbilityInputTagReleased(InputTag);
-		}
+		GetASC()->AbilityInputTagReleased(InputTag);
 	}
-
-	else
+	
+	// Case #2: 
+	if (!bTargeting && !bShiftKeyDown)
 	{
 		APawn* ControlledPawn = GetPawn();
 		if (FollowTime <= ShortPressThreshold && ControlledPawn)
