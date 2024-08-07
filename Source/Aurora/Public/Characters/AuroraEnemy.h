@@ -3,7 +3,10 @@
 #include "CoreMinimal.h"
 #include "AuroraCharacterBase.h"
 #include "Interfaces/Interaction/TargetInterface.h"
+#include "UI/WidgetController/AuroraWidgetController.h"
 #include "AuroraEnemy.generated.h"
+
+class UWidgetComponent;
 
 UCLASS()
 class AURORA_API AAuroraEnemy : public AAuroraCharacterBase, public ITargetInterface
@@ -27,25 +30,41 @@ protected:
 	
 	virtual void HighLightActor() override;
 	virtual void UnHighLightActor() override;
-	
 
+public:
+	virtual int32 GetPlayerLevel() override;
+
+protected:
 	UPROPERTY(BlueprintReadOnly)
 	bool bHighlighted = false;
 
 #pragma endregion
+
+#pragma region COMBAT INTERFACE
+
+public:
 
 protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
 	int32 Level = 1;
 
-#pragma region COMBAT INTERFACE
+#pragma endregion
+#pragma region UI
 
 public:
 
-  FORCEINLINE virtual int32 GetPlayerLevel() override { return Level; }
-	
-#pragma endregion
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangedSignature OnHealthChanged;
 
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangedSignature OnMaxHealthChanged;
+	
+protected:
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<UWidgetComponent> HealthBar;
+
+#pragma endregion
 	
 };

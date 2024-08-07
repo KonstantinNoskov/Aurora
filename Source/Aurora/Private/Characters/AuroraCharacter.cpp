@@ -98,7 +98,7 @@ int32 AAuroraCharacter::GetPlayerLevel()
 	AAuroraPlayerState* AuroraPlayerState = GetPlayerState<AAuroraPlayerState>();
 	checkf(AuroraPlayerState, TEXT("AuroraCharacter.cpp - Aurora playerstate is null!"))
 
-	return  AuroraPlayerState->GetPlayerLevel();
+	return AuroraPlayerState->GetPlayerLevel();
 }
 
 void AAuroraCharacter::OnRep_PlayerState()

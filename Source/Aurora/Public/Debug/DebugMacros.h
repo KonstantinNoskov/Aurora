@@ -64,4 +64,7 @@
 #define DEBUG_MESSAGE_TEXT_SingleFrame(TextValue)				if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Yellow, FString::Printf(TEXT(TextValue)));
 #define DEBUG_MESSAGE_TEXT_COLOR_SingleFrame(TextValue, Color)	if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 0.f, Color, FString::Printf(TEXT(TextValue)));
 
+// LOG
+#define LOG(TextValue) UE_LOG(LogTemp, Warning, TEXT(TextValue))
+
 #pragma endregion

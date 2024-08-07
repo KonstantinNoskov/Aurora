@@ -42,10 +42,6 @@ UAuroraAttributeSet::UAuroraAttributeSet()
 void UAuroraAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	// Vital Attributes
-	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, Health,					COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, Mana,					COND_None, REPNOTIFY_Always);
 	
 	// Primary Attributes
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, Strength,				COND_None, REPNOTIFY_Always);
@@ -64,6 +60,10 @@ void UAuroraAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, ManaRegeneration,		COND_None, REPNOTIFY_Always);	
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, MaxHealth,				COND_None, REPNOTIFY_Always);	
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, MaxMana,				COND_None, REPNOTIFY_Always);
+
+	// Vital Attributes
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, Health,					COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, Mana,					COND_None, REPNOTIFY_Always);
 }
 void UAuroraAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
@@ -152,7 +152,6 @@ void UAuroraAttributeSet::OnRep_Mana(const FGameplayAttributeData& OldMana) cons
 #pragma endregion
 
 #pragma endregion
-
 #pragma region PRIMARY ATTRIBUTES
 
 void UAuroraAttributeSet::OnRep_Strength(const FGameplayAttributeData& OldStrength) const

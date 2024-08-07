@@ -44,7 +44,6 @@ private:
 
 #pragma endregion
 
-
 #pragma region COMBAT INTERFACE
 
 	UFUNCTION()

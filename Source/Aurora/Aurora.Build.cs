@@ -7,7 +7,8 @@ public class Aurora : ModuleRules
 	public Aurora(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-	
+		
+		// Core
 		PublicDependencyModuleNames.AddRange(new string[]
 		{
 			"Core",
@@ -41,6 +42,12 @@ public class Aurora : ModuleRules
 		PrivateDependencyModuleNames.AddRange(new string[]
 		{
 			"NavigationSystem"
+		});
+		
+		// VFX
+		PrivateDependencyModuleNames.AddRange(new string[]
+		{
+			"Niagara"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
