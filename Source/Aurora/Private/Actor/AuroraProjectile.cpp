@@ -52,9 +52,7 @@ void AAuroraProjectile::Destroyed()
 
 		// Apply Impact Effect
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation());
-
-		// Stop looping sound
-		LoopingSoundComponent->Stop();
+		
 	}
 	
 	Super::Destroyed();
@@ -70,7 +68,7 @@ void AAuroraProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation());
 
 	// Stop looping sound
-	LoopingSoundComponent->Stop();
+	if (LoopingSoundComponent) LoopingSoundComponent->Stop();
 	
 	if (HasAuthority())
 	{
