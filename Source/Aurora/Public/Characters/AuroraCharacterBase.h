@@ -67,7 +67,7 @@ protected:
 	virtual void InitAbilityActorInfo();
 	
 	UFUNCTION()
-	void InitializeDefaultAttributes() const;
+	virtual void InitializeDefaultAttributes() const;
 
 public:
 

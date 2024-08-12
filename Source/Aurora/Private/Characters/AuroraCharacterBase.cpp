@@ -11,17 +11,19 @@ AAuroraCharacterBase::AAuroraCharacterBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	// Capsule
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	GetCapsuleComponent()->SetGenerateOverlapEvents(false);
-	
+
+	// Mesh
 	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECC_Projectile, ECR_Overlap);
 	GetMesh()->SetGenerateOverlapEvents(true);
-	
+
+	// Weapon
 	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>("Weapon");
 	Weapon->SetupAttachment(GetMesh(), FName("SKT_WeaponHand"));
 	Weapon->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	
 }
 
 void AAuroraCharacterBase::BeginPlay()

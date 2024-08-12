@@ -37,9 +37,12 @@ AAuroraProjectile::AAuroraProjectile()
 void AAuroraProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	SetLifeSpan(LifeSpan);
 
+	// Set Projectile life time
+	SetLifeSpan(LifeSpan);
+	
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &AAuroraProjectile::OnSphereOverlap);
+	
 	LoopingSoundComponent = UGameplayStatics::SpawnSoundAttached(LoopingSound, GetRootComponent());
 }
 
@@ -52,7 +55,11 @@ void AAuroraProjectile::Destroyed()
 
 		// Apply Impact Effect
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation());
-		
+
+		// Stop looping sound
+		if (LoopingSoundComponent) LoopingSoundComponent->Stop();
+
+		UE_LOG(LogTemp, Warning, TEXT("WARNING"))
 	}
 	
 	Super::Destroyed();

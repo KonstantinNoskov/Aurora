@@ -4,6 +4,7 @@
 #include "AuroraCharacterBase.h"
 #include "Interfaces/Interaction/TargetInterface.h"
 #include "UI/WidgetController/AuroraWidgetController.h"
+#include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "AuroraEnemy.generated.h"
 
 class UWidgetComponent;
@@ -25,7 +26,22 @@ public:
 protected:
 
 	virtual void InitAbilityActorInfo() override;
+	virtual void InitializeDefaultAttributes() const override;
 
+#pragma region CHARACTER CLASS DEFAULTS
+
+protected:
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
+	ECharacterClass CharacterClass = ECharacterClass::Warrior;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
+	int32 Level = 1;
+	
+#pragma endregion
+
+void BindingHealthBarCallbacks();
+	
 #pragma region TARGET INTERFACE
 	
 	virtual void HighLightActor() override;
@@ -34,20 +50,10 @@ protected:
 public:
 	virtual int32 GetPlayerLevel() override;
 
-protected:
+
+
 	UPROPERTY(BlueprintReadOnly)
 	bool bHighlighted = false;
-
-#pragma endregion
-
-#pragma region COMBAT INTERFACE
-
-public:
-
-protected:
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
-	int32 Level = 1;
 
 #pragma endregion
 #pragma region UI
