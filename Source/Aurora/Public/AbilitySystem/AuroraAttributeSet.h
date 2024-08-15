@@ -120,7 +120,6 @@ public:
 	void OnRep_Strength(const FGameplayAttributeData& OldStrength) const;
 
 #pragma endregion
-
 #pragma region Intelligence
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Intelligence, Category = "Primary Attributes")
@@ -131,7 +130,6 @@ public:
 	void OnRep_Intelligence(const FGameplayAttributeData& OldIntelligence) const;
 
 #pragma endregion
-	
 #pragma region Resilience
 	
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Resilience, Category = "Primary Attributes")
@@ -142,7 +140,6 @@ public:
 	void OnRep_Resilience(const FGameplayAttributeData& OldResilience) const;
 
 #pragma endregion
-	
 #pragma region Vigor
 	
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Vigor, Category = "Primary Attributes")
@@ -267,6 +264,13 @@ public:
 
 #pragma endregion
 
+#pragma endregion
+#pragma region META ATTRIBUTES
+
+	UPROPERTY(BlueprintReadOnly, Category = "Meta Attributes")
+	FGameplayAttributeData IncomingDamage;
+	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, IncomingDamage)
+	
 #pragma endregion
 	
 };

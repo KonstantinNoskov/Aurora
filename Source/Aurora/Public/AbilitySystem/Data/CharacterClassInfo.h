@@ -5,6 +5,7 @@
 #include "CharacterClassInfo.generated.h"
 
 
+class UGameplayAbility;
 class UGameplayEffect;
 
 UENUM(BlueprintType)
@@ -31,6 +32,13 @@ class AURORA_API UCharacterClassInfo : public UDataAsset
 
 public:
 
+	/*
+	 * Returns default primary attributes for specific character class (warrior, mage, ranger etc.)
+	 */
+	UFUNCTION()
+	FCharacterClassDefaultInfo GetClassDefaultInfo(ECharacterClass CharacterClass);
+
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Character Class Defaults")
 	TMap<ECharacterClass, FCharacterClassDefaultInfo> CharacterClassInformation;
 	
@@ -40,6 +48,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Common Class Defaults")
 	TSubclassOf<UGameplayEffect> VitalAttributes;
 
-	UFUNCTION()
-	FCharacterClassDefaultInfo GetClassDefaultInfo(ECharacterClass CharacterClass);
+	UPROPERTY(EditDefaultsOnly, Category = "Common Class Defaults")
+	TArray<TSubclassOf<UGameplayAbility>> CommonAbilities;
 };

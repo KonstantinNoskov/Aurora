@@ -2,17 +2,15 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "AuroraGameplayTags.h"
 #include "Actor/AuroraProjectile.h"
 #include "Interfaces/Interaction/CombatInterface.h"
-
 
 void UAuroraProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                              const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
                                              const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-
-	
 }
 
 void UAuroraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocation)
@@ -44,8 +42,14 @@ void UAuroraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLoca
 		// Set damage gameplay effect on projectile through creating new spec handle
 		const UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
 		const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), SourceASC->MakeEffectContext());
-		Projectile->DamageEffectSpecHandle = SpecHandle;
+		const FAuroraGameplayTags GameplayTags = FAuroraGameplayTags::Get();
+
+		// Set damage value to a projectile
+		// Scaled damage = Damage based on ability level from Damage curve
+		const float ScaledDamage = Damage.GetValueAtLevel(GetAbilityLevel());
+		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, GameplayTags.Damage, ScaledDamage);
 		
+		Projectile->DamageEffectSpecHandle = SpecHandle;
 		Projectile->FinishSpawning(SpawnTransform);
 	}
 }

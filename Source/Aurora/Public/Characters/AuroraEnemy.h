@@ -40,22 +40,37 @@ protected:
 	
 #pragma endregion
 
-void BindingHealthBarCallbacks();
+	void BindingHealthBarCallbacks();
+
+public:
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Combat")
+	bool bHitReacting = false;
 	
 #pragma region TARGET INTERFACE
+
+protected:
 	
 	virtual void HighLightActor() override;
 	virtual void UnHighLightActor() override;
 
 public:
 	virtual int32 GetPlayerLevel() override;
-
-
+	
 
 	UPROPERTY(BlueprintReadOnly)
 	bool bHighlighted = false;
 
 #pragma endregion
+#pragma region COMBAT INTERFACE
+
+	virtual void Die() override;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
+	float LifeSpan = 5.f;
+	
+#pragma endregion
+	
 #pragma region UI
 
 public:

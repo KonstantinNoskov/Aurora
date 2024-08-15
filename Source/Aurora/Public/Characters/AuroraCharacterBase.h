@@ -38,8 +38,34 @@ protected:
 	
 	virtual FVector GetCombatSocketLocation() override;
 
+	
+
 #pragma endregion
 
+#pragma region DISSOLVE EFFECT
+	
+	void Dissolve();
+
+	/*
+	 * Set Timeline to dissolve character mesh after death
+	 */
+	UFUNCTION(BlueprintImplementableEvent)
+	void StartDissolveTimeLine(UMaterialInstanceDynamic* DynamicMaterialInstance);
+
+	/*
+	 * Set Timeline to dissolve character's weapon mesh after death
+	 */
+	UFUNCTION(BlueprintImplementableEvent)
+	void StartWeaponDissolveTimeLine(UMaterialInstanceDynamic* DynamicMaterialInstance);
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UMaterialInstance> DissolveMaterialInstance;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UMaterialInstance> WeaponDissolveMaterialInstance;
+	
+#pragma endregion
+	
 #pragma region ABILITY SYSTEM
 
 #pragma region ABILITIES
@@ -75,7 +101,22 @@ public:
 	void ApplyEffectToSelf(const TSubclassOf<UGameplayEffect>& GameplayEffectClass, const float Level) const;
 	
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-	FORCEINLINE TObjectPtr<UAttributeSet> GetAttributeSet() const { return AttributeSet; }  
+
+	FORCEINLINE TObjectPtr<UAttributeSet> GetAttributeSet() const { return AttributeSet; }
+
+#pragma region COMBAT 
+	
+	virtual void Die() override;
+
+	UFUNCTION(NetMulticast, Reliable)
+	virtual void MulticastHandleDeath();
+	
+	FORCEINLINE virtual UAnimMontage* GetHitReactMontage_Implementation() override { return HitReactMontage; }
+	
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	TObjectPtr<UAnimMontage> HitReactMontage;
+
+#pragma endregion
 
 #pragma region ATTRIBUTES
 	
@@ -104,7 +145,7 @@ protected:
 #pragma endregion
 
 #pragma endregion
-
+	
 #pragma endregion
 
 	

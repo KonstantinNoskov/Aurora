@@ -4,8 +4,8 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AuroraGameplayTags.h"
 #include "GameplayEffectExtension.h"
-#include "Debug/DebugMacros.h"
 #include "GameFramework/Character.h"
+#include "Interfaces/Interaction/CombatInterface.h"
 #include "Net/UnrealNetwork.h"
 
 UAuroraAttributeSet::UAuroraAttributeSet()
@@ -84,18 +84,60 @@ void UAuroraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCall
 	Super::PostGameplayEffectExecute(Data);
 
 	FEffectProperties Props;
+	SetEffectProperties(Data,Props);
 
+	// Health Changed
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
 		SetHealth(FMath::Clamp(GetHealth(), 0 , GetMaxHealth()));
 	}
 
+	// Mana changed
 	if (Data.EvaluatedData.Attribute == GetManaAttribute())
 	{
 		SetMana(FMath::Clamp(GetMana(), 0 , GetMaxMana()));
 	}
+
+	// Damage taken
+	if (Data.EvaluatedData.Attribute == GetIncomingDamageAttribute())
+	{
+		const float LocalIncomingDamage = GetIncomingDamage();
+
+		// Reset incoming damage
+		SetIncomingDamage(0.f);
+
+		// Apply incoming damage if > 0
+		if (LocalIncomingDamage > 0.f)
+		{
+			// New Health = Old Health - Incoming damage
+			const float NewHealth = GetHealth() - LocalIncomingDamage;
+			SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
+
+			// Check if taken damage is fatal
+			const bool bFatal = NewHealth <= 0.f;
+
+			// If damage is fatal, check if avatar has a combat interface
+			// and if it does, call die function from it.
+			if (bFatal)
+			{
+				if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(Props.TargetAvatarActor))
+				{
+					CombatInterface->Die();
+				}
+			}
+			// If damage not fatal activate HitReact ability (which is basically hit react animation montage)
+			else 
+			{
+				// TryActivateAbilitiesByTag function receives only TagContainer as an argument
+				// so we create TagContainer and add HitReact Tag to it.
+				FGameplayTagContainer TagContainer;
+				TagContainer.AddTag(FAuroraGameplayTags::Get().Effects_HitReact);
+				
+				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
+			}
+		}
+	}
 	
-	SetEffectProperties(Data,Props);
 }
 void UAuroraAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const
 {
@@ -134,22 +176,14 @@ void UAuroraAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackDa
 
 #pragma region VITAL ATTRIBUTES
 
-#pragma region HEALTH
-
 void UAuroraAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuroraAttributeSet, Health, OldHealth);
 }
-
-#pragma endregion
-#pragma region MANA
-
 void UAuroraAttributeSet::OnRep_Mana(const FGameplayAttributeData& OldMana) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuroraAttributeSet, Mana, OldMana);
 }
-
-#pragma endregion
 
 #pragma endregion
 #pragma region PRIMARY ATTRIBUTES
@@ -172,54 +206,44 @@ void UAuroraAttributeSet::OnRep_Vigor(const FGameplayAttributeData& OldVigor) co
 }
 
 #pragma endregion
-
 #pragma region SECONDARY ATTRIBUTES
 
 void UAuroraAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuroraAttributeSet, MaxHealth, OldMaxHealth);
 }
-
 void UAuroraAttributeSet::OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana) const 
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuroraAttributeSet, MaxMana, OldMaxMana); 
 }
-
 void UAuroraAttributeSet::OnRep_Armor(const FGameplayAttributeData& OldArmor) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuroraAttributeSet, Armor, OldArmor);
 }
-
 void UAuroraAttributeSet::OnRep_ArmorPenetration(const FGameplayAttributeData& OldArmorPenetration) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuroraAttributeSet, ArmorPenetration, OldArmorPenetration);
 }
-
 void UAuroraAttributeSet::OnRep_BlockChance(const FGameplayAttributeData& OldBlockChance) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuroraAttributeSet, BlockChance, OldBlockChance);
 }
-
 void UAuroraAttributeSet::OnRep_CriticalHitChance(const FGameplayAttributeData& OldCriticalHitChance) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuroraAttributeSet, CriticalHitChance, OldCriticalHitChance);
 }
-
 void UAuroraAttributeSet::OnRep_CriticalHitDamage(const FGameplayAttributeData& OldCriticalHitDamage) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuroraAttributeSet, CriticalHitDamage, OldCriticalHitDamage);
 }
-
 void UAuroraAttributeSet::OnRep_CriticalHitResistance(const FGameplayAttributeData& OldCriticalHitResistance) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuroraAttributeSet, CriticalHitResistance, OldCriticalHitResistance);
 }
-
 void UAuroraAttributeSet::OnRep_HealthRegeneration(const FGameplayAttributeData& OldHealthRegeneration) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuroraAttributeSet, HealthRegeneration, OldHealthRegeneration);
 }
-
 void UAuroraAttributeSet::OnRep_ManaRegeneration(const FGameplayAttributeData& OldManaRegeneration) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuroraAttributeSet, ManaRegeneration, OldManaRegeneration);

@@ -82,4 +82,57 @@ FVector AAuroraCharacterBase::GetCombatSocketLocation()
 	return Weapon->GetSocketLocation(WeaponTipSocketName);
 }
 
+void AAuroraCharacterBase::Die()
+{
+	Weapon->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
+	MulticastHandleDeath();
+}
+
+void AAuroraCharacterBase::MulticastHandleDeath_Implementation()
+{
+	// Enable "ragdoll mode" 
+	Weapon->SetSimulatePhysics(true);
+	Weapon->SetEnableGravity(true);
+	Weapon->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetEnableGravity(true);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+	
+	//GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn,ECR_Ignore);
+
+	// Start to dissolve the died character and his weapon 
+	Dissolve();
+}
+
+#pragma endregion
+
+#pragma region DISSOLVE EFFECT
+
+void AAuroraCharacterBase::Dissolve()
+{
+	// Create Dynamic material for Character Mesh
+	if (IsValid(DissolveMaterialInstance))
+	{
+		UMaterialInstanceDynamic* DynamicMatInst = UMaterialInstanceDynamic::Create(DissolveMaterialInstance, this);
+		GetMesh()->SetMaterial(0, DynamicMatInst);
+
+		// Start the dissolve process
+		StartDissolveTimeLine(DynamicMatInst);
+	}
+
+	// Create Dynamic material for Weapon Mesh
+	if (IsValid(WeaponDissolveMaterialInstance))
+	{
+		UMaterialInstanceDynamic* DynamicMatInst = UMaterialInstanceDynamic::Create(DissolveMaterialInstance, this);
+		Weapon ->SetMaterial(0, DynamicMatInst);
+		
+		// Start the dissolve process
+		StartWeaponDissolveTimeLine(DynamicMatInst);
+	}
+}
+
 #pragma endregion
