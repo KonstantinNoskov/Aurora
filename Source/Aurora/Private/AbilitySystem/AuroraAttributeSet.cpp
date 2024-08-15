@@ -4,8 +4,10 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AuroraGameplayTags.h"
 #include "GameplayEffectExtension.h"
+#include "Controllers/PlayerControllers/AuroraPlayerController.h"
 #include "GameFramework/Character.h"
 #include "Interfaces/Interaction/CombatInterface.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
 UAuroraAttributeSet::UAuroraAttributeSet()
@@ -113,31 +115,49 @@ void UAuroraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCall
 			const float NewHealth = GetHealth() - LocalIncomingDamage;
 			SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
 
-			// Check if taken damage is fatal
-			const bool bFatal = NewHealth <= 0.f;
+			// Handle behavior after taken damage
+			TakenDamageHandle(Props, NewHealth);
 
-			// If damage is fatal, check if avatar has a combat interface
-			// and if it does, call die function from it.
-			if (bFatal)
-			{
-				if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(Props.TargetAvatarActor))
-				{
-					CombatInterface->Die();
-				}
-			}
-			// If damage not fatal activate HitReact ability (which is basically hit react animation montage)
-			else 
-			{
-				// TryActivateAbilitiesByTag function receives only TagContainer as an argument
-				// so we create TagContainer and add HitReact Tag to it.
-				FGameplayTagContainer TagContainer;
-				TagContainer.AddTag(FAuroraGameplayTags::Get().Effects_HitReact);
-				
-				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
-			}
+			// Show damage as a floating widget
+			ShowFloatingText(Props, LocalIncomingDamage);
 		}
 	}
-	
+}
+
+void UAuroraAttributeSet::TakenDamageHandle(const FEffectProperties& Props, const float NewHealth) const
+{
+	// Check if taken damage is fatal
+	const bool bFatal = NewHealth <= 0.f;
+
+	// If damage is fatal, check if avatar has a combat interface
+	// and if it does, call die function from it.
+	if (bFatal)
+	{
+		if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(Props.TargetAvatarActor))
+		{
+			CombatInterface->Die();
+		}
+	}
+	// If damage not fatal activate HitReact ability (which is basically hit react animation montage)
+	else 
+	{
+		// TryActivateAbilitiesByTag function receives only TagContainer as an argument
+		// so we create TagContainer and add HitReact Tag to it.
+		FGameplayTagContainer TagContainer;
+		TagContainer.AddTag(FAuroraGameplayTags::Get().Effects_HitReact);
+				
+		Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
+	}
+}
+void UAuroraAttributeSet::ShowFloatingText(const FEffectProperties& Props, const float Damage) const
+{
+	if (Props.SourceCharacter != Props.TargetCharacter)
+	{
+		if (AAuroraPlayerController* PC = Cast<AAuroraPlayerController>(UGameplayStatics::GetPlayerController(Props.SourceCharacter, 0)))
+		{
+			PC->ShowDamageNumber(Damage, Props.TargetCharacter);					
+		}
+	}
 }
 void UAuroraAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const
 {

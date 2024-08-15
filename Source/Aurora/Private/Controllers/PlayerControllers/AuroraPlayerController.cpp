@@ -1,5 +1,7 @@
 ﻿#include "Controllers/PlayerControllers/AuroraPlayerController.h"
 
+#include "GameFramework/Character.h"
+
 // Enhanced Input
 #include "EnhancedInputSubsystems.h"
 #include "Input/AuroraInputComponent.h"
@@ -13,12 +15,15 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AuroraGameplayTags.h"
 
+// UI
+#include "UI/Widgets/DamageTextComponent.h"
+
 // Interaction
 #include "Interfaces/Interaction/TargetInterface.h"
 
 // Debug
 #include "NavigationPath.h"
-#include "Debug/DebugMacros.h"
+
 
 AAuroraPlayerController::AAuroraPlayerController()
 {
@@ -95,7 +100,6 @@ void AAuroraPlayerController::Move(const FInputActionValue& InputActionValue)
 }
 
 #pragma endregion
-
 #pragma region ABILITIES
 
 UAuroraAbilitySystemComponent* AAuroraPlayerController::GetASC()
@@ -217,6 +221,28 @@ void AAuroraPlayerController::AutoRun()
 			bAutoRunning = false;
 		}
 	}
+}
+
+#pragma endregion
+
+#pragma region DAMAGE
+
+void AAuroraPlayerController::ShowDamageNumber_Implementation(float DamageAmount, ACharacter* TargetCharacter)
+{
+	if (IsValid(TargetCharacter) && DamageTextComponentClass)
+	{
+		// Create Damage widget, attach it to a damaged character
+		// and detach it right away so the damage widget can float in the world space
+		UDamageTextComponent* DamageText = NewObject<UDamageTextComponent>(TargetCharacter, DamageTextComponentClass);
+		DamageText->RegisterComponent();
+		DamageText->AttachToComponent(TargetCharacter->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+		//DamageText->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+	
+		// Set Damage value
+		DamageText->SetDamageText(DamageAmount);
+	}
+
+	
 }
 
 #pragma endregion

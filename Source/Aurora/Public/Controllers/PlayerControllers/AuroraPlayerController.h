@@ -7,6 +7,7 @@
 #include "AuroraPlayerController.generated.h"
 
 
+class UDamageTextComponent;
 class USplineComponent;
 class UAuroraAbilitySystemComponent;
 
@@ -30,6 +31,20 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
 
+
+
+	
+#pragma region DAMAGE
+	
+public:
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UDamageTextComponent> DamageTextComponentClass;
+	
+	UFUNCTION(Client, Reliable)
+	void ShowDamageNumber(float DamageAmount, ACharacter* TargetCharacter);
+	
+#pragma endregion
 #pragma region INPUT
 	
 private:	
@@ -108,5 +123,7 @@ private:
 	TScriptInterface<ITargetInterface> ThisActor;
 
 	FHitResult CursorHit;
+
+	
 	
 };
