@@ -241,8 +241,6 @@ void AAuroraPlayerController::ShowDamageNumber_Implementation(float DamageAmount
 		// Set Damage value
 		DamageText->SetDamageText(DamageAmount);
 	}
-
-	
 }
 
 #pragma endregion

@@ -6,11 +6,10 @@
 #include "Interfaces/Interaction/CombatInterface.h"
 #include "AuroraCharacterBase.generated.h"
 
-class UGameplayAbility;
-
 // Ability System
 class UAttributeSet;
 class UGameplayEffect;
+class UGameplayAbility;
 
 
 UCLASS(Abstract)

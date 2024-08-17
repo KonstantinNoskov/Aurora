@@ -103,6 +103,7 @@ void UAuroraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCall
 	// Damage taken
 	if (Data.EvaluatedData.Attribute == GetIncomingDamageAttribute())
 	{
+		// Store Incoming damage in local variable so we can reset Incoming damage attribute value
 		const float LocalIncomingDamage = GetIncomingDamage();
 
 		// Reset incoming damage

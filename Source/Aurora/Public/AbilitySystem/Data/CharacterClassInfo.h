@@ -4,9 +4,9 @@
 #include "Engine/DataAsset.h"
 #include "CharacterClassInfo.generated.h"
 
-
 class UGameplayAbility;
 class UGameplayEffect;
+
 
 UENUM(BlueprintType)
 enum class ECharacterClass : uint8
@@ -37,7 +37,6 @@ public:
 	 */
 	UFUNCTION()
 	FCharacterClassDefaultInfo GetClassDefaultInfo(ECharacterClass CharacterClass);
-
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Character Class Defaults")
 	TMap<ECharacterClass, FCharacterClassDefaultInfo> CharacterClassInformation;
@@ -49,5 +48,8 @@ public:
 	TSubclassOf<UGameplayEffect> VitalAttributes;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Common Class Defaults")
-	TArray<TSubclassOf<UGameplayAbility>> CommonAbilities;
+	TArray<TSubclassOf<UGameplayAbility>> CommonAbilities; 
+
+	UPROPERTY(EditDefaultsOnly, Category = "Common Class Defaults | Damage", DisplayName = "Attributes Calculation Coefficients")
+	TObjectPtr<UCurveTable> AttributesCalcCoefficients;
 };

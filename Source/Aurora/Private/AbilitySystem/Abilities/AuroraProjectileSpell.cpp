@@ -41,7 +41,27 @@ void UAuroraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLoca
 		
 		// Set damage gameplay effect on projectile through creating new spec handle
 		const UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
-		const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), SourceASC->MakeEffectContext());
+
+		// Create custom EffectContextHandle so we can pass in all data we want; 
+		FGameplayEffectContextHandle EffectContextHandle = SourceASC->MakeEffectContext();
+
+		// Ability Data
+		EffectContextHandle.SetAbility(this);
+
+		// SourceObject
+		EffectContextHandle.AddSourceObject(Projectile);
+
+		// Actors
+		TArray<TWeakObjectPtr<AActor>> Actors;
+		Actors.Add(Projectile);
+		EffectContextHandle.AddActors(Actors);
+
+		// Hit Result
+		FHitResult HitResult;
+		HitResult.Location = ProjectileTargetLocation;
+		EffectContextHandle.AddHitResult(HitResult);
+		
+		const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), EffectContextHandle);
 		const FAuroraGameplayTags GameplayTags = FAuroraGameplayTags::Get();
 
 		// Set damage value to a projectile
