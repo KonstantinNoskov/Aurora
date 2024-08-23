@@ -1,13 +1,13 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "AuroraGameplayAbility.h"
+#include "AuroraDamageGameplayAbility.h"
 #include "AuroraProjectileSpell.generated.h"
 
 class AAuroraProjectile;
 
 UCLASS()
-class AURORA_API UAuroraProjectileSpell : public UAuroraGameplayAbility
+class AURORA_API UAuroraProjectileSpell : public UAuroraDamageGameplayAbility
 {
 	GENERATED_BODY()
 
@@ -25,6 +25,5 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSubclassOf<AAuroraProjectile> ProjectileClass;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TSubclassOf<UGameplayEffect> DamageEffectClass;
+	
 };

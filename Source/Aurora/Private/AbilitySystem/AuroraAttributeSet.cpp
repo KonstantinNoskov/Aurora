@@ -4,6 +4,8 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AuroraGameplayTags.h"
 #include "GameplayEffectExtension.h"
+#include "AbilitySystem/AuroraAbilitySystemLibrary.h"
+#include "AbilitySystem/Abilities/AuroraGameplayAbility.h"
 #include "Controllers/PlayerControllers/AuroraPlayerController.h"
 #include "GameFramework/Character.h"
 #include "Interfaces/Interaction/CombatInterface.h"
@@ -34,6 +36,12 @@ UAuroraAttributeSet::UAuroraAttributeSet()
 	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_CriticalHitDamage,		GetCriticalHitDamageAttribute);
 	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_CriticalHitResistance,	GetCriticalHitResistanceAttribute);
 
+	// Resistances
+	TagsToAttributes.Add(GameplayTags.Attributes_Resistance_Fire,					GetFireResistanceAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Resistance_Lightning,				GetLightningResistanceAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Resistance_Arcane,					GetArcaneResistanceAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Resistance_Physical,				GetPhysicalResistanceAttribute);
+
 	// Vital
 	/*TagsToAttributes.Add(GameplayTags.Attributes_Vital_Health,					GetHealthAttribute);
 	TagsToAttributes.Add(GameplayTags.Attributes_Vital_Mana,						GetManaAttribute);*/
@@ -62,6 +70,12 @@ void UAuroraAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, ManaRegeneration,		COND_None, REPNOTIFY_Always);	
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, MaxHealth,				COND_None, REPNOTIFY_Always);	
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, MaxMana,				COND_None, REPNOTIFY_Always);
+
+	// Resistance
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, FireResistance,			COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, LightningResistance,	COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, ArcaneResistance,		COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, PhysicalResistance,		COND_None, REPNOTIFY_Always);
 
 	// Vital Attributes
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuroraAttributeSet, Health,					COND_None, REPNOTIFY_Always);
@@ -119,8 +133,12 @@ void UAuroraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCall
 			// Handle behavior after taken damage
 			TakenDamageHandle(Props, NewHealth);
 
+			// Pass in an additional info about the damage so the widget can use it (such as whether damage was critical, blocked etc.) 
+			const bool bBlock = UAuroraAbilitySystemLibrary::IsBlockedHit(Props.EffectContextHandle);
+			const bool bCritical = UAuroraAbilitySystemLibrary::IsCriticalHit(Props.EffectContextHandle);
+			
 			// Show damage as a floating widget
-			ShowFloatingText(Props, LocalIncomingDamage);
+			ShowFloatingText(Props, LocalIncomingDamage, bBlock, bCritical);
 		}
 	}
 }
@@ -150,13 +168,13 @@ void UAuroraAttributeSet::TakenDamageHandle(const FEffectProperties& Props, cons
 		Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
 	}
 }
-void UAuroraAttributeSet::ShowFloatingText(const FEffectProperties& Props, const float Damage) const
+void UAuroraAttributeSet::ShowFloatingText(const FEffectProperties& Props, const float Damage, bool bBlockedHit, bool bCriticalHit) const
 {
 	if (Props.SourceCharacter != Props.TargetCharacter)
 	{
-		if (AAuroraPlayerController* PC = Cast<AAuroraPlayerController>(UGameplayStatics::GetPlayerController(Props.SourceCharacter, 0)))
-		{
-			PC->ShowDamageNumber(Damage, Props.TargetCharacter);					
+		if (AAuroraPlayerController* PC = Cast<AAuroraPlayerController>(Props.SourceCharacter->Controller))
+		{	
+			PC->ShowDamageNumber(Damage, Props.TargetCharacter, bBlockedHit, bCriticalHit);
 		}
 	}
 }
@@ -268,6 +286,23 @@ void UAuroraAttributeSet::OnRep_HealthRegeneration(const FGameplayAttributeData&
 void UAuroraAttributeSet::OnRep_ManaRegeneration(const FGameplayAttributeData& OldManaRegeneration) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuroraAttributeSet, ManaRegeneration, OldManaRegeneration);
+}
+
+void UAuroraAttributeSet::OnRep_FireResistance(const FGameplayAttributeData& OldFireResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuroraAttributeSet, FireResistance, OldFireResistance);
+}
+void UAuroraAttributeSet::OnRep_LightningResistance(const FGameplayAttributeData& OldLightningResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuroraAttributeSet, LightningResistance, OldLightningResistance);
+}
+void UAuroraAttributeSet::OnRep_ArcaneResistance(const FGameplayAttributeData& OldArcaneResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuroraAttributeSet, ArcaneResistance, OldArcaneResistance);
+}
+void UAuroraAttributeSet::OnRep_PhysicalResistance(const FGameplayAttributeData& OldPhysicalResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuroraAttributeSet, PhysicalResistance, OldPhysicalResistance);
 }
 
 #pragma endregion

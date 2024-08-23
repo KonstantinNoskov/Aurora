@@ -42,7 +42,7 @@ public:
 	TSubclassOf<UDamageTextComponent> DamageTextComponentClass;
 	
 	UFUNCTION(Client, Reliable)
-	void ShowDamageNumber(float DamageAmount, ACharacter* TargetCharacter);
+	void ShowDamageNumber(float DamageAmount, ACharacter* TargetCharacter, bool bBlockedHit, bool bCriticalHit);
 	
 #pragma endregion
 #pragma region INPUT

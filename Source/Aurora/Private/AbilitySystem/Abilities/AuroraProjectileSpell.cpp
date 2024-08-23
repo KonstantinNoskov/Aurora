@@ -24,7 +24,8 @@ void UAuroraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLoca
 	{
 		const FVector SocketLocation = CombatInterface->GetCombatSocketLocation();
 		FRotator Rotation = (ProjectileTargetLocation - SocketLocation).Rotation();
-		Rotation.Pitch = 0.f;
+		//Rotation.Pitch = 0.f;
+		
 		
 		FTransform SpawnTransform;
 		SpawnTransform.SetLocation(SocketLocation);
@@ -39,18 +40,20 @@ void UAuroraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLoca
 			ESpawnActorCollisionHandlingMethod::AlwaysSpawn
 			);
 		
-		// Set damage gameplay effect on projectile through creating new spec handle
+		// Set damage gameplay effect on projectile through creating new spec handle 
 		const UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
 
+#pragma region Creating custom effect context
+		
 		// Create custom EffectContextHandle so we can pass in all data we want; 
 		FGameplayEffectContextHandle EffectContextHandle = SourceASC->MakeEffectContext();
-
+		
 		// Ability Data
 		EffectContextHandle.SetAbility(this);
-
+		
 		// SourceObject
 		EffectContextHandle.AddSourceObject(Projectile);
-
+		
 		// Actors
 		TArray<TWeakObjectPtr<AActor>> Actors;
 		Actors.Add(Projectile);
@@ -60,14 +63,19 @@ void UAuroraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLoca
 		FHitResult HitResult;
 		HitResult.Location = ProjectileTargetLocation;
 		EffectContextHandle.AddHitResult(HitResult);
+
+#pragma endregion
 		
 		const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), EffectContextHandle);
 		const FAuroraGameplayTags GameplayTags = FAuroraGameplayTags::Get();
 
 		// Set damage value to a projectile
 		// Scaled damage = Damage based on ability level from Damage curve
-		const float ScaledDamage = Damage.GetValueAtLevel(GetAbilityLevel());
-		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, GameplayTags.Damage, ScaledDamage);
+		for (auto& Pair : DamageTypes)
+		{
+			const float ScaledDamage = Pair.Value.GetValueAtLevel(GetAbilityLevel());
+			UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, Pair.Key, ScaledDamage);
+		}
 		
 		Projectile->DamageEffectSpecHandle = SpecHandle;
 		Projectile->FinishSpawning(SpawnTransform);

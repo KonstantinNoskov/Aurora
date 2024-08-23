@@ -227,19 +227,19 @@ void AAuroraPlayerController::AutoRun()
 
 #pragma region DAMAGE
 
-void AAuroraPlayerController::ShowDamageNumber_Implementation(float DamageAmount, ACharacter* TargetCharacter)
+void AAuroraPlayerController::ShowDamageNumber_Implementation(float DamageAmount, ACharacter* TargetCharacter, bool bBlockedHit, bool bCriticalHit)
 {
-	if (IsValid(TargetCharacter) && DamageTextComponentClass)
+	if (IsValid(TargetCharacter) && DamageTextComponentClass && IsLocalController())
 	{
 		// Create Damage widget, attach it to a damaged character
 		// and detach it right away so the damage widget can float in the world space
 		UDamageTextComponent* DamageText = NewObject<UDamageTextComponent>(TargetCharacter, DamageTextComponentClass);
 		DamageText->RegisterComponent();
 		DamageText->AttachToComponent(TargetCharacter->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
-		//DamageText->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+		DamageText->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
 	
 		// Set Damage value
-		DamageText->SetDamageText(DamageAmount);
+		DamageText->SetDamageText(DamageAmount, bBlockedHit, bCriticalHit);
 	}
 }
 

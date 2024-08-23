@@ -43,19 +43,6 @@ UOverlayWidgetController* AAuroraHUD::GetOverlayWidgetController(const FWidgetCo
 
 #pragma region ATTRIBUTE MENU WIDGET CONTROLLER
 
-UAttributeMenuWidgetController* AAuroraHUD::GetAttributeMenuWidgetController(
-	const FWidgetControllerParams& WCParams)
-{
-	if (!AttributeMenuWidgetController)
-	{
-		AttributeMenuWidgetController = NewObject<UAttributeMenuWidgetController>(this, AttributeMenuWidgetControllerClass);
-		AttributeMenuWidgetController->SetWidgetControllerParams(WCParams);
-		AttributeMenuWidgetController->BindCallbacksToDependencies();
-	}
-
-	return AttributeMenuWidgetController; 
-}
-
 void AAuroraHUD::InitAttributeMenu(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC,
 	UAttributeSet* AS)
 {
@@ -70,6 +57,19 @@ void AAuroraHUD::InitAttributeMenu(APlayerController* PC, APlayerState* PS, UAbi
 
 	AttributeMenuWidget->SetWidgetController(WidgetController);
 	WidgetController->BroadcastInitialValues();
+}
+
+UAttributeMenuWidgetController* AAuroraHUD::GetAttributeMenuWidgetController(
+	const FWidgetControllerParams& WCParams)
+{
+	if (!AttributeMenuWidgetController)
+	{
+		AttributeMenuWidgetController = NewObject<UAttributeMenuWidgetController>(this, AttributeMenuWidgetControllerClass);
+		AttributeMenuWidgetController->SetWidgetControllerParams(WCParams);
+		AttributeMenuWidgetController->BindCallbacksToDependencies();
+	}
+
+	return AttributeMenuWidgetController; 
 }
 
 #pragma endregion

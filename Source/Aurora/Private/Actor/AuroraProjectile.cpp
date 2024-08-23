@@ -6,7 +6,6 @@
 #include "Aurora/Aurora.h"
 #include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
-#include "Debug/DebugMacros.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -57,7 +56,10 @@ void AAuroraProjectile::Destroyed()
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation());
 
 		// Stop looping sound
-		if (LoopingSoundComponent) LoopingSoundComponent->Stop();
+		if (LoopingSoundComponent)
+		{
+			LoopingSoundComponent->Stop();
+		}
 	}
 	
 	Super::Destroyed();
@@ -66,20 +68,23 @@ void AAuroraProjectile::Destroyed()
 void AAuroraProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                         UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	// Play Sound
-	UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(), FRotator::ZeroRotator);
-
-	// Apply Impact Effect
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation());
-
-	// Stop looping sound
-	if (LoopingSoundComponent)
+	if (DamageEffectSpecHandle.Data.IsValid() && DamageEffectSpecHandle.Data.Get()->GetContext().GetEffectCauser() == OtherActor) return;
+	if (!bHit)
 	{
-		LoopingSoundComponent->Stop();
+		// Play Sound
+		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(), FRotator::ZeroRotator);
+
+		// Apply Impact Effect
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation());
+
+		// Stop looping sound
+		if (LoopingSoundComponent) LoopingSoundComponent->Stop();
 	}
+	
 	
 	if (HasAuthority())
 	{
+		
 		if (UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
 		{
 			TargetASC->ApplyGameplayEffectSpecToSelf(*DamageEffectSpecHandle.Data.Get());

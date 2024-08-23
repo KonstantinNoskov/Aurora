@@ -7,12 +7,12 @@
 
 AAuroraPlayerState::AAuroraPlayerState()
 {
-	NetUpdateFrequency = 100.f;
-	
 	// Ability system component
 	AbilitySystemComponent = CreateDefaultSubobject<UAuroraAbilitySystemComponent>("AbilitySystemComponent");
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
+
+	NetUpdateFrequency = 100.f;
 
 	// Attribute set
 	AttributeSet = CreateDefaultSubobject<UAuroraAttributeSet>("AttributeSet");
