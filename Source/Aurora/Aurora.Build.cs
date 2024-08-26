@@ -49,6 +49,12 @@ public class Aurora : ModuleRules
 		{
 			"Niagara"
 		});
+		
+		// AI
+		PrivateDependencyModuleNames.AddRange(new string[]
+		{
+			"AIModule"
+		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 		

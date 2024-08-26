@@ -18,6 +18,10 @@ void AAuroraEffectActor::BeginPlay()
 
 void AAuroraEffectActor::ApplyEffectToTarget(AActor* TargetActor, TSubclassOf<UGameplayEffect> GameplayEffectClass)
  {
+	
+	// If we dont want to apply this effect to the enemy - return
+	if (TargetActor->ActorHasTag(FName("Enemy")) && !bApplyEffectToEnemies) return;
+	
 	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
 	
 	if (!TargetASC) return;
@@ -46,10 +50,17 @@ void AAuroraEffectActor::ApplyEffectToTarget(AActor* TargetActor, TSubclassOf<UG
 	{
 		ActiveEffectHandlesMap.Add(ActiveEffectHandle, TargetASC);
 	}
+
+	if (!bIsInfiniteDuration)
+	{
+		Destroy();
+	}
 }
 void AAuroraEffectActor::OnOverlap(AActor* TargetActor)
 {
-	//
+
+	// If we dont want enemy to overlap this effect (fire area, etc.) - return
+	if (TargetActor->ActorHasTag(FName("Enemy")) && !bApplyEffectToEnemies) return;
 	
 	if (InstantEffectApplicationPolicy == EEffectApplicationPolicy::ApplyOnOverlap)
 	{
@@ -68,6 +79,9 @@ void AAuroraEffectActor::OnOverlap(AActor* TargetActor)
 }
 void AAuroraEffectActor::OnEndOverlap(AActor* TargetActor)
 {
+	// If we dont want enemy to overlap this effect, we dont want to trigger EndOverlap event neither, so - return
+	if (TargetActor->ActorHasTag(FName("Enemy")) && !bApplyEffectToEnemies) return;
+	
 	if (InstantEffectApplicationPolicy == EEffectApplicationPolicy::ApplyOnEndOverlap)
 	{
 		ApplyEffectToTarget(TargetActor, InstantGameplayEffectClass);

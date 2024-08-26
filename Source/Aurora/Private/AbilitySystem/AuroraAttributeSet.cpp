@@ -9,7 +9,6 @@
 #include "Controllers/PlayerControllers/AuroraPlayerController.h"
 #include "GameFramework/Character.h"
 #include "Interfaces/Interaction/CombatInterface.h"
-#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
 UAuroraAttributeSet::UAuroraAttributeSet()

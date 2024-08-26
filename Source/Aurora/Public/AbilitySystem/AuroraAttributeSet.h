@@ -52,6 +52,7 @@ struct FEffectProperties
 template<class T>
 using TStaticFuncPtr = typename TBaseStaticDelegateInstance<T, FDefaultDelegateUserPolicy>::FFuncPtr;
 
+
 UCLASS()
 class AURORA_API UAuroraAttributeSet : public UAttributeSet
 {

@@ -7,6 +7,8 @@
 #include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "AuroraEnemy.generated.h"
 
+class AAuroraAIController;
+class UBehaviorTree;
 class UWidgetComponent;
 
 UCLASS()
@@ -16,6 +18,8 @@ class AURORA_API AAuroraEnemy : public AAuroraCharacterBase, public ITargetInter
 
 public:
 	AAuroraEnemy();
+
+	virtual void PossessedBy(AController* NewController) override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -70,7 +74,6 @@ public:
 	float LifeSpan = 5.f;
 	
 #pragma endregion
-	
 #pragma region UI
 
 public:
@@ -86,6 +89,17 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UWidgetComponent> HealthBar;
 
+#pragma endregion
+#pragma region AI
+
+	UPROPERTY(EditAnywhere, Category = "AI")
+	TObjectPtr<UBehaviorTree> BehaviorTree;
+
+	UPROPERTY(VisibleAnywhere, Category = "AI")
+	TObjectPtr<AAuroraAIController> AuroraAIController;
+
+	
+	
 #pragma endregion
 	
 };
