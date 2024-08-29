@@ -169,12 +169,19 @@ void UAuroraAttributeSet::TakenDamageHandle(const FEffectProperties& Props, cons
 }
 void UAuroraAttributeSet::ShowFloatingText(const FEffectProperties& Props, const float Damage, bool bBlockedHit, bool bCriticalHit) const
 {
+	//if (!IsValid(Props.SourceCharacter) || !IsValid(Props.TargetCharacter)) return;
 	if (Props.SourceCharacter != Props.TargetCharacter)
 	{
 		if (AAuroraPlayerController* PC = Cast<AAuroraPlayerController>(Props.SourceCharacter->Controller))
 		{	
 			PC->ShowDamageNumber(Damage, Props.TargetCharacter, bBlockedHit, bCriticalHit);
+			return;
 		}
+		if (AAuroraPlayerController* PC = Cast<AAuroraPlayerController>(Props.TargetCharacter->Controller))
+		{	
+			PC->ShowDamageNumber(Damage, Props.TargetCharacter, bBlockedHit, bCriticalHit);
+		}
+		
 	}
 }
 void UAuroraAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const
@@ -189,7 +196,7 @@ void UAuroraAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackDa
 		Props.SourceAvatarActor = Props.SourceASC->AbilityActorInfo->AvatarActor.Get();
 		Props.SourceController = Props.SourceASC->AbilityActorInfo->PlayerController.Get();
 		
-		if (!IsValid(Props.SourceController) && !IsValid(Props.SourceAvatarActor))
+		if (!IsValid(Props.SourceController) && IsValid(Props.SourceAvatarActor))
 		{
 			if (const APawn* Pawn = Cast<APawn>(Props.SourceAvatarActor))
 			{

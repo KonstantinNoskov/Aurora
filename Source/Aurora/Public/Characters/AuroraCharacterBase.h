@@ -25,23 +25,54 @@ protected:
 
 	virtual void BeginPlay() override;
 
-protected:
-
 #pragma region COMBAT
+
+public:
+	
+	virtual AActor* GetAvatar_Implementation() override;
+	virtual bool IsDead_Implementation() const override;
+	virtual void Die() override;
+	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag) override;
+	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
+	virtual TArray<FTaggedMontage> GetAttackMontages_Implementation() override;
+	virtual float GetMeleeAttackRadius_Implementation() override;
+
+protected:
+	
+	UFUNCTION(NetMulticast, Reliable)
+	virtual void MulticastHandleDeath();
 	
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
 
+	// Sockets
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	FName WeaponTipSocketName;
-	
-	virtual FVector GetCombatSocketLocation() override;
 
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	FName RightHandSocketName;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	FName LeftHandSocketName;
 	
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	TObjectPtr<UAnimMontage> HitReactMontage;
+
+	UPROPERTY()
+	bool bDead = false;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	TArray<FTaggedMontage> AttackMontages;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	float MeleeAttackRadius = 40.f;
+
 
 #pragma endregion
 
 #pragma region DISSOLVE EFFECT
+
+protected:
 	
 	void Dissolve();
 
@@ -102,20 +133,6 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 	FORCEINLINE TObjectPtr<UAttributeSet> GetAttributeSet() const { return AttributeSet; }
-
-#pragma region COMBAT 
-	
-	virtual void Die() override;
-
-	UFUNCTION(NetMulticast, Reliable)
-	virtual void MulticastHandleDeath();
-	
-	FORCEINLINE virtual UAnimMontage* GetHitReactMontage_Implementation() override { return HitReactMontage; }
-	
-	UPROPERTY(EditAnywhere, Category = "Combat")
-	TObjectPtr<UAnimMontage> HitReactMontage;
-
-#pragma endregion
 
 #pragma region ATTRIBUTES
 	

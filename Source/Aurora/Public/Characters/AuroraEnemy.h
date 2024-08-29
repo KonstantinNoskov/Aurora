@@ -45,11 +45,20 @@ protected:
 #pragma endregion
 
 	void BindingHealthBarCallbacks();
+	
 
 public:
+
+	void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Combat")
 	bool bHitReacting = false;
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void SetHitReacting(bool NewHitReacting) { bHitReacting = NewHitReacting;}
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
+	float BaseWalkSpeed = 250.f;
 	
 #pragma region TARGET INTERFACE
 
@@ -68,11 +77,17 @@ public:
 #pragma endregion
 #pragma region COMBAT INTERFACE
 
+	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override;
+	virtual AActor* GetCombatTarget_Implementation() const override;
+	
 	virtual void Die() override;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	float LifeSpan = 5.f;
-	
+
+	UPROPERTY(BlueprintReadWrite, Category = "Combat")
+	TObjectPtr<AActor> CombatTarget;
+
 #pragma endregion
 #pragma region UI
 
@@ -98,8 +113,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "AI")
 	TObjectPtr<AAuroraAIController> AuroraAIController;
 
-	
-	
 #pragma endregion
 	
 };

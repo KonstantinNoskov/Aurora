@@ -1,6 +1,7 @@
 ﻿#include "Aurora/Public/Characters/AuroraCharacterBase.h"
 
 #include "AbilitySystemComponent.h"
+#include "AuroraGameplayTags.h"
 #include "AbilitySystem/AuroraAbilitySystemComponent.h"
 #include "Aurora/Aurora.h"
 #include "Components/CapsuleComponent.h"
@@ -76,10 +77,41 @@ void AAuroraCharacterBase::AddCharacterAbilities()
 
 #pragma region COMBAT
 
-FVector AAuroraCharacterBase::GetCombatSocketLocation()
+FVector AAuroraCharacterBase::GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag)
 {
-	check(Weapon)
-	return Weapon->GetSocketLocation(WeaponTipSocketName);
+	const FAuroraGameplayTags& GameplayTags = FAuroraGameplayTags::Get();
+	
+	if (MontageTag.MatchesTagExact(GameplayTags.Montage_Attack_Weapon) && IsValid(Weapon))
+	{
+		return Weapon->GetSocketLocation(WeaponTipSocketName);	
+	}
+	
+	if (MontageTag.MatchesTagExact(GameplayTags.Montage_Attack_RightHand) && IsValid(GetMesh()))
+	{
+		return GetMesh()->GetSocketLocation(RightHandSocketName);	
+	}
+	
+	if (MontageTag.MatchesTagExact(GameplayTags.Montage_Attack_LeftHand) && IsValid(GetMesh()))
+	{
+		return GetMesh()->GetSocketLocation(LeftHandSocketName);	
+	}
+
+	return FVector();
+}
+
+UAnimMontage* AAuroraCharacterBase::GetHitReactMontage_Implementation()
+{
+	return HitReactMontage;
+}
+
+TArray<FTaggedMontage> AAuroraCharacterBase::GetAttackMontages_Implementation()
+{
+	return AttackMontages;
+}
+
+float AAuroraCharacterBase::GetMeleeAttackRadius_Implementation()
+{
+	return MeleeAttackRadius;
 }
 
 void AAuroraCharacterBase::Die()
@@ -87,7 +119,6 @@ void AAuroraCharacterBase::Die()
 	Weapon->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
 	MulticastHandleDeath();
 }
-
 void AAuroraCharacterBase::MulticastHandleDeath_Implementation()
 {
 	// Enable "ragdoll mode" 
@@ -106,6 +137,17 @@ void AAuroraCharacterBase::MulticastHandleDeath_Implementation()
 
 	// Start to dissolve the died character and his weapon 
 	Dissolve();
+
+	// Set bDead flag;
+	bDead = true;
+}
+AActor* AAuroraCharacterBase::GetAvatar_Implementation()
+{
+	return this;
+}
+bool AAuroraCharacterBase::IsDead_Implementation() const
+{
+	return bDead;
 }
 
 #pragma endregion
