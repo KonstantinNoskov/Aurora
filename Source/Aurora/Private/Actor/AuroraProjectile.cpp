@@ -3,6 +3,8 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "AbilitySystem/AuroraAbilitySystemLibrary.h"
+#include "AbilitySystem/Abilities/AuroraGameplayAbility.h"
 #include "Aurora/Aurora.h"
 #include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
@@ -69,6 +71,12 @@ void AAuroraProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent
                                         UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (DamageEffectSpecHandle.Data.IsValid() && DamageEffectSpecHandle.Data.Get()->GetContext().GetEffectCauser() == OtherActor) return;
+
+	if (UAuroraAbilitySystemLibrary::IsActorsFriendly(DamageEffectSpecHandle.Data.Get()->GetContext().GetEffectCauser(), OtherActor))
+	{
+		return;
+	}
+	
 	if (!bHit)
 	{
 		// Play Sound

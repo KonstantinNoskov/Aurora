@@ -2,7 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "AuroraGameplayAbility.h"
+#include "Interfaces/Interaction/CombatInterface.h"
 #include "AuroraDamageGameplayAbility.generated.h"
+
+
 
 
 UCLASS()
@@ -17,6 +20,9 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
 	TMap<FGameplayTag, FScalableFloat> DamageTypes;
+
+	UFUNCTION(BlueprintPure)
+	FTaggedMontage GetRandomTaggedMontageFromArray(const TArray<FTaggedMontage>& TaggedMontages);
 
 public:
 
