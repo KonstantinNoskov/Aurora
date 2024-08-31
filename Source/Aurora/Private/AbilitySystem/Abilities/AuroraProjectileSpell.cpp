@@ -78,5 +78,6 @@ void UAuroraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLoca
 	}
 	
 	Projectile->DamageEffectSpecHandle = SpecHandle;
+	
 	Projectile->FinishSpawning(SpawnTransform);
 }
