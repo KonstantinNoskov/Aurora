@@ -5,6 +5,7 @@
 #include "Interfaces/Interaction/TargetInterface.h"
 #include "UI/WidgetController/AuroraWidgetController.h"
 #include "AbilitySystem/Data/CharacterClassInfo.h"
+#include "Debug/DebugMacros.h"
 #include "AuroraEnemy.generated.h"
 
 class AAuroraAIController;
@@ -59,6 +60,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	float BaseWalkSpeed = 250.f;
+
+	UFUNCTION(BlueprintCallable)
+	void MyFunction() { DEBUG_MESSAGE_TEXT("Hello World!")}
 	
 #pragma region TARGET INTERFACE
 

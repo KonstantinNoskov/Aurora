@@ -20,7 +20,7 @@ void UAuroraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLoca
 	if (!bIsServer) return;
 
 	// GetCombatSocketLocation is a Combat Interface native function. 
-	const FVector SocketLocation = ICombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo(), FAuroraGameplayTags::Get().Montage_Attack_Weapon);
+	const FVector SocketLocation = ICombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo(), FAuroraGameplayTags::Get().CombatSocket_Weapon);
 	FRotator Rotation = (ProjectileTargetLocation - SocketLocation).Rotation();
 	//Rotation.Pitch = 0.f;
 	

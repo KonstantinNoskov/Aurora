@@ -81,17 +81,17 @@ FVector AAuroraCharacterBase::GetCombatSocketLocation_Implementation(const FGame
 {
 	const FAuroraGameplayTags& GameplayTags = FAuroraGameplayTags::Get();
 	
-	if (MontageTag.MatchesTagExact(GameplayTags.Montage_Attack_Weapon) && IsValid(Weapon))
+	if (MontageTag.MatchesTagExact(GameplayTags.CombatSocket_Weapon) && IsValid(Weapon))
 	{
 		return Weapon->GetSocketLocation(WeaponTipSocketName);	
 	}
 	
-	if (MontageTag.MatchesTagExact(GameplayTags.Montage_Attack_RightHand) && IsValid(GetMesh()))
+	if (MontageTag.MatchesTagExact(GameplayTags.CombatSocket_RightHand) && IsValid(GetMesh()))
 	{
 		return GetMesh()->GetSocketLocation(RightHandSocketName);	
 	}
 	
-	if (MontageTag.MatchesTagExact(GameplayTags.Montage_Attack_LeftHand) && IsValid(GetMesh()))
+	if (MontageTag.MatchesTagExact(GameplayTags.CombatSocket_LeftHand) && IsValid(GetMesh()))
 	{
 		return GetMesh()->GetSocketLocation(LeftHandSocketName);	
 	}
@@ -99,19 +99,16 @@ FVector AAuroraCharacterBase::GetCombatSocketLocation_Implementation(const FGame
 	return FVector();
 }
 
-UAnimMontage* AAuroraCharacterBase::GetHitReactMontage_Implementation()
+FTaggedMontage AAuroraCharacterBase::GetTaggedMontageByTag_Implementation(const FGameplayTag& InMontageTag)
 {
-	return HitReactMontage;
-}
-
-TArray<FTaggedMontage> AAuroraCharacterBase::GetAttackMontages_Implementation()
-{
-	return AttackMontages;
-}
-
-float AAuroraCharacterBase::GetMeleeAttackRadius_Implementation()
-{
-	return MeleeAttackRadius;
+	for (FTaggedMontage TaggedMontage : AttackMontages)
+	{
+		if (TaggedMontage.MontageTag == InMontageTag)
+		{
+			return TaggedMontage;		
+		}
+	}
+	return FTaggedMontage();
 }
 
 void AAuroraCharacterBase::Die()
@@ -140,14 +137,6 @@ void AAuroraCharacterBase::MulticastHandleDeath_Implementation()
 
 	// Set bDead flag;
 	bDead = true;
-}
-AActor* AAuroraCharacterBase::GetAvatar_Implementation()
-{
-	return this;
-}
-bool AAuroraCharacterBase::IsDead_Implementation() const
-{
-	return bDead;
 }
 
 #pragma endregion

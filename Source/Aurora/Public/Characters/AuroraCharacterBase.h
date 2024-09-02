@@ -6,6 +6,9 @@
 #include "Interfaces/Interaction/CombatInterface.h"
 #include "AuroraCharacterBase.generated.h"
 
+// VFX
+class UNiagaraSystem;
+
 // Ability System
 class UAttributeSet;
 class UGameplayEffect;
@@ -29,13 +32,17 @@ protected:
 
 public:
 	
-	virtual AActor* GetAvatar_Implementation() override;
-	virtual bool IsDead_Implementation() const override;
 	virtual void Die() override;
 	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag) override;
-	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
-	virtual TArray<FTaggedMontage> GetAttackMontages_Implementation() override;
-	virtual float GetMeleeAttackRadius_Implementation() override;
+	virtual FTaggedMontage GetTaggedMontageByTag_Implementation(const FGameplayTag& InMontageTag) override;
+	
+	FORCEINLINE virtual UAnimMontage* GetHitReactMontage_Implementation() const				override	{ return HitReactMontage; }
+	FORCEINLINE virtual TArray<FTaggedMontage> GetAttackMontages_Implementation() const		override	{ return AttackMontages; }
+	FORCEINLINE virtual float GetMeleeAttackRadius_Implementation() const					override	{ return MeleeAttackRadius; }
+	FORCEINLINE virtual UNiagaraSystem* GetBloodEffect_Implementation() const				override	{ return BloodEffect; };
+	FORCEINLINE virtual AActor* GetAvatar_Implementation()									override	{ return this; }
+	FORCEINLINE virtual bool IsDead_Implementation() const									override	{ return bDead; }
+	
 
 protected:
 	
@@ -66,7 +73,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	float MeleeAttackRadius = 40.f;
-
+	
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	UNiagaraSystem* BloodEffect;
 
 #pragma endregion
 

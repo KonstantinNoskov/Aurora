@@ -229,6 +229,6 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	
 	const FGameplayModifierEvaluatedData EvaluatedData(UAuroraAttributeSet::GetIncomingDamageAttribute(), EGameplayModOp::Additive, Damage);
 	
-	// Returns output armor magnitude
+	// Returns output data magnitude
 	OutExecutionOutput.AddOutputModifier(EvaluatedData);
 }
