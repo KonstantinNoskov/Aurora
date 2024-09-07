@@ -6,6 +6,7 @@
 #include "Aurora/Aurora.h"
 #include "Components/CapsuleComponent.h"
 #include "Debug/DebugMacros.h"
+#include "Kismet/GameplayStatics.h"
 
 
 AAuroraCharacterBase::AAuroraCharacterBase()
@@ -79,7 +80,7 @@ void AAuroraCharacterBase::AddCharacterAbilities()
 
 FVector AAuroraCharacterBase::GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag)
 {
-	const FAuroraGameplayTags& GameplayTags = FAuroraGameplayTags::Get();
+	/*const FAuroraGameplayTags& GameplayTags = FAuroraGameplayTags::Get();
 	
 	if (MontageTag.MatchesTagExact(GameplayTags.CombatSocket_Weapon) && IsValid(Weapon))
 	{
@@ -94,6 +95,22 @@ FVector AAuroraCharacterBase::GetCombatSocketLocation_Implementation(const FGame
 	if (MontageTag.MatchesTagExact(GameplayTags.CombatSocket_LeftHand) && IsValid(GetMesh()))
 	{
 		return GetMesh()->GetSocketLocation(LeftHandSocketName);	
+	}
+
+	if (MontageTag.MatchesTagExact(GameplayTags.CombatSocket_Tail) && IsValid(GetMesh()))
+	{
+		return GetMesh()->GetSocketLocation(TailSocketName);	
+	}*/
+
+	for (TTuple<FGameplayTag, FName> Socket : CombatSockets)
+	{
+		if (MontageTag.MatchesTagExact(Socket.Key))
+		{
+			return
+			Socket.Key == FAuroraGameplayTags::Get().CombatSocket_Weapon
+			? Weapon->GetSocketLocation(WeaponTipSocketName) 
+			: GetMesh()->GetSocketLocation(Socket.Value);
+		}
 	}
 
 	return FVector();
@@ -111,6 +128,15 @@ FTaggedMontage AAuroraCharacterBase::GetTaggedMontageByTag_Implementation(const 
 	return FTaggedMontage();
 }
 
+void AAuroraCharacterBase::SetMinionCount_Implementation(int32 NewMinionCount)
+{
+	MinionCount = NewMinionCount;
+}
+void AAuroraCharacterBase::IncrementMinionCount_Implementation(int32 Increment)
+{
+	MinionCount += Increment;
+}
+
 void AAuroraCharacterBase::Die()
 {
 	Weapon->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
@@ -118,6 +144,9 @@ void AAuroraCharacterBase::Die()
 }
 void AAuroraCharacterBase::MulticastHandleDeath_Implementation()
 {
+	// Play death sound
+	UGameplayStatics::PlaySoundAtLocation(this, DeathSound, GetActorLocation(), GetActorRotation());
+	
 	// Enable "ragdoll mode" 
 	Weapon->SetSimulatePhysics(true);
 	Weapon->SetEnableGravity(true);

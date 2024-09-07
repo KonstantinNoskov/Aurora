@@ -30,19 +30,26 @@ protected:
 
 #pragma region COMBAT
 
+#pragma region Combat Interface functions
+
 public:
 	
 	virtual void Die() override;
 	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag) override;
 	virtual FTaggedMontage GetTaggedMontageByTag_Implementation(const FGameplayTag& InMontageTag) override;
-	
+	virtual void SetMinionCount_Implementation(int32 NewMinionCount) override;
+	virtual void IncrementMinionCount_Implementation(int32 Increment) override;
+
 	FORCEINLINE virtual UAnimMontage* GetHitReactMontage_Implementation() const				override	{ return HitReactMontage; }
 	FORCEINLINE virtual TArray<FTaggedMontage> GetAttackMontages_Implementation() const		override	{ return AttackMontages; }
 	FORCEINLINE virtual float GetMeleeAttackRadius_Implementation() const					override	{ return MeleeAttackRadius; }
 	FORCEINLINE virtual UNiagaraSystem* GetBloodEffect_Implementation() const				override	{ return BloodEffect; };
 	FORCEINLINE virtual AActor* GetAvatar_Implementation()									override	{ return this; }
 	FORCEINLINE virtual bool IsDead_Implementation() const									override	{ return bDead; }
+	FORCEINLINE virtual int32 GetMinionCount_Implementation() const							override	{ return MinionCount; }
 	
+
+#pragma endregion
 
 protected:
 	
@@ -61,10 +68,16 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	FName LeftHandSocketName;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	FName TailSocketName;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	TMap<FGameplayTag, FName> CombatSockets;
 	
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TObjectPtr<UAnimMontage> HitReactMontage;
-
+	
 	UPROPERTY()
 	bool bDead = false;
 
@@ -76,6 +89,11 @@ protected:
 	
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	UNiagaraSystem* BloodEffect;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	USoundBase* DeathSound;
+
+	int32 MinionCount = 0;
 
 #pragma endregion
 
@@ -107,7 +125,7 @@ protected:
 	
 #pragma region ABILITY SYSTEM
 
-#pragma region ABILITIES
+#pragma region DEFAULT ABILITIES
 	
 private:
 	

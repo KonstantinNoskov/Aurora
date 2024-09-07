@@ -13,16 +13,19 @@ void UAuroraProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
 
-void UAuroraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocation)
+void UAuroraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocation, const FGameplayTag& SocketTag, bool bOverridePitch, float PitchOverride)
 {
 	const bool bIsServer = GetAvatarActorFromActorInfo()->HasAuthority(); 
 	
 	if (!bIsServer) return;
 
 	// GetCombatSocketLocation is a Combat Interface native function. 
-	const FVector SocketLocation = ICombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo(), FAuroraGameplayTags::Get().CombatSocket_Weapon);
+	const FVector SocketLocation = ICombatInterface::Execute_GetCombatSocketLocation(
+		GetAvatarActorFromActorInfo(),
+		SocketTag);
+	
 	FRotator Rotation = (ProjectileTargetLocation - SocketLocation).Rotation();
-	//Rotation.Pitch = 0.f;
+	Rotation.Pitch = bOverridePitch ? PitchOverride : Rotation.Pitch;
 	
 	FTransform SpawnTransform;
 	SpawnTransform.SetLocation(SocketLocation);

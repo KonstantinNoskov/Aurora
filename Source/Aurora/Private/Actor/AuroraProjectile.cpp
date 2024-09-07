@@ -62,6 +62,8 @@ void AAuroraProjectile::Destroyed()
 		{
 			LoopingSoundComponent->Stop();
 		}
+
+		bHit = true;
 	}
 	
 	Super::Destroyed();
@@ -83,6 +85,7 @@ void AAuroraProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent
 	
 	if (!bHit)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("[%s} spawned"), *GetName())
 		// Play Sound
 		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(), FRotator::ZeroRotator);
 
@@ -91,6 +94,7 @@ void AAuroraProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent
 
 		// Stop looping sound
 		if (LoopingSoundComponent) LoopingSoundComponent->Stop();
+		bHit = true;
 	}
 	
 	
