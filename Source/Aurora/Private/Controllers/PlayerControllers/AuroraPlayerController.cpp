@@ -227,7 +227,6 @@ void AAuroraPlayerController::AutoRun()
 }
 
 #pragma endregion
-
 #pragma region DAMAGE
 
 void AAuroraPlayerController::ShowDamageNumber_Implementation(float DamageAmount, ACharacter* TargetCharacter, bool bBlockedHit, bool bCriticalHit)
