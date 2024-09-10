@@ -93,25 +93,13 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 	}
 }
 
-// TODO: Think about to bind function pointer to a BroadcastDelegate instead lambda
+// TODO: Think about to bind a function pointer to a BroadcastDelegate instead lambda
 void UOverlayWidgetController::OnInitializeStartupAbilities(UAuroraAbilitySystemComponent* AuroraAbilitySystemComponent)
 {
 	if (!AuroraAbilitySystemComponent->bStartupAbilitiesGiven) return;
 
 	FForEachAbility BroadcastDelegate;
-
-	BroadcastDelegate.BindLambda(
-		[this, AuroraAbilitySystemComponent](const FGameplayAbilitySpec& AbilitySpec)
-		{
-			// Try to get ability info if it has an "Abilities" tag.
-			FAuroraAbilityInfo Info = AbilityInfo->FindAbilityInfoForTag(AuroraAbilitySystemComponent->GetAbilityTagFromSpec(AbilitySpec));
-
-			// 
-			Info.InputTag = AuroraAbilitySystemComponent->GetInputTagFromSpec(AbilitySpec);
-			
-			AbilityInfoDelegate.Broadcast(Info);
-		});
-
+	BroadcastDelegate.BindUObject(this, &UOverlayWidgetController::BroadcastAbilityInfo);
 	AuroraAbilitySystemComponent->ForEachAbility(BroadcastDelegate);
 }
 
