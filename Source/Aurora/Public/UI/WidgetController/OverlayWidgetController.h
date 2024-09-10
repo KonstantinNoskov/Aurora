@@ -4,6 +4,9 @@
 #include "AuroraWidgetController.h"
 #include "OverlayWidgetController.generated.h"
 
+struct FAuroraAbilityInfo;
+class UAuroraAbilitySystemComponent;
+class UAbilityInfo;
 class UAuroraUserWidget;
 
 USTRUCT(BlueprintType)
@@ -24,10 +27,8 @@ struct FUIWidgetRow : public FTableRowBase
 	UTexture2D* Image = nullptr;
 };
 
-
-// Widget Row
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageWidgetRowSignature, FUIWidgetRow, Row) ;
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageWidgetRowSignature, FUIWidgetRow, Row);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityInfoSignature, const FAuroraAbilityInfo&, Info);
 
 UCLASS(BlueprintType, Blueprintable)
 class AURORA_API UOverlayWidgetController : public UAuroraWidgetController
@@ -38,6 +39,11 @@ public:
 
 	virtual void BroadcastInitialValues() override;
 	virtual void BindCallbacksToDependencies() override;
+
+protected:
+
+	UPROPERTY()
+	UAuroraAbilitySystemComponent* AuroraASC;
 
 #pragma region OVERLAY MESSAGES 
 	
@@ -54,7 +60,28 @@ protected:
 
 #pragma endregion
 
-#pragma region HEALTH
+#pragma region AbilityInfo
+
+protected:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Widget Data")
+	TObjectPtr<UAbilityInfo> AbilityInfo;
+
+	void OnInitializeStartupAbilities(UAuroraAbilitySystemComponent* AuroraAbilitySystemComponent);
+
+	UPROPERTY(BlueprintAssignable, Category = "GAS | Messages")
+	FAbilityInfoSignature AbilityInfoDelegate;
+
+	UFUNCTION()
+	void BroadcastAbilityInfo(const FGameplayAbilitySpec& AbilitySpec);
+	
+#pragma endregion
+
+#pragma region Attributes
+
+protected:
+	
+	FOnGameplayAttributeValueChange OnGameplayAttributeValueChange;
 
 public:
 	
@@ -63,16 +90,6 @@ public:
 	
 	UPROPERTY(BlueprintAssignable, Category = "GAS | Attributes")
 	FOnAttributeChangedSignature OnMaxHealthChanged;
-
-protected:
-	
-	FOnGameplayAttributeValueChange OnGameplayAttributeValueChange;
-
-#pragma endregion
-
-#pragma region MANA
-
-public:
 	
 	UPROPERTY(BlueprintAssignable, Category = "GAS | Attributes")
 	FOnAttributeChangedSignature OnManaChanged;
