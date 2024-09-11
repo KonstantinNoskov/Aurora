@@ -17,6 +17,9 @@ struct FAuroraAbilityInfo
 	FGameplayTag InputTag = FGameplayTag();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FGameplayTag CooldownTag = FGameplayTag();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<const UTexture2D> Icon = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
@@ -32,7 +35,7 @@ class AURORA_API UAbilityInfo : public UDataAsset
 
 public:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AbilityInformation")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AbilityInformation", DisplayName = "Abilities")
 	TArray<FAuroraAbilityInfo> AbilityInformation;
 
 	FAuroraAbilityInfo FindAbilityInfoForTag(const FGameplayTag& AbilityTag, bool bLogNotFound = false) const;
