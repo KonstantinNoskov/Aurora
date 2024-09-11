@@ -93,16 +93,20 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 	}
 }
 
-// TODO: Think about to bind a function pointer to a BroadcastDelegate instead lambda
 void UOverlayWidgetController::OnInitializeStartupAbilities(UAuroraAbilitySystemComponent* AuroraAbilitySystemComponent)
 {
 	if (!AuroraAbilitySystemComponent->bStartupAbilitiesGiven) return;
 
+	// Create a delegate 
 	FForEachAbility BroadcastDelegate;
+
+	// Bind AbilityInfo setup to it
 	BroadcastDelegate.BindUObject(this, &UOverlayWidgetController::BroadcastAbilityInfo);
+
+	// Pass in outcome delegate to the ASC ForEachAbility-function
+	// so it can execute the delegate for each activatable ability
 	AuroraAbilitySystemComponent->ForEachAbility(BroadcastDelegate);
 }
-
 void UOverlayWidgetController::BroadcastAbilityInfo(const FGameplayAbilitySpec& AbilitySpec)
 {
 	AuroraASC = !AuroraASC ? Cast<UAuroraAbilitySystemComponent>(AbilitySystemComponent) : AuroraASC;
@@ -110,9 +114,10 @@ void UOverlayWidgetController::BroadcastAbilityInfo(const FGameplayAbilitySpec& 
 	// Try to get ability info if it has an "Abilities" tag.
 	FAuroraAbilityInfo Info = AbilityInfo->FindAbilityInfoForTag(AuroraASC->GetAbilityTagFromSpec(AbilitySpec));
 
-	// 
+	// Set AbilityInfo InputTag if ability have it
 	Info.InputTag = AuroraASC->GetInputTagFromSpec(AbilitySpec);
-			
+
+	// Broadcast outcome AbilityInfo to the widgets
 	AbilityInfoDelegate.Broadcast(Info);
 }
 
