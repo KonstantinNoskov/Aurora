@@ -5,8 +5,12 @@
 #include "GameFramework/PlayerState.h"
 #include "AuroraPlayerState.generated.h"
 
+class ULevelUpInfo;
 // Ability System
 class UAttributeSet;
+
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerStatChangedSignature, int32);
 
 UCLASS()
 class AURORA_API AAuroraPlayerState : public APlayerState, public IAbilitySystemInterface
@@ -38,16 +42,43 @@ public:
 
 #pragma endregion
 
-private:
-
-	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_Level)
-	int32 Level = 1;
-
-	UFUNCTION()
-	void OnRep_Level(int32 OldLevel);
+#pragma region XP & Level UP
 
 public:
 	
-	FORCEINLINE int32 GetPlayerLevel() const { return Level; }
+	FOnPlayerStatChangedSignature OnXPChanged;
+	FOnPlayerStatChangedSignature OnLevelChanged;
+
+private:
+	
+	UFUNCTION()
+	void OnRep_Level(int32 OldLevel) const;
+
+	UFUNCTION()
+	void OnRep_XP(int32 OldXP) const;
+
+public:
+	
+	FORCEINLINE int32 GetPlayerLevel() const	{ return Level; }
+	FORCEINLINE int32 GetXP() const				{ return XP; }
+	
+	void SetXP(int32 NewXP); 
+	void AddToXP(int32 AddXP);
+
+	void SetLevel(int32 NewLevel); 
+	void AddToLevel(int32 AddLevel);
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<ULevelUpInfo> LevelUpInfo;
+
+private:
+
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_Level, Category = "Level")
+	int32 Level = 1;
+	
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_XP, Category = "Level")
+	int32 XP = 0;
+
+#pragma endregion
 	
 };

@@ -99,6 +99,16 @@ public:
 
 #pragma endregion
 
+#pragma region XP & Level UP
+
+	FOnAttributeChangedSignature OnLevelUpdated;
+	FOnAttributeChangedSignature OnXPUpdated;
+
+	UFUNCTION()
+	void OnXPUpdate(int32 NewXP) const;
+	
+#pragma endregion
+
 
 };
 

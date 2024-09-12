@@ -3,7 +3,8 @@
 #include "AbilitySystem/AuroraAbilitySystemComponent.h"
 #include "AbilitySystem/AuroraAttributeSet.h"
 #include "AbilitySystem/Data/AbilityInfo.h"
-#include "Debug/DebugMacros.h"
+#include "AbilitySystem/Data/LevelUpInfo.h"
+#include "Player/AuroraPlayerState.h"
 
 void UOverlayWidgetController::BroadcastInitialValues()
 {
@@ -16,11 +17,13 @@ void UOverlayWidgetController::BroadcastInitialValues()
 	OnMaxManaChanged.Broadcast(AuroraAttributeSet->GetMaxMana());
 }
 
-// Bind callbacks to attribute changed events 
+// Bind callbacks to different events on Ability System Component, Attribute Set, Player state, etc.
+// so the widget controller can give commands to the widgets
 void UOverlayWidgetController::BindCallbacksToDependencies()
 {
-	const UAuroraAttributeSet* AuroraAttributeSet = CastChecked<UAuroraAttributeSet>(AttributeSet);
 	AuroraASC = !AuroraASC ? Cast<UAuroraAbilitySystemComponent>(AbilitySystemComponent) : AuroraASC;
+	const UAuroraAttributeSet* AuroraAttributeSet = CastChecked<UAuroraAttributeSet>(AttributeSet);
+	AAuroraPlayerState* AuroraPlayerState = CastChecked<AAuroraPlayerState>(PlayerState);
 	
 	// On Health changed
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
@@ -28,8 +31,7 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 			[this](const FOnAttributeChangeData& Data)
 			{
 				OnHealthChanged.Broadcast(Data.NewValue);
-			}
-		);
+			});
 	
 	// On Max Health changed
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
@@ -37,8 +39,7 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 			[this](const FOnAttributeChangeData& Data)
 			{
 				OnMaxHealthChanged.Broadcast(Data.NewValue);
-			}
-		);
+			});
 	
 	// On Mana changed 
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
@@ -46,8 +47,7 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 			[this](const FOnAttributeChangeData& Data)
 			{
 				OnManaChanged.Broadcast(Data.NewValue);
-			}
-		);
+			});
 
 	// On Max Mana changed
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
@@ -55,10 +55,19 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 			[this](const FOnAttributeChangeData& Data)
 			{
 				OnMaxManaChanged.Broadcast(Data.NewValue);
-			}
-		);
+			});
+	
+	// On XP changed
+	AuroraPlayerState->OnXPChanged.AddUObject(this, &UOverlayWidgetController::OnXPUpdate);
 
-
+	// On Level changed
+	AuroraPlayerState->OnLevelChanged.AddLambda(
+	[this](int32 NewLevel)
+			{
+				OnLevelUpdated.Broadcast(NewLevel);
+			});
+	
+	// On Startup Abilities Initialized
 	if (AuroraASC)
 	{
 		
@@ -92,7 +101,6 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 		);
 	}
 }
-
 void UOverlayWidgetController::OnInitializeStartupAbilities(UAuroraAbilitySystemComponent* AuroraAbilitySystemComponent)
 {
 	if (!AuroraAbilitySystemComponent->bStartupAbilitiesGiven) return;
@@ -119,6 +127,27 @@ void UOverlayWidgetController::BroadcastAbilityInfo(const FGameplayAbilitySpec& 
 
 	// Broadcast outcome AbilityInfo to the widgets
 	AbilityInfoDelegate.Broadcast(Info);
+}
+
+void UOverlayWidgetController::OnXPUpdate(int32 NewXP) const
+{
+	const AAuroraPlayerState* AuroraPlayerState = CastChecked<AAuroraPlayerState>(PlayerState);
+	const ULevelUpInfo* LevelUpInfo = AuroraPlayerState->LevelUpInfo;
+
+	const int32 Level = LevelUpInfo->FindLevelForXPByCurve(NewXP);
+	const int32 MaxLevel = LevelUpInfo->LevelUpInformation.Num();
+
+	if (Level <= MaxLevel && Level > 0)
+	{
+		const int32 LevelUpRequirement = LevelUpInfo->LevelUpInformation[Level].LevelUpRequirement;
+		const int32 PrevLevelUpRequirement = LevelUpInfo->LevelUpInformation[Level-1]. LevelUpRequirement;
+		const int32 DeltaLevelUpRequirement = LevelUpRequirement - PrevLevelUpRequirement;
+
+		const int32 XPBarPercent = (NewXP - PrevLevelUpRequirement) / DeltaLevelUpRequirement;
+		const float XPBarPercentAsFloat = static_cast<float>(XPBarPercent);
+
+		OnXPUpdated.Broadcast(XPBarPercentAsFloat);
+	}
 }
 
 template <typename T>

@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
-//#include "AttributeSet.h"
 #include "AuroraAttributeSet.generated.h"
 
 #define ATTRIBUTE_ACCESSORS(ClassName, PropertyName) \
@@ -90,172 +89,128 @@ public:
 
 #pragma endregion
 #pragma region VITAL ATTRIBUTES
-	
-#pragma region HEALTH
 
 public:
+
+	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, Health);
+	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, Mana);
 	
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Health, Category = "Vital Attributes")
 	FGameplayAttributeData Health;
-	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, Health);
-	
-	UFUNCTION()
-	void OnRep_Health(const FGameplayAttributeData& OldHealth) const;
-
-#pragma endregion
-#pragma region MANA
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Mana, Category = "Vital Attributes")
 	FGameplayAttributeData Mana;
-	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, Mana);
+	
+	UFUNCTION()
+	void OnRep_Health(const FGameplayAttributeData& OldHealth) const;
 	
 	UFUNCTION()
 	void OnRep_Mana(const FGameplayAttributeData& OldMana) const;
 
 #pragma endregion
-
-#pragma endregion
 #pragma region PRIMARY ATTRIBUTES
 
-#pragma region Strength
+	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, Strength);
+	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, Intelligence);
+	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, Resilience);
+	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, Vigor);
 	
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Strength, Category = "Primary Attributes")
 	FGameplayAttributeData Strength;
-	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, Strength);
-
-	UFUNCTION()
-	void OnRep_Strength(const FGameplayAttributeData& OldStrength) const;
-
-#pragma endregion
-#pragma region Intelligence
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Intelligence, Category = "Primary Attributes")
 	FGameplayAttributeData Intelligence;
-	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, Intelligence);
 
-	UFUNCTION()
-	void OnRep_Intelligence(const FGameplayAttributeData& OldIntelligence) const;
-
-#pragma endregion
-#pragma region Resilience
-	
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Resilience, Category = "Primary Attributes")
 	FGameplayAttributeData Resilience;
-	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, Resilience);
 
-	UFUNCTION()
-	void OnRep_Resilience(const FGameplayAttributeData& OldResilience) const;
-
-#pragma endregion
-#pragma region Vigor
-	
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Vigor, Category = "Primary Attributes")
 	FGameplayAttributeData Vigor;
-	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, Vigor);
-
+	
+	UFUNCTION()
+	void OnRep_Strength(const FGameplayAttributeData& OldStrength) const;
+	
+	UFUNCTION()
+	void OnRep_Intelligence(const FGameplayAttributeData& OldIntelligence) const;
+	
+	UFUNCTION()
+	void OnRep_Resilience(const FGameplayAttributeData& OldResilience) const;
+	
 	UFUNCTION()
 	void OnRep_Vigor(const FGameplayAttributeData& OldVigor) const;
-	
-#pragma endregion
 
 #pragma endregion
 #pragma region SECONDARY ATTRIBUTES
 
-#pragma region MaxHealth
+	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, MaxHealth);
+	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, MaxMana);
+	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, Armor);
+	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, ArmorPenetration);
+	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, BlockChance);
+	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, CriticalHitChance);
+	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, CriticalHitDamage);
+	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, CriticalHitResistance);
+	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, HealthRegeneration);
+	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, ManaRegeneration);
+
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxHealth, Category = "Health Attributes")
 	FGameplayAttributeData MaxHealth;
-	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, MaxHealth);
-
-	UFUNCTION()
-	void OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth) const;
 	
-#pragma endregion
-#pragma region MaxMana
-
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxMana, Category = "Mana Attributes")
 	FGameplayAttributeData MaxMana;
-	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, MaxMana);
-
-	UFUNCTION()
-	void OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana) const;
-	
-#pragma endregion
-#pragma region Armor;
 	
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Armor, Category = "Secondary Attributes")
 	FGameplayAttributeData Armor;
-	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, Armor);
-
-	UFUNCTION()
-	void OnRep_Armor(const FGameplayAttributeData& OldArmor) const;
-
-#pragma endregion
-#pragma region ArmorPenetration;
 	
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ArmorPenetration, Category = "Secondary Attributes")
 	FGameplayAttributeData ArmorPenetration;
-	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, ArmorPenetration);
 
-	UFUNCTION()
-	void OnRep_ArmorPenetration(const FGameplayAttributeData& OldArmorPenetration) const;
-	
-#pragma endregion
-#pragma region BlockChance;
-	
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_BlockChance, Category = "Secondary Attributes")
 	FGameplayAttributeData BlockChance;
-	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, BlockChance);
-
-	UFUNCTION()
-	void OnRep_BlockChance(const FGameplayAttributeData& OldBlockChance) const;
-	
-#pragma endregion
-#pragma region CriticalHitChance;
 	
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CriticalHitChance, Category = "Secondary Attributes")
 	FGameplayAttributeData CriticalHitChance;
-	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, CriticalHitChance);
-
-	UFUNCTION()
-	void OnRep_CriticalHitChance(const FGameplayAttributeData& OldCriticalHitChance) const;
-	
-#pragma endregion
-#pragma region CriticalHitDamage;
 	
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CriticalHitDamage, Category = "Secondary Attributes")
 	FGameplayAttributeData CriticalHitDamage;
-	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, CriticalHitDamage);
-
-	UFUNCTION()
-	void OnRep_CriticalHitDamage(const FGameplayAttributeData& OldCriticalHitDamage) const;
-	
-#pragma endregion
-#pragma region CriticalHitResistance;
 	
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CriticalHitResistance, Category = "Secondary Attributes")
 	FGameplayAttributeData CriticalHitResistance;
-	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, CriticalHitResistance);
-
-	UFUNCTION()
-	void OnRep_CriticalHitResistance(const FGameplayAttributeData& OldCriticalHitResistance) const;
-	
-#pragma endregion
-#pragma region HealthRegeneration;
 	
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_HealthRegeneration, Category = "Secondary Attributes")
 	FGameplayAttributeData HealthRegeneration;
-	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, HealthRegeneration);
-
-	UFUNCTION()
-	void OnRep_HealthRegeneration(const FGameplayAttributeData& OldHealthRegeneration) const;
-	
-#pragma endregion
-#pragma region ManaRegeneration;
 	
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ManaRegeneration, Category = "Secondary Attributes")
 	FGameplayAttributeData ManaRegeneration;
-	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, ManaRegeneration);
+
+	
+	UFUNCTION()
+	void OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth) const;
+	
+	UFUNCTION()
+	void OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana) const;
+	
+	UFUNCTION()
+	void OnRep_Armor(const FGameplayAttributeData& OldArmor) const;
+	
+	UFUNCTION()
+	void OnRep_ArmorPenetration(const FGameplayAttributeData& OldArmorPenetration) const;
+	
+	UFUNCTION()
+	void OnRep_BlockChance(const FGameplayAttributeData& OldBlockChance) const;
+	
+	UFUNCTION()
+	void OnRep_CriticalHitChance(const FGameplayAttributeData& OldCriticalHitChance) const;
+	
+	UFUNCTION()
+	void OnRep_CriticalHitDamage(const FGameplayAttributeData& OldCriticalHitDamage) const;
+	
+	UFUNCTION()
+	void OnRep_CriticalHitResistance(const FGameplayAttributeData& OldCriticalHitResistance) const;
+	
+	UFUNCTION()
+	void OnRep_HealthRegeneration(const FGameplayAttributeData& OldHealthRegeneration) const;
 	
 	UFUNCTION()
 	void OnRep_ManaRegeneration(const FGameplayAttributeData& OldManaRegeneration) const;
@@ -263,39 +218,39 @@ public:
 #pragma endregion
 #pragma region Damage Resistance
 
+	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, FireResistance);
+	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, LightningResistance);
+	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, ArcaneResistance);
+	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, PhysicalResistance);
+	
 	// Fire
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ManaRegeneration, Category = "Resistance Attributes")
 	FGameplayAttributeData FireResistance;
-	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, FireResistance);
-	
-	UFUNCTION()
-	void OnRep_FireResistance(const FGameplayAttributeData& OldFireResistance) const;
 
 	// Lightning
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ManaRegeneration, Category = "Resistance Attributes")
 	FGameplayAttributeData LightningResistance;
-	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, LightningResistance);
-	
-	UFUNCTION()
-	void OnRep_LightningResistance(const FGameplayAttributeData& OldLightningResistance) const;
 
 	// Arcane
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ManaRegeneration, Category = "Resistance Attributes")
 	FGameplayAttributeData ArcaneResistance;
-	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, ArcaneResistance);
-	
-	UFUNCTION()
-	void OnRep_ArcaneResistance(const FGameplayAttributeData& OldArcaneResistance) const;
 
 	// Physical
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ManaRegeneration, Category = "Resistance Attributes")
 	FGameplayAttributeData PhysicalResistance;
-	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, PhysicalResistance);
+	
+	
+	UFUNCTION()
+	void OnRep_FireResistance(const FGameplayAttributeData& OldFireResistance) const;
+	
+	UFUNCTION()
+	void OnRep_LightningResistance(const FGameplayAttributeData& OldLightningResistance) const;
+	
+	UFUNCTION()
+	void OnRep_ArcaneResistance(const FGameplayAttributeData& OldArcaneResistance) const;
 	
 	UFUNCTION()
 	void OnRep_PhysicalResistance(const FGameplayAttributeData& OldPhysicalResistance) const;
-	
-#pragma endregion
 
 #pragma endregion
 #pragma region META ATTRIBUTES
