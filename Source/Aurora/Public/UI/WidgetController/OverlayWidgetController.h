@@ -102,11 +102,13 @@ public:
 #pragma region XP & Level UP
 
 	FOnAttributeChangedSignature OnLevelUpdated;
+
+	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangedSignature OnXPUpdated;
 
 	UFUNCTION()
 	void OnXPUpdate(int32 NewXP) const;
-	
+
 #pragma endregion
 
 

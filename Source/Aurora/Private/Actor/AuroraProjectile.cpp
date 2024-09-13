@@ -85,7 +85,6 @@ void AAuroraProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent
 	
 	if (!bHit)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("[%s} spawned"), *GetName())
 		// Play Sound
 		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(), FRotator::ZeroRotator);
 

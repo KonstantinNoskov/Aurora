@@ -71,23 +71,29 @@ public:
 
 private:
 
-	void ShowFloatingText(const FEffectProperties& Props, const float Damage, bool bBlockedHit, bool bCriticalHit) const;
-	void TakenDamageHandle(const FEffectProperties& Props, const float NewHealth) const;
-	
-#pragma region EFFECT PROPS
-	
-public:
-
 	/**
 	 *  Fills up FEffectProperties struct.
 	 *
 	 *  @param Data - contains different info about EffectSpec, EvaluatedData, Target.
 	 *  @param Props - FEffectProperties struct which is stores all info actors, pawns, controllers, ability systems etc.
 	 */
-	
 	void SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const;
 
-#pragma endregion
+	/**
+	 * 
+	 */
+	void ShowFloatingText(const FEffectProperties& Props, const float Damage, bool bBlockedHit, bool bCriticalHit) const;
+
+	/**
+	 * 
+	 */
+	void TakenDamageHandle(const FEffectProperties& Props, const float NewHealth);
+
+	/**
+	 * 
+	 */
+	void SendXPEvent(const FEffectProperties& Props);
+
 #pragma region VITAL ATTRIBUTES
 
 public:
@@ -216,7 +222,7 @@ public:
 	void OnRep_ManaRegeneration(const FGameplayAttributeData& OldManaRegeneration) const;
 
 #pragma endregion
-#pragma region Damage Resistance
+#pragma region Damage Resistance Attributes
 
 	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, FireResistance);
 	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, LightningResistance);
@@ -253,11 +259,17 @@ public:
 	void OnRep_PhysicalResistance(const FGameplayAttributeData& OldPhysicalResistance) const;
 
 #pragma endregion
-#pragma region META ATTRIBUTES
+#pragma region Meta Attributes
+
+	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, IncomingDamage)
+	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, IncomingXP)
 
 	UPROPERTY(BlueprintReadOnly, Category = "Meta Attributes")
 	FGameplayAttributeData IncomingDamage;
-	ATTRIBUTE_ACCESSORS(UAuroraAttributeSet, IncomingDamage)
+
+	UPROPERTY(BlueprintReadOnly, Category = "Meta Attributes")
+	FGameplayAttributeData IncomingXP;
+	
 	
 #pragma endregion
 	

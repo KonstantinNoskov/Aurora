@@ -9,10 +9,7 @@ USTRUCT(BlueprintType)
 struct FAuroraLevelUpInfo
 {
 	GENERATED_BODY()
-
-	UPROPERTY(EditDefaultsOnly)
-	FScalableFloat LevelUpRequirementScale = 0;
-
+	
 	UPROPERTY(EditDefaultsOnly)
 	int32 LevelUpRequirement = 0;
 	
@@ -32,10 +29,6 @@ public:
 
 	UPROPERTY(EditDefaultsOnly)
 	TArray<FAuroraLevelUpInfo> LevelUpInformation;
-
-	UPROPERTY(EditDefaultsOnly)
-	FAuroraLevelUpInfo LevelUpInfo;
-
-	int32 FindLevelForXP(int32 XP);
-	int32 FindLevelForXPByCurve(int32 XP) const;
+	
+	int32 FindLevelForXP(int32 XP) const;
 };

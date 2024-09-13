@@ -1,6 +1,6 @@
 ﻿#include "AbilitySystem/Data/LevelUpInfo.h"
 
-int32 ULevelUpInfo::FindLevelForXP(int32 XP)
+int32 ULevelUpInfo::FindLevelForXP(int32 XP) const
 {
 	int32 Level = 1;
 	bool bSearching = true;
@@ -18,27 +18,6 @@ int32 ULevelUpInfo::FindLevelForXP(int32 XP)
 		}
 		
 	}
-
-	return Level;
-}
-int32 ULevelUpInfo::FindLevelForXPByCurve(int32 XP) const
-{
-	int32 Level = 1;
-	bool bSearching = true;
-
-	while (bSearching)
-	{
-		if (XP >= LevelUpInfo.LevelUpRequirementScale.GetValueAtLevel(Level) )
-		{
-			++Level;
-		}
-		else
-		{
-			bSearching = false;
-		}
-	}
-	
-	//LevelUpInfo.LevelUpRequirementScale->
 
 	return Level;
 }

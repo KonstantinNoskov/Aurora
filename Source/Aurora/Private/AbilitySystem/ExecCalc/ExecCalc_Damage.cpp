@@ -75,17 +75,19 @@ UExecCalc_Damage::UExecCalc_Damage()
 void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
 	FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
 {
-	// Source references
+	// Source/Target references
 	const UAbilitySystemComponent* SourceASC = ExecutionParams.GetSourceAbilitySystemComponent();
-	AActor* SourceAvatar = SourceASC ? SourceASC->GetAvatarActor() : nullptr;
-	ICombatInterface* SourceCombatInterface = Cast<ICombatInterface>(SourceAvatar);
-	const UCharacterClassInfo* SourceCharacterClassInfo = UAuroraAbilitySystemLibrary::GetCharacterClassInfo(SourceAvatar);
-	
-	// Target references
 	const UAbilitySystemComponent* TargetASC = ExecutionParams.GetTargetAbilitySystemComponent();
+	
+	AActor* SourceAvatar = SourceASC ? SourceASC->GetAvatarActor() : nullptr;
 	AActor* TargetAvatar = TargetASC ? TargetASC->GetAvatarActor() : nullptr;
+	
+	ICombatInterface* SourceCombatInterface = Cast<ICombatInterface>(SourceAvatar);
 	ICombatInterface* TargetCombatInterface = Cast<ICombatInterface>(TargetAvatar);
+	
+	const UCharacterClassInfo* SourceCharacterClassInfo = UAuroraAbilitySystemLibrary::GetCharacterClassInfo(SourceAvatar);
 	const UCharacterClassInfo* TargetCharacterClassInfo = UAuroraAbilitySystemLibrary::GetCharacterClassInfo(TargetAvatar);
+	
 	
 	// Creating spec
 	const FGameplayEffectSpec Spec = ExecutionParams.GetOwningSpec();
@@ -100,10 +102,9 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	EvaluationParams.SourceTags = SourceTags;
 	EvaluationParams.TargetTags = TargetTags;
 
-#pragma region Calculate damage
+#pragma region Calculate damage resistance
 	
 	// Get Damage Set by Caller Magnitude
-
 	float Damage = 0.0f;
 	
 	for (const TTuple<FGameplayTag, FGameplayTag>& Pair : FAuroraGameplayTags::Get().DamageTypesToResistances)
@@ -229,6 +230,6 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	
 	const FGameplayModifierEvaluatedData EvaluatedData(UAuroraAttributeSet::GetIncomingDamageAttribute(), EGameplayModOp::Additive, Damage);
 	
-	// Returns output data magnitude
+	// Returns final damage value
 	OutExecutionOutput.AddOutputModifier(EvaluatedData);
 }

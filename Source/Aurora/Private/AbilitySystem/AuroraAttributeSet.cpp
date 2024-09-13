@@ -6,9 +6,11 @@
 #include "GameplayEffectExtension.h"
 #include "AbilitySystem/AuroraAbilitySystemLibrary.h"
 #include "AbilitySystem/Abilities/AuroraGameplayAbility.h"
+#include "Aurora/AuroraLogChannels.h"
 #include "Controllers/PlayerControllers/AuroraPlayerController.h"
 #include "GameFramework/Character.h"
 #include "Interfaces/Interaction/CombatInterface.h"
+#include "Interfaces/Interaction/PlayerInterface.h"
 #include "Net/UnrealNetwork.h"
 
 UAuroraAttributeSet::UAuroraAttributeSet()
@@ -140,9 +142,24 @@ void UAuroraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCall
 			ShowFloatingText(Props, LocalIncomingDamage, bBlock, bCritical);
 		}
 	}
+
+	// XP gained
+	if (Data.EvaluatedData.Attribute == GetIncomingXPAttribute())
+	{
+		const float LocalIncomingXP = GetIncomingXP();
+		SetIncomingXP(0.f);
+
+		UE_LOG(LogAurora, Warning, TEXT("[%hs] Incoming %f XP!"), __FUNCTION__, LocalIncomingXP)
+		
+		// TODO: See if we should level up
+		if (Props.SourceCharacter->Implements<UPlayerInterface>())
+		{
+			IPlayerInterface::Execute_AddToXP(Props.SourceCharacter, LocalIncomingXP);
+		}
+	}
 }
 
-void UAuroraAttributeSet::TakenDamageHandle(const FEffectProperties& Props, const float NewHealth) const
+void UAuroraAttributeSet::TakenDamageHandle(const FEffectProperties& Props, const float NewHealth)
 {
 	// Check if taken damage is fatal
 	const bool bFatal = NewHealth <= 0.f;
@@ -155,6 +172,8 @@ void UAuroraAttributeSet::TakenDamageHandle(const FEffectProperties& Props, cons
 		{
 			CombatInterface->Die();
 		}
+
+		SendXPEvent(Props);
 	}
 	// If damage not fatal activate HitReact ability (which is basically hit react animation montage)
 	else 
@@ -165,6 +184,23 @@ void UAuroraAttributeSet::TakenDamageHandle(const FEffectProperties& Props, cons
 		TagContainer.AddTag(FAuroraGameplayTags::Get().Effects_HitReact);
 				
 		Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
+	}
+}
+void UAuroraAttributeSet::SendXPEvent(const FEffectProperties& Props)
+{
+	if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(Props.TargetCharacter))
+	{
+		ECharacterClass TargetClass = CombatInterface->Execute_GetCharacterClass(Props.TargetCharacter);
+		int32 TargetLevel = CombatInterface->GetPlayerLevel();
+		const int32 XPReward = UAuroraAbilitySystemLibrary::GetXPRewardForClassAndLevel(this, TargetClass, TargetLevel);
+
+		const FAuroraGameplayTags& GameplayTags = FAuroraGameplayTags::Get();
+
+		FGameplayEventData Payload;
+		Payload.EventTag = GameplayTags.Attributes_Meta_IncomingXP;
+		Payload.EventMagnitude = XPReward;
+		
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Props.SourceCharacter, GameplayTags.Attributes_Meta_IncomingXP, Payload);
 	}
 }
 void UAuroraAttributeSet::ShowFloatingText(const FEffectProperties& Props, const float Damage, bool bBlockedHit, bool bCriticalHit) const

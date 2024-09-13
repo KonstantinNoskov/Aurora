@@ -3,8 +3,12 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
+#include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "Interfaces/Interaction/CombatInterface.h"
+#include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "AuroraCharacterBase.generated.h"
+
+enum class ECharacterClass : uint8;
 
 // VFX
 class UNiagaraSystem;
@@ -24,13 +28,7 @@ public:
 	
 	AAuroraCharacterBase();
 
-protected:
-
-	virtual void BeginPlay() override;
-
-#pragma region COMBAT
-
-#pragma region Combat Interface functions
+#pragma region Combat Interface overrided functions
 
 public:
 	
@@ -47,9 +45,18 @@ public:
 	FORCEINLINE virtual AActor* GetAvatar_Implementation()									override	{ return this; }
 	FORCEINLINE virtual bool IsDead_Implementation() const									override	{ return bDead; }
 	FORCEINLINE virtual int32 GetMinionCount_Implementation() const							override	{ return MinionCount; }
-	
+	FORCEINLINE virtual ECharacterClass GetCharacterClass_Implementation()					override	{ return CharacterClass; }
 
 #pragma endregion
+
+protected:
+
+	virtual void BeginPlay() override;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
+	ECharacterClass CharacterClass = ECharacterClass::Warrior;
+
+#pragma region COMBAT
 
 protected:
 	
@@ -131,6 +138,9 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category = "Abilitites")
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
+
+	UPROPERTY(EditAnywhere, Category = "Abilitites")
+	TArray<TSubclassOf<UGameplayAbility>> StartupPassiveAbilities;
 
 protected:
 

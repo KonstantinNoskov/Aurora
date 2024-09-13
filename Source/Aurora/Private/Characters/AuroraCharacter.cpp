@@ -33,7 +33,12 @@ AAuroraCharacter::AAuroraCharacter()
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
+
+	// Character defaults
+	CharacterClass = ECharacterClass::Elementalist;
 }
+
+
 
 void AAuroraCharacter::BeginPlay()
 {
@@ -44,6 +49,24 @@ void AAuroraCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
+
+
+#pragma region Player Interface overriden functions
+
+void AAuroraCharacter::AddToXP_Implementation(int32 InXP)
+{
+	AAuroraPlayerState* AuroraPlayerState = GetPlayerState<AAuroraPlayerState>();
+	checkf(AuroraPlayerState, TEXT("AuroraCharacter.cpp - Aurora playerstate is null!"))
+
+	AuroraPlayerState->AddToXP(InXP);
+}
+
+void AAuroraCharacter::LevelUp_Implementation()
+{
+	
+}
+
+#pragma endregion
 
 void AAuroraCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -86,14 +109,13 @@ void AAuroraCharacter::InitAbilityActorInfo()
 			AuroraHUD->InitOverlay(AuroraPlayerController, AuroraPlayerState, AbilitySystemComponent, AttributeSet);
 			AuroraHUD->InitAttributeMenu(AuroraPlayerController, AuroraPlayerState, AbilitySystemComponent, AttributeSet);
 		}
-		
 	}
 	
 	// Set default attributes
 	InitializeDefaultAttributes();
 }
 
-int32 AAuroraCharacter::GetPlayerLevel()
+int32 AAuroraCharacter::GetPlayerLevel_Implementation()
 {
 	AAuroraPlayerState* AuroraPlayerState = GetPlayerState<AAuroraPlayerState>();
 	checkf(AuroraPlayerState, TEXT("AuroraCharacter.cpp - Aurora playerstate is null!"))

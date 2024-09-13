@@ -70,6 +70,8 @@ void AAuroraCharacterBase::AddCharacterAbilities()
 	if (!HasAuthority()) return;
 
 	AuroraASC->AddCharacterAbilities(StartupAbilities);
+	AuroraASC->AddCharacterPassiveAbilities(StartupPassiveAbilities);
+	
 }
 
 #pragma endregion
@@ -80,28 +82,6 @@ void AAuroraCharacterBase::AddCharacterAbilities()
 
 FVector AAuroraCharacterBase::GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag)
 {
-	/*const FAuroraGameplayTags& GameplayTags = FAuroraGameplayTags::Get();
-	
-	if (MontageTag.MatchesTagExact(GameplayTags.CombatSocket_Weapon) && IsValid(Weapon))
-	{
-		return Weapon->GetSocketLocation(WeaponTipSocketName);	
-	}
-	
-	if (MontageTag.MatchesTagExact(GameplayTags.CombatSocket_RightHand) && IsValid(GetMesh()))
-	{
-		return GetMesh()->GetSocketLocation(RightHandSocketName);	
-	}
-	
-	if (MontageTag.MatchesTagExact(GameplayTags.CombatSocket_LeftHand) && IsValid(GetMesh()))
-	{
-		return GetMesh()->GetSocketLocation(LeftHandSocketName);	
-	}
-
-	if (MontageTag.MatchesTagExact(GameplayTags.CombatSocket_Tail) && IsValid(GetMesh()))
-	{
-		return GetMesh()->GetSocketLocation(TailSocketName);	
-	}*/
-
 	for (TTuple<FGameplayTag, FName> Socket : CombatSockets)
 	{
 		if (MontageTag.MatchesTagExact(Socket.Key))

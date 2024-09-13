@@ -1,6 +1,7 @@
 ﻿#include "AbilitySystem/ModMagCalc/MMC_MaxMana.h"
 
 #include "AbilitySystem/AuroraAttributeSet.h"
+#include "Interfaces/Interaction/CombatInterface.h"
 
 UMMC_MaxMana::UMMC_MaxMana()
 {
@@ -13,8 +14,8 @@ UMMC_MaxMana::UMMC_MaxMana()
 
 float UMMC_MaxMana::CalculateBaseMagnitude_Implementation(const FGameplayEffectSpec& Spec) const
 {
-	// Gather tags from source and target
-	/*const FGameplayTagContainer* SourceTags = Spec.CapturedSourceTags.GetAggregatedTags();
+	/*// Gather tags from source and target
+	const FGameplayTagContainer* SourceTags = Spec.CapturedSourceTags.GetAggregatedTags();
 	const FGameplayTagContainer* TargetTags = Spec.CapturedTargetTags.GetAggregatedTags();
 
 	FAggregatorEvaluateParameters EvaluationParams;
@@ -26,12 +27,17 @@ float UMMC_MaxMana::CalculateBaseMagnitude_Implementation(const FGameplayEffectS
 	GetCapturedAttributeMagnitude(IntelligenceDef, Spec, EvaluationParams, Intelligence);
 	Intelligence = FMath::Max<float>(Intelligence, 0.f);
 
-	ICombatInterface* CombatInterface = Cast<ICombatInterface>(Spec.GetContext().GetSourceObject());
-	const int32 PlayerLevel = CombatInterface->GetPlayerLevel();*/
+	int32 PlayerLevel = 1.f;
+	
+	if (Spec.GetContext().GetSourceObject()->Implements<UCombatInterface>())
+	{
+		PlayerLevel = ICombatInterface::Execute_GetPlayerLevel(Spec.GetContext().GetSourceObject());
+	}*/
 
+
+	int32 PlayerLevel = 1.f;
 	float IntelligenceValue;
-	int32 PlayerLevel;
-
+	
 	GetCalculationParams(Spec, IntelligenceDef, IntelligenceValue, PlayerLevel);
 
 	return 50.f + IntelligenceValue * 1 * PlayerLevel;

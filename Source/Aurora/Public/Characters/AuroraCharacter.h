@@ -2,18 +2,29 @@
 
 #include "CoreMinimal.h"
 #include "AuroraCharacterBase.h"
+#include "Interfaces/Interaction/PlayerInterface.h"
 #include "AuroraCharacter.generated.h"
 
 class UCameraComponent;
 class USpringArmComponent;
 
 UCLASS()
-class AURORA_API AAuroraCharacter : public AAuroraCharacterBase
+class AURORA_API AAuroraCharacter : public AAuroraCharacterBase, public IPlayerInterface
 {
 	GENERATED_BODY()
 
 public:
 	AAuroraCharacter();
+	
+#pragma region Player Interface overriden functions
+
+public:
+
+	virtual void AddToXP_Implementation(int32 InXP) override;
+	virtual void LevelUp_Implementation() override;
+
+#pragma endregion
+	
 
 protected:
 	virtual void BeginPlay() override;
@@ -47,7 +58,7 @@ private:
 #pragma region COMBAT INTERFACE
 
 	UFUNCTION()
-	virtual int32 GetPlayerLevel() override;
+	virtual int32 GetPlayerLevel_Implementation() override;
 	
 #pragma endregion
 };

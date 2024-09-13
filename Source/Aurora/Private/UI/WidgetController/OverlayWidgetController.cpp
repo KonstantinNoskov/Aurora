@@ -58,6 +58,9 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 			});
 	
 	// On XP changed
+	//AuroraPlayerState->OnXPChanged.AddUObject(this, &UOverlayWidgetController::OnXPUpdate);
+
+	// On XP changed TEST
 	AuroraPlayerState->OnXPChanged.AddUObject(this, &UOverlayWidgetController::OnXPUpdate);
 
 	// On Level changed
@@ -134,7 +137,7 @@ void UOverlayWidgetController::OnXPUpdate(int32 NewXP) const
 	const AAuroraPlayerState* AuroraPlayerState = CastChecked<AAuroraPlayerState>(PlayerState);
 	const ULevelUpInfo* LevelUpInfo = AuroraPlayerState->LevelUpInfo;
 
-	const int32 Level = LevelUpInfo->FindLevelForXPByCurve(NewXP);
+	const int32 Level = LevelUpInfo->FindLevelForXP(NewXP);
 	const int32 MaxLevel = LevelUpInfo->LevelUpInformation.Num();
 
 	if (Level <= MaxLevel && Level > 0)
@@ -142,13 +145,15 @@ void UOverlayWidgetController::OnXPUpdate(int32 NewXP) const
 		const int32 LevelUpRequirement = LevelUpInfo->LevelUpInformation[Level].LevelUpRequirement;
 		const int32 PrevLevelUpRequirement = LevelUpInfo->LevelUpInformation[Level-1]. LevelUpRequirement;
 		const int32 DeltaLevelUpRequirement = LevelUpRequirement - PrevLevelUpRequirement;
-
-		const int32 XPBarPercent = (NewXP - PrevLevelUpRequirement) / DeltaLevelUpRequirement;
-		const float XPBarPercentAsFloat = static_cast<float>(XPBarPercent);
+		const int32 XPForThisLevel = NewXP - PrevLevelUpRequirement;
+		
+		const float XPBarPercentAsFloat = static_cast<float>(XPForThisLevel) / static_cast<float>(DeltaLevelUpRequirement);
 
 		OnXPUpdated.Broadcast(XPBarPercentAsFloat);
 	}
 }
+
+
 
 template <typename T>
 T* UOverlayWidgetController::GetDataTableRowByTag(UDataTable* DataTable, const FGameplayTag& Tag)
