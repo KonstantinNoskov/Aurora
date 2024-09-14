@@ -1,7 +1,9 @@
 ﻿#include "Characters/AuroraCharacter.h"
 
 #include "AbilitySystemComponent.h"
+#include "NiagaraComponent.h"
 #include "AbilitySystem/AuroraAbilitySystemComponent.h"
+#include "AbilitySystem/Data/LevelUpInfo.h"
 #include "Camera/CameraComponent.h"
 #include "Controllers/PlayerControllers/AuroraPlayerController.h"
 #include "Debug/DebugMacros.h"
@@ -18,6 +20,8 @@ AAuroraCharacter::AAuroraCharacter()
 	AuroraSpringArmComponent = CreateDefaultSubobject<USpringArmComponent>("AuroraSpringArm");
 	AuroraSpringArmComponent->SetupAttachment(GetRootComponent());
 	AuroraSpringArmComponent->TargetArmLength = 400.f;
+	AuroraSpringArmComponent->SetUsingAbsoluteRotation(true);
+	AuroraSpringArmComponent->bDoCollisionTest = false;
 	AuroraSpringArmComponent->bUsePawnControlRotation = true;
 	
 	AuroraCameraComponent = CreateDefaultSubobject<UCameraComponent>("AuroraCamera");
@@ -36,9 +40,12 @@ AAuroraCharacter::AAuroraCharacter()
 
 	// Character defaults
 	CharacterClass = ECharacterClass::Elementalist;
+
+	// VFX
+	LevelUpNiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>("LevelUpNiagaraComponent");
+	LevelUpNiagaraComponent->SetupAttachment(GetRootComponent());
+	LevelUpNiagaraComponent->bAutoActivate = false;
 }
-
-
 
 void AAuroraCharacter::BeginPlay()
 {
@@ -50,7 +57,6 @@ void AAuroraCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-
 #pragma region Player Interface overriden functions
 
 void AAuroraCharacter::AddToXP_Implementation(int32 InXP)
@@ -60,10 +66,73 @@ void AAuroraCharacter::AddToXP_Implementation(int32 InXP)
 
 	AuroraPlayerState->AddToXP(InXP);
 }
-
 void AAuroraCharacter::LevelUp_Implementation()
 {
-	
+	MulticastLevelUpParticles();
+}
+void AAuroraCharacter::MulticastLevelUpParticles_Implementation() const
+{
+	if (IsValid(LevelUpNiagaraComponent))
+	{
+		const FVector CameraLocation = AuroraCameraComponent->GetComponentLocation();
+		const FVector NiagaraSystemLocation = LevelUpNiagaraComponent->GetComponentLocation();
+
+		const FRotator ToCameraRotation = (CameraLocation - NiagaraSystemLocation).Rotation();
+
+		LevelUpNiagaraComponent->SetWorldRotation(ToCameraRotation);
+		LevelUpNiagaraComponent->Activate(true);
+	}
+}
+
+int32 AAuroraCharacter::GetXP_Implementation() const
+{
+	AAuroraPlayerState* AuroraPlayerState = GetPlayerState<AAuroraPlayerState>();
+	checkf(AuroraPlayerState, TEXT("[%hs] - Aurora playerstate is null!"), __FUNCTION__)
+
+	return  AuroraPlayerState->GetXP();
+}
+int32 AAuroraCharacter::FindLevelForXP_Implementation(int32 InXP) const
+{
+	AAuroraPlayerState* AuroraPlayerState = GetPlayerState<AAuroraPlayerState>();
+	checkf(AuroraPlayerState, TEXT("[%hs] - Aurora playerstate is null!"), __FUNCTION__)
+
+	return  AuroraPlayerState->LevelUpInfo->FindLevelForXP(InXP);
+}
+int32 AAuroraCharacter::GetAttributePointsReward_Implementation(int32 Level) const
+{
+	AAuroraPlayerState* AuroraPlayerState = GetPlayerState<AAuroraPlayerState>();
+	checkf(AuroraPlayerState, TEXT("[%hs] - Aurora playerstate is null!"), __FUNCTION__)
+
+	return AuroraPlayerState->LevelUpInfo->LevelUpInformation[Level].AttributePointReward;
+}
+int32 AAuroraCharacter::GetSpellPointsReward_Implementation(int32 Level) const
+{
+	AAuroraPlayerState* AuroraPlayerState = GetPlayerState<AAuroraPlayerState>();
+	checkf(AuroraPlayerState, TEXT("[%hs] - Aurora playerstate is null!"), __FUNCTION__)
+
+	return AuroraPlayerState->LevelUpInfo->LevelUpInformation[Level].SpellPointReward;
+}
+void AAuroraCharacter::AddToPlayerLevel_Implementation(int32 InPlayerLevel)
+{
+	AAuroraPlayerState* AuroraPlayerState = GetPlayerState<AAuroraPlayerState>();
+	checkf(AuroraPlayerState, TEXT("[%hs] - Aurora playerstate is null!"), __FUNCTION__)
+
+	AuroraPlayerState->AddToLevel(InPlayerLevel);
+}
+void AAuroraCharacter::AddToAttributePoints_Implementation(int32 InAttributePoints)
+{
+	AAuroraPlayerState* AuroraPlayerState = GetPlayerState<AAuroraPlayerState>();
+	checkf(AuroraPlayerState, TEXT("[%hs] - Aurora playerstate is null!"), __FUNCTION__)
+
+	// TODO: Add attribute points to player state
+}
+
+void AAuroraCharacter::AddToSpellPoints_Implementation(int32 InSpellPoints)
+{
+	AAuroraPlayerState* AuroraPlayerState = GetPlayerState<AAuroraPlayerState>();
+	checkf(AuroraPlayerState, TEXT("[%hs] - Aurora playerstate is null!"), __FUNCTION__)
+
+	// TODO: Add spell points to player state
 }
 
 #pragma endregion
@@ -72,7 +141,6 @@ void AAuroraCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
-
 void AAuroraCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
@@ -114,13 +182,12 @@ void AAuroraCharacter::InitAbilityActorInfo()
 	// Set default attributes
 	InitializeDefaultAttributes();
 }
-
 int32 AAuroraCharacter::GetPlayerLevel_Implementation()
 {
 	AAuroraPlayerState* AuroraPlayerState = GetPlayerState<AAuroraPlayerState>();
 	checkf(AuroraPlayerState, TEXT("AuroraCharacter.cpp - Aurora playerstate is null!"))
 
-	return AuroraPlayerState->GetPlayerLevel();
+	return AuroraPlayerState->GetPlayerLevel_Implementation();
 }
 
 void AAuroraCharacter::OnRep_PlayerState()

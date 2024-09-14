@@ -29,6 +29,7 @@ struct FUIWidgetRow : public FTableRowBase
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageWidgetRowSignature, FUIWidgetRow, Row);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityInfoSignature, const FAuroraAbilityInfo&, Info);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLevelChangedSignature, int32, NewStatValue);
 
 UCLASS(BlueprintType, Blueprintable)
 class AURORA_API UOverlayWidgetController : public UAuroraWidgetController
@@ -101,9 +102,10 @@ public:
 
 #pragma region XP & Level UP
 
-	FOnAttributeChangedSignature OnLevelUpdated;
-
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "GAS | XP")
+	FOnLevelChangedSignature OnLevelUpdated;
+	
+	UPROPERTY(BlueprintAssignable, Category = "GAS | XP")
 	FOnAttributeChangedSignature OnXPUpdated;
 
 	UFUNCTION()

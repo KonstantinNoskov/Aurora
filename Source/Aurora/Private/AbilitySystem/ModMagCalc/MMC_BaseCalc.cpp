@@ -18,5 +18,11 @@ void UMMC_BaseCalc::GetCalculationParams(
 	AttributeValue = FMath::Max<float>(AttributeValue, 0.f);
 
 	ICombatInterface* CombatInterface = Cast<ICombatInterface>(ParamSpec.GetContext().GetSourceObject());
-	ActorLevel = CombatInterface->GetPlayerLevel();
+
+	if (ParamSpec.GetContext().GetSourceObject()->Implements<UCombatInterface>())
+	{
+		ActorLevel = ICombatInterface::Execute_GetPlayerLevel(ParamSpec.GetContext().GetSourceObject());	
+	}
+	
+	
 }

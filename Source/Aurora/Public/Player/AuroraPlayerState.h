@@ -59,14 +59,16 @@ private:
 
 public:
 	
-	FORCEINLINE int32 GetPlayerLevel() const	{ return Level; }
+	FORCEINLINE int32 GetPlayerLevel_Implementation() const	{ return Level; }
 	FORCEINLINE int32 GetXP() const				{ return XP; }
 	
-	void SetXP(int32 NewXP); 
+	
 	void AddToXP(int32 AddXP);
-
-	void SetLevel(int32 NewLevel); 
 	void AddToLevel(int32 AddLevel);
+
+	void SetXP(int32 NewXP); 
+	void SetLevel(int32 NewLevel); 
+	
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULevelUpInfo> LevelUpInfo;

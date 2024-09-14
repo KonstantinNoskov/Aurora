@@ -81,9 +81,12 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	
 	AActor* SourceAvatar = SourceASC ? SourceASC->GetAvatarActor() : nullptr;
 	AActor* TargetAvatar = TargetASC ? TargetASC->GetAvatarActor() : nullptr;
-	
-	ICombatInterface* SourceCombatInterface = Cast<ICombatInterface>(SourceAvatar);
-	ICombatInterface* TargetCombatInterface = Cast<ICombatInterface>(TargetAvatar);
+
+	int32 SourcePlayerLevel = 1;
+	if (SourceAvatar->Implements<UCombatInterface>()) { SourcePlayerLevel = ICombatInterface::Execute_GetPlayerLevel(SourceAvatar); }
+
+	int32 TargetPlayerLevel = 1;
+	if (TargetAvatar->Implements<UCombatInterface>()) { TargetPlayerLevel = ICombatInterface::Execute_GetPlayerLevel(TargetAvatar); }
 	
 	const UCharacterClassInfo* SourceCharacterClassInfo = UAuroraAbilitySystemLibrary::GetCharacterClassInfo(SourceAvatar);
 	const UCharacterClassInfo* TargetCharacterClassInfo = UAuroraAbilitySystemLibrary::GetCharacterClassInfo(TargetAvatar);
@@ -160,11 +163,11 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	
 	// Getting a armor penetration coefficient value from a CharacterClassInfo
 	const FRealCurve* ArmorPenetrationCurve = SourceCharacterClassInfo->AttributesCalcCoefficients->FindCurve(FName("ArmorPenetration"), FString());
-	const float ArmorPenetrationCoefficient = ArmorPenetrationCurve->Eval(SourceCombatInterface->GetPlayerLevel());
+	const float ArmorPenetrationCoefficient = ArmorPenetrationCurve->Eval(SourcePlayerLevel);
 
 	// Getting a effective armor coefficient value from a CharacterClassInfo
 	const FRealCurve* EffectiveArmorCurve = SourceCharacterClassInfo->AttributesCalcCoefficients->FindCurve(FName("EffectiveArmor"), FString());
-	const float EffectiveArmorCoefficient = EffectiveArmorCurve->Eval(TargetCombatInterface->GetPlayerLevel());
+	const float EffectiveArmorCoefficient = EffectiveArmorCurve->Eval(TargetPlayerLevel);
 	
 	/*	
 	 *	Effective Armor = Target Armor after applying Source Armor penetration.
@@ -212,7 +215,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 
 	// Getting a critical hit multiplier coefficient value from a CharacterClassInfo
 	const FRealCurve* CriticalHitMultiplierCurve = SourceCharacterClassInfo->AttributesCalcCoefficients->FindCurve(FName("CriticalHitMultiplier"), FString());
-	const float CriticalHitCoefficient = CriticalHitMultiplierCurve->Eval(SourceCombatInterface->GetPlayerLevel());
+	const float CriticalHitCoefficient = CriticalHitMultiplierCurve->Eval(SourcePlayerLevel);
 	
 	/*
 	 * CriticalHitChance = SourceCriticalHitChance - TargetCriticalHitResistance

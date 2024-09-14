@@ -58,11 +58,8 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 			});
 	
 	// On XP changed
-	//AuroraPlayerState->OnXPChanged.AddUObject(this, &UOverlayWidgetController::OnXPUpdate);
-
-	// On XP changed TEST
 	AuroraPlayerState->OnXPChanged.AddUObject(this, &UOverlayWidgetController::OnXPUpdate);
-
+	
 	// On Level changed
 	AuroraPlayerState->OnLevelChanged.AddLambda(
 	[this](int32 NewLevel)
@@ -131,7 +128,6 @@ void UOverlayWidgetController::BroadcastAbilityInfo(const FGameplayAbilitySpec& 
 	// Broadcast outcome AbilityInfo to the widgets
 	AbilityInfoDelegate.Broadcast(Info);
 }
-
 void UOverlayWidgetController::OnXPUpdate(int32 NewXP) const
 {
 	const AAuroraPlayerState* AuroraPlayerState = CastChecked<AAuroraPlayerState>(PlayerState);
@@ -152,8 +148,6 @@ void UOverlayWidgetController::OnXPUpdate(int32 NewXP) const
 		OnXPUpdated.Broadcast(XPBarPercentAsFloat);
 	}
 }
-
-
 
 template <typename T>
 T* UOverlayWidgetController::GetDataTableRowByTag(UDataTable* DataTable, const FGameplayTag& Tag)
