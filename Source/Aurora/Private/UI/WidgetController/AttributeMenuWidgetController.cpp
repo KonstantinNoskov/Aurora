@@ -3,11 +3,13 @@
 //#include "AuroraGameplayTags.h"
 #include "AbilitySystem/AuroraAttributeSet.h"
 #include "AbilitySystem/Data/AttributeInfo.h"
+#include "Player/AuroraPlayerState.h"
 
 void UAttributeMenuWidgetController::BindCallbacksToDependencies()
 {
 	// Getting actor's attribute set info
 	const UAuroraAttributeSet* AS = CastChecked<UAuroraAttributeSet>(AttributeSet);
+	AuroraPlayerState = !AuroraPlayerState ? CastChecked<AAuroraPlayerState>(PlayerState) : AuroraPlayerState;
 
 	// Looping through all attributes the actor has. 
 	for (auto& Pair : AS->TagsToAttributes)
@@ -25,6 +27,11 @@ void UAttributeMenuWidgetController::BindCallbacksToDependencies()
 				}
 			);
 	}
+
+	// On Attribute Points changed
+	AuroraPlayerState->OnAttributePointsChanged.AddUObject(this, &UAttributeMenuWidgetController::OnAttributePointsUpdate);
+
+	// On Spell Points changed
 }
 
 /* BroadcastAttributeInfo
@@ -44,6 +51,11 @@ void UAttributeMenuWidgetController::BroadcastAttributeInfo(const FGameplayTag& 
 	AttributeInfoDelegate.Broadcast(Info);
 }
 
+void UAttributeMenuWidgetController::OnAttributePointsUpdate(int32 AttributePoints) const
+{
+	OnAttributePointsUpdated.Broadcast(AttributePoints);
+}
+
 
 /* BroadcastInitialValues
  *	
@@ -53,12 +65,15 @@ void UAttributeMenuWidgetController::BroadcastAttributeInfo(const FGameplayTag& 
 void UAttributeMenuWidgetController::BroadcastInitialValues()
 {
 	const UAuroraAttributeSet* AS = CastChecked<UAuroraAttributeSet>(AttributeSet);
+	AuroraPlayerState = !AuroraPlayerState ? CastChecked<AAuroraPlayerState>(PlayerState) : AuroraPlayerState;
 	check(AttributeInfo)
 	
 	for (auto& Pair : AS->TagsToAttributes)
 	{
 		BroadcastAttributeInfo(Pair.Key, Pair.Value());
 	}
+	
+	AuroraPlayerState->OnAttributePointsChanged.Broadcast(AuroraPlayerState->GetAttributePoints());
 }
 
 

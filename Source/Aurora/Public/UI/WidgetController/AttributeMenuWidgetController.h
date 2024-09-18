@@ -5,6 +5,7 @@
 #include "AttributeMenuWidgetController.generated.h"
 
 
+class AAuroraPlayerState;
 class UAttributeInfo;
 struct FAuroraAttributeInfo;
 
@@ -28,7 +29,16 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UAttributeInfo> AttributeInfo;
 
+	UPROPERTY(BlueprintAssignable, Category = "GAS | Attributes")
+	FOnAttributeChangedSignature OnAttributePointsUpdated;
+
 private:
 
 	void BroadcastAttributeInfo(const FGameplayTag& AttributeTag, const FGameplayAttribute& Attribute) const;
+
+	UFUNCTION()
+	void OnAttributePointsUpdate(int32 AttributePoints) const;
+
+	UPROPERTY()
+	AAuroraPlayerState* AuroraPlayerState;
 };

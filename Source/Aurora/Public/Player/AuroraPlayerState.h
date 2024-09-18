@@ -6,9 +6,7 @@
 #include "AuroraPlayerState.generated.h"
 
 class ULevelUpInfo;
-// Ability System
 class UAttributeSet;
-
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerStatChangedSignature, int32);
 
@@ -48,6 +46,8 @@ public:
 	
 	FOnPlayerStatChangedSignature OnXPChanged;
 	FOnPlayerStatChangedSignature OnLevelChanged;
+	FOnPlayerStatChangedSignature OnAttributePointsChanged;
+	FOnPlayerStatChangedSignature OnSpellPointsChanged;
 
 private:
 	
@@ -57,19 +57,29 @@ private:
 	UFUNCTION()
 	void OnRep_XP(int32 OldXP) const;
 
+	UFUNCTION()
+	void OnRep_AttributePoints(int32 OldAttributePoints) const;
+
+	UFUNCTION()
+	void OnRep_SpellPoints(int32 OldSpellPoints) const;
+
 public:
 	
 	FORCEINLINE int32 GetPlayerLevel_Implementation() const	{ return Level; }
-	FORCEINLINE int32 GetXP() const				{ return XP; }
-	
+	FORCEINLINE int32 GetXP() const							{ return XP; }
+	FORCEINLINE int32 GetAttributePoints() const			{ return AttributePoints; }
+	FORCEINLINE int32 GetSpellPoints() const				{ return SpellPoints; }
 	
 	void AddToXP(int32 AddXP);
 	void AddToLevel(int32 AddLevel);
+	void AddToAttributePoints(int32 AddAttributePoints);
+	void AddToSpellPoints(int32 AddSpellPoints);
 
 	void SetXP(int32 NewXP); 
-	void SetLevel(int32 NewLevel); 
+	void SetLevel(int32 NewLevel);
+	void SetAttributePoints(int32 NewAttributePoints); 
+	void SetSpellPoints(int32 NewSpellPoints); 
 	
-
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULevelUpInfo> LevelUpInfo;
 
@@ -80,6 +90,12 @@ private:
 	
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_XP, Category = "Level")
 	int32 XP = 0;
+
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_XP, Category = "Level")
+	int32 AttributePoints = 0;
+
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_XP, Category = "Level")
+	int32 SpellPoints = 1;
 
 #pragma endregion
 	

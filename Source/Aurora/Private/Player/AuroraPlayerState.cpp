@@ -24,7 +24,9 @@ void AAuroraPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AAuroraPlayerState, Level)
-	DOREPLIFETIME(AAuroraPlayerState, XP)	
+	DOREPLIFETIME(AAuroraPlayerState, XP)
+	DOREPLIFETIME(AAuroraPlayerState, AttributePoints)
+	DOREPLIFETIME(AAuroraPlayerState, SpellPoints)	
 }
 
 void AAuroraPlayerState::BeginPlay()
@@ -59,6 +61,7 @@ void AAuroraPlayerState::AddToXP(int32 AddXP)
 
 	OnXPChanged.Broadcast(XP);
 }
+
 void AAuroraPlayerState::SetLevel(int32 NewLevel)
 {
 	Level = NewLevel;
@@ -71,6 +74,29 @@ void AAuroraPlayerState::AddToLevel(int32 AddLevel)
 
 	OnLevelChanged.Broadcast(Level);
 }
+
+void AAuroraPlayerState::AddToAttributePoints(int32 AddAttributePoints)
+{
+	AttributePoints += AddAttributePoints;
+	OnAttributePointsChanged.Broadcast(AttributePoints);
+}
+void AAuroraPlayerState::SetAttributePoints(int32 NewAttributePoints)
+{
+	AttributePoints = NewAttributePoints;
+	OnAttributePointsChanged.Broadcast(AttributePoints);
+}
+
+void AAuroraPlayerState::AddToSpellPoints(int32 AddSpellPoints)
+{
+	SpellPoints += AddSpellPoints;
+	OnSpellPointsChanged.Broadcast(SpellPoints);
+}
+void AAuroraPlayerState::SetSpellPoints(int32 NewSpellPoints)
+{
+	SpellPoints = NewSpellPoints;
+	OnSpellPointsChanged.Broadcast(SpellPoints);
+}
+
 void AAuroraPlayerState::OnRep_Level(int32 OldLevel) const
 {
 	OnLevelChanged.Broadcast(Level);
@@ -78,6 +104,14 @@ void AAuroraPlayerState::OnRep_Level(int32 OldLevel) const
 void AAuroraPlayerState::OnRep_XP(int32 OldXP) const 
 {
 	OnXPChanged.Broadcast(XP);
+}
+void AAuroraPlayerState::OnRep_AttributePoints(int32 OldAttributePoints) const
+{
+	OnAttributePointsChanged.Broadcast(AttributePoints);
+}
+void AAuroraPlayerState::OnRep_SpellPoints(int32 OldSpellPoints) const
+{
+	OnSpellPointsChanged.Broadcast(SpellPoints);
 }
 
 #pragma endregion

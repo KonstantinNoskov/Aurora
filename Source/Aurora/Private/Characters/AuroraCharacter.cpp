@@ -119,20 +119,22 @@ void AAuroraCharacter::AddToPlayerLevel_Implementation(int32 InPlayerLevel)
 
 	AuroraPlayerState->AddToLevel(InPlayerLevel);
 }
+
 void AAuroraCharacter::AddToAttributePoints_Implementation(int32 InAttributePoints)
 {
 	AAuroraPlayerState* AuroraPlayerState = GetPlayerState<AAuroraPlayerState>();
 	checkf(AuroraPlayerState, TEXT("[%hs] - Aurora playerstate is null!"), __FUNCTION__)
 
 	// TODO: Add attribute points to player state
+	AuroraPlayerState->AddToAttributePoints(InAttributePoints);
 }
-
 void AAuroraCharacter::AddToSpellPoints_Implementation(int32 InSpellPoints)
 {
 	AAuroraPlayerState* AuroraPlayerState = GetPlayerState<AAuroraPlayerState>();
 	checkf(AuroraPlayerState, TEXT("[%hs] - Aurora playerstate is null!"), __FUNCTION__)
 
 	// TODO: Add spell points to player state
+	AuroraPlayerState->AddToSpellPoints(InSpellPoints);
 }
 
 #pragma endregion

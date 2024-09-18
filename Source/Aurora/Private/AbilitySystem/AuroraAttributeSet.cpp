@@ -180,7 +180,7 @@ void UAuroraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCall
 
 				// Add spell points depending on level
 				IPlayerInterface::Execute_AddToSpellPoints(Props.SourceCharacter, SpellPointsReward);
-
+				
 				// Fill up Health and Mana
 				SetHealth(GetMaxHealth());
 				SetMana(GetMaxMana());

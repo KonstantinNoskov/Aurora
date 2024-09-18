@@ -27,9 +27,10 @@ struct FUIWidgetRow : public FTableRowBase
 	UTexture2D* Image = nullptr;
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLevelChangedSignature, int32, NewStatValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageWidgetRowSignature, FUIWidgetRow, Row);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityInfoSignature, const FAuroraAbilityInfo&, Info);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLevelChangedSignature, int32, NewStatValue);
+
 
 UCLASS(BlueprintType, Blueprintable)
 class AURORA_API UOverlayWidgetController : public UAuroraWidgetController
@@ -110,6 +111,9 @@ public:
 
 	UFUNCTION()
 	void OnXPUpdate(int32 NewXP) const;
+
+	/*UFUNCTION()
+	void OnXPUpdate(int32 NewXP) const;*/
 
 #pragma endregion
 
