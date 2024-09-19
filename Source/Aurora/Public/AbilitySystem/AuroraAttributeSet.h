@@ -63,7 +63,7 @@ public:
 	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
-	
+	virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 		
 	// [GameplayTag - Gameplay Attribute] Map
@@ -272,7 +272,12 @@ public:
 	
 	
 #pragma endregion
-	
+
+
+private:
+
+	bool bTopOffHealth = false;
+	bool bTopOffMana = false;
 };
 
 

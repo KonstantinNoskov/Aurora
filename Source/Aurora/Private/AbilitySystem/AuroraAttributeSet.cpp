@@ -96,6 +96,23 @@ void UAuroraAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute
 		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxMana());
 	}
 }
+void UAuroraAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
+{
+	Super::PostAttributeChange(Attribute, OldValue, NewValue);
+
+	if (Attribute == GetMaxHealthAttribute() && bTopOffHealth)
+	{
+		SetHealth(GetMaxHealth());
+		bTopOffHealth = false;
+	}
+
+	if (Attribute == GetMaxManaAttribute() && bTopOffMana)
+	{
+		SetMana(GetMaxMana());
+		bTopOffMana = false;
+	}
+}
+
 void UAuroraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
@@ -160,15 +177,10 @@ void UAuroraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCall
 			const int32 NewLevel = IPlayerInterface::Execute_FindLevelForXP(Props.SourceCharacter, CurrentXP + LocalIncomingXP);
 			const int32 NumLevelUps = NewLevel - CurrentLevel;
 
+			// Initiate Level up if level ups amount > 0 
 			if (NumLevelUps > 0)
 			{
-				// TODO: Get Attribute Points reward and SpellPoints reward
-				// GetAttributePointsReward()
-				// GetSpellPointsReward()
-				// AddToAttributePoints()
-				// AddToSpellpoints()
 				
-
 				int32 AttributePointsReward = IPlayerInterface::Execute_GetAttributePointsReward(Props.SourceCharacter, CurrentLevel);
 				int32 SpellPointsReward = IPlayerInterface::Execute_GetAttributePointsReward(Props.SourceCharacter, CurrentLevel);
 
@@ -184,7 +196,12 @@ void UAuroraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCall
 				// Fill up Health and Mana
 				SetHealth(GetMaxHealth());
 				SetMana(GetMaxMana());
+
 				
+				bTopOffHealth = true;
+				bTopOffMana = true;
+
+				// Call avatar level up handle
 				IPlayerInterface::Execute_LevelUp(Props.SourceCharacter);
 			}
 			

@@ -1,6 +1,7 @@
 ﻿#include "UI/WidgetController/AttributeMenuWidgetController.h"
 
 //#include "AuroraGameplayTags.h"
+#include "AbilitySystem/AuroraAbilitySystemComponent.h"
 #include "AbilitySystem/AuroraAttributeSet.h"
 #include "AbilitySystem/Data/AttributeInfo.h"
 #include "Player/AuroraPlayerState.h"
@@ -34,6 +35,8 @@ void UAttributeMenuWidgetController::BindCallbacksToDependencies()
 	// On Spell Points changed
 }
 
+
+
 /* BroadcastAttributeInfo
  *
  *	
@@ -56,23 +59,31 @@ void UAttributeMenuWidgetController::OnAttributePointsUpdate(int32 AttributePoin
 	OnAttributePointsUpdated.Broadcast(AttributePoints);
 }
 
+void UAttributeMenuWidgetController::UpgradeAttribute(const FGameplayTag& AttributeTag)
+{
+	UAuroraAbilitySystemComponent* AuroraASC = CastChecked<UAuroraAbilitySystemComponent>(AbilitySystemComponent);
+	AuroraASC->UpgradeAttribute(AttributeTag);
+}
 
 /* BroadcastInitialValues
  *	
- *	Updating actor's attributes at the start of the game
+ *	Updating actor's attributes such as Strength, AbilityPoints, etc at the start of the game
  */
 
 void UAttributeMenuWidgetController::BroadcastInitialValues()
 {
+	
 	const UAuroraAttributeSet* AS = CastChecked<UAuroraAttributeSet>(AttributeSet);
 	AuroraPlayerState = !AuroraPlayerState ? CastChecked<AAuroraPlayerState>(PlayerState) : AuroraPlayerState;
 	check(AttributeInfo)
 	
+	// Initial Attribute stats (strength, intelligence, etc.)
 	for (auto& Pair : AS->TagsToAttributes)
 	{
 		BroadcastAttributeInfo(Pair.Key, Pair.Value());
 	}
 	
+	// Intial Attribute Poitns
 	AuroraPlayerState->OnAttributePointsChanged.Broadcast(AuroraPlayerState->GetAttributePoints());
 }
 
