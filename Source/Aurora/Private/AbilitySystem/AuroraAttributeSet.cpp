@@ -88,12 +88,12 @@ void UAuroraAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute
 
 	if (Attribute == GetHealthAttribute())
 	{
-		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxHealth());
+		NewValue = FMath::CeilToFloat(FMath::Clamp(NewValue, 0.f, GetMaxHealth()));
 	}
 	
 	if (Attribute == GetManaAttribute())
 	{
-		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxMana());
+		NewValue = FMath::CeilToFloat(FMath::Clamp(NewValue, 0.f, GetMaxMana()));
 	}
 }
 void UAuroraAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
@@ -123,13 +123,13 @@ void UAuroraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCall
 	// Health Changed
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
-		SetHealth(FMath::Clamp(GetHealth(), 0 , GetMaxHealth()));
+		SetHealth(FMath::CeilToFloat(FMath::Clamp(GetHealth(), 0 , GetMaxHealth())));
 	}
 
 	// Mana changed
 	if (Data.EvaluatedData.Attribute == GetManaAttribute())
 	{
-		SetMana(FMath::Clamp(GetMana(), 0 , GetMaxMana()));
+		SetMana(FMath::CeilToFloat(FMath::Clamp(GetMana(), 0 , GetMaxMana())));
 	}
 
 	// Damage taken

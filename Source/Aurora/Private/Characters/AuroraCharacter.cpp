@@ -9,6 +9,7 @@
 #include "Debug/DebugMacros.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Player/AuroraPlayerState.h"
 #include "UI/HUD/AuroraHUD.h"
 
@@ -54,6 +55,7 @@ void AAuroraCharacter::BeginPlay()
 void AAuroraCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
 }
 void AAuroraCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
