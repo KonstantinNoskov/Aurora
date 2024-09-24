@@ -55,7 +55,6 @@ void AAuroraCharacter::BeginPlay()
 void AAuroraCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
 }
 void AAuroraCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {

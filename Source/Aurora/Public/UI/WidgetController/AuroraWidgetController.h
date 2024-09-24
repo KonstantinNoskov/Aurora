@@ -5,11 +5,17 @@
 #include "UObject/Object.h"
 #include "AuroraWidgetController.generated.h"
 
+class UAbilityInfo;
+class UAuroraAttributeSet;
+class UAuroraAbilitySystemComponent;
+class AAuroraPlayerState;
+class AAuroraPlayerController;
 class UAttributeSet;
 class UAbilitySystemComponent;
 
 // Attribute Changed
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangedSignature, float, NewAttributeValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityInfoSignature, const FAuroraAbilityInfo&, Info);
 
 USTRUCT(BlueprintType)
 struct FWidgetControllerParams
@@ -33,14 +39,31 @@ struct FWidgetControllerParams
 	TObjectPtr<UAttributeSet> AttributeSet = nullptr;
 };
 
-
-
 UCLASS()
 class AURORA_API UAuroraWidgetController : public UObject
 {
 	GENERATED_BODY()
 
+public:
+
+	UFUNCTION(BlueprintCallable)
+	void SetWidgetControllerParams(const FWidgetControllerParams& WCParams);
+
+	UFUNCTION(BlueprintCallable)
+	virtual void BroadcastInitialValues();
+
+	UFUNCTION(BlueprintCallable, Category = "Widget Controller")
+	virtual void BindCallbacksToDependencies();
+
 protected:
+
+	AAuroraPlayerController* GetAuroraPC();
+	AAuroraPlayerState* GetAuroraPS();
+	UAuroraAbilitySystemComponent* GetAuroraASC();
+	UAuroraAttributeSet* GetAuroraAS();
+
+	void BroadcastAbilityInfo();
+	void BroadcastAbilityInfo(const FGameplayAbilitySpec& AbilitySpec);
 
 	UPROPERTY(BlueprintReadOnly, Category = "Widget Controller")
 	TObjectPtr<APlayerController> PlayerController;
@@ -54,15 +77,22 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Widget Controller")
 	TObjectPtr<UAttributeSet> AttributeSet;
 
-public:
+	UPROPERTY(BlueprintReadOnly, Category = "Widget Controller")
+	TObjectPtr<AAuroraPlayerController> AuroraPlayerController;
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Widget Controller")
+	TObjectPtr<AAuroraPlayerState> AuroraPlayerState;
 
-	UFUNCTION(BlueprintCallable)
-	void SetWidgetControllerParams(const FWidgetControllerParams& WCParams);
+	UPROPERTY(BlueprintReadOnly, Category = "Widget Controller")
+	TObjectPtr<UAuroraAbilitySystemComponent> AuroraAbilitySystemComponent;
 
-	UFUNCTION(BlueprintCallable)
-	virtual void BroadcastInitialValues();
+	UPROPERTY(BlueprintReadOnly, Category = "Widget Controller")
+	TObjectPtr<UAuroraAttributeSet> AuroraAttributeSet;
 
-	UFUNCTION(BlueprintCallable, Category = "Widget Controller")
-	virtual void BindCallbacksToDependencies();
+	UPROPERTY(BlueprintAssignable, Category = "GAS | Messages")
+	FAbilityInfoSignature AbilityInfoDelegate;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Widget Data")
+	TObjectPtr<UAbilityInfo> AbilityInfo;
 	
 };

@@ -9,14 +9,12 @@
 void UAttributeMenuWidgetController::BindCallbacksToDependencies()
 {
 	// Getting actor's attribute set info
-	const UAuroraAttributeSet* AS = CastChecked<UAuroraAttributeSet>(AttributeSet);
-	AuroraPlayerState = !AuroraPlayerState ? CastChecked<AAuroraPlayerState>(PlayerState) : AuroraPlayerState;
-
+	
 	// Looping through all attributes the actor has. 
-	for (auto& Pair : AS->TagsToAttributes)
+	for (auto& Pair : GetAuroraAS()->TagsToAttributes)
 	{
 		// ... then bind callbacks to each one of this attribute's OnChangeDelegate
-		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
+		GetAuroraASC()->GetGameplayAttributeValueChangeDelegate(
 			Pair.Value()).AddLambda
 			(
 				[this, Pair](const FOnAttributeChangeData& Data)
@@ -30,12 +28,10 @@ void UAttributeMenuWidgetController::BindCallbacksToDependencies()
 	}
 
 	// On Attribute Points changed
-	AuroraPlayerState->OnAttributePointsChanged.AddUObject(this, &UAttributeMenuWidgetController::OnAttributePointsUpdate);
+	GetAuroraPS()->OnAttributePointsChanged.AddUObject(this, &UAttributeMenuWidgetController::OnAttributePointsUpdate);
 
 	// On Spell Points changed
 }
-
-
 
 /* BroadcastAttributeInfo
  *
@@ -61,8 +57,7 @@ void UAttributeMenuWidgetController::OnAttributePointsUpdate(int32 AttributePoin
 
 void UAttributeMenuWidgetController::UpgradeAttribute(const FGameplayTag& AttributeTag)
 {
-	UAuroraAbilitySystemComponent* AuroraASC = CastChecked<UAuroraAbilitySystemComponent>(AbilitySystemComponent);
-	AuroraASC->UpgradeAttribute(AttributeTag);
+	GetAuroraASC()->UpgradeAttribute(AttributeTag);
 }
 
 /* BroadcastInitialValues
@@ -72,19 +67,16 @@ void UAttributeMenuWidgetController::UpgradeAttribute(const FGameplayTag& Attrib
 
 void UAttributeMenuWidgetController::BroadcastInitialValues()
 {
-	
-	const UAuroraAttributeSet* AS = CastChecked<UAuroraAttributeSet>(AttributeSet);
-	AuroraPlayerState = !AuroraPlayerState ? CastChecked<AAuroraPlayerState>(PlayerState) : AuroraPlayerState;
 	check(AttributeInfo)
 	
 	// Initial Attribute stats (strength, intelligence, etc.)
-	for (auto& Pair : AS->TagsToAttributes)
+	for (auto& Pair : GetAuroraAS()->TagsToAttributes)
 	{
 		BroadcastAttributeInfo(Pair.Key, Pair.Value());
 	}
 	
-	// Intial Attribute Poitns
-	AuroraPlayerState->OnAttributePointsChanged.Broadcast(AuroraPlayerState->GetAttributePoints());
+	// Initial Attribute Points
+	GetAuroraPS()->OnAttributePointsChanged.Broadcast(GetAuroraPS()->GetAttributePoints());
 }
 
 

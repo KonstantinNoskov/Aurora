@@ -29,7 +29,7 @@ struct FUIWidgetRow : public FTableRowBase
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLevelChangedSignature, int32, NewStatValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageWidgetRowSignature, FUIWidgetRow, Row);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityInfoSignature, const FAuroraAbilityInfo&, Info);
+
 
 
 UCLASS(BlueprintType, Blueprintable)
@@ -60,23 +60,6 @@ protected:
 	UPROPERTY(BlueprintAssignable, Category = "GAS | Messages")
 	FMessageWidgetRowSignature MessageWidgetRowDelegate;
 
-#pragma endregion
-
-#pragma region AbilityInfo
-
-protected:
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Widget Data")
-	TObjectPtr<UAbilityInfo> AbilityInfo;
-
-	void OnInitializeStartupAbilities(UAuroraAbilitySystemComponent* AuroraAbilitySystemComponent);
-
-	UPROPERTY(BlueprintAssignable, Category = "GAS | Messages")
-	FAbilityInfoSignature AbilityInfoDelegate;
-
-	UFUNCTION()
-	void BroadcastAbilityInfo(const FGameplayAbilitySpec& AbilitySpec);
-	
 #pragma endregion
 
 #pragma region Attributes
@@ -110,7 +93,7 @@ public:
 	FOnAttributeChangedSignature OnXPUpdated;
 
 	UFUNCTION()
-	void OnXPUpdate(int32 NewXP) const;
+	void OnXPUpdate(int32 NewXP);
 
 	/*UFUNCTION()
 	void OnXPUpdate(int32 NewXP) const;*/

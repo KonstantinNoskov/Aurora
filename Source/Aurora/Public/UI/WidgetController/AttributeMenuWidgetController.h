@@ -39,10 +39,6 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "GAS | Attributes")
 	FOnAttributeChangedSignature OnAttributePointsUpdated;
 
-	
-	UPROPERTY()
-	AAuroraPlayerState* AuroraPlayerState;
-
 protected:
 
 	UPROPERTY(EditDefaultsOnly)
