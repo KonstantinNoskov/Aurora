@@ -4,6 +4,7 @@
 #include "Debug/DebugMacros.h"
 #include "UI/WidgetController/AttributeMenuWidgetController.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
+#include "UI/WidgetController/SpellMenuWidgetController.h"
 #include "UI/Widgets/AuroraUserWidget.h"
 
 #pragma region OVERLAY WIDGET CONTROLLER
@@ -59,6 +60,7 @@ void AAuroraHUD::InitAttributeMenu(APlayerController* PC, APlayerState* PS, UAbi
 	WidgetController->BroadcastInitialValues();
 }
 
+
 UAttributeMenuWidgetController* AAuroraHUD::GetAttributeMenuWidgetController(
 	const FWidgetControllerParams& WCParams)
 {
@@ -71,6 +73,38 @@ UAttributeMenuWidgetController* AAuroraHUD::GetAttributeMenuWidgetController(
 
 	return AttributeMenuWidgetController; 
 }
+
+#pragma endregion
+#pragma region Spell Menu Widget Controller
+
+USpellMenuWidgetController* AAuroraHUD::GetSpellMenuWidgetController(
+	const FWidgetControllerParams& WidgetControllerParams)
+{
+	if (!SpellMenuWidgetController)
+	{
+		SpellMenuWidgetController = NewObject<USpellMenuWidgetController>(this, SpellMenuWidgetControllerClass);
+		SpellMenuWidgetController->SetWidgetControllerParams(WidgetControllerParams);
+		SpellMenuWidgetController->BindCallbacksToDependencies();
+	}
+	
+	return SpellMenuWidgetController;
+}
+
+void AAuroraHUD::InitSpellMenu(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS)
+{
+	checkf(SpellMenuWidgetClass,				TEXT("Spell Menu widget class uninitialized, fill out BP_AuroraHUD"));
+	checkf(SpellMenuWidgetControllerClass,		TEXT("Spell Menu widget controller class uninitialized, fill out BP_AuroraHUD"));
+	
+	UUserWidget* Widget = CreateWidget<UUserWidget>(GetWorld(), SpellMenuWidgetClass);
+	SpellMenuWidget = Cast<UAuroraUserWidget>(Widget);
+	
+	const FWidgetControllerParams WidgetControllerParams(PC, PS, ASC, AS);
+	USpellMenuWidgetController* WidgetController = GetSpellMenuWidgetController(WidgetControllerParams);
+
+	SpellMenuWidget->SetWidgetController(WidgetController);
+	WidgetController->BroadcastInitialValues();
+}
+
 
 #pragma endregion
 

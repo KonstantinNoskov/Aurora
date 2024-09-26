@@ -182,7 +182,7 @@ void AAuroraCharacter::InitAbilityActorInfo()
 	
 	Cast<UAuroraAbilitySystemComponent>(AuroraPlayerState->GetAbilitySystemComponent())->AbilityActorInfoSet();
 	
-	// Set abilitySystemComponent
+	// Set AbilitySystemComponent
 	AbilitySystemComponent = AuroraPlayerState->GetAbilitySystemComponent();
 
 	// Set attribute set
@@ -193,7 +193,7 @@ void AAuroraCharacter::InitAbilityActorInfo()
 		if (AAuroraHUD* AuroraHUD = Cast<AAuroraHUD>(AuroraPlayerController->GetHUD()))
 		{
 			AuroraHUD->InitOverlay(AuroraPlayerController, AuroraPlayerState, AbilitySystemComponent, AttributeSet);
-			AuroraHUD->InitAttributeMenu(AuroraPlayerController, AuroraPlayerState, AbilitySystemComponent, AttributeSet);
+			//AuroraHUD->InitAttributeMenu(AuroraPlayerController, AuroraPlayerState, AbilitySystemComponent, AttributeSet);
 		}
 	}
 	

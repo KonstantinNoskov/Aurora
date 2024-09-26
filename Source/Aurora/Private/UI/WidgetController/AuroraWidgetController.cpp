@@ -57,13 +57,13 @@ void UAuroraWidgetController::BroadcastAbilityInfo()
 	if (!GetAuroraASC()->bStartupAbilitiesGiven) return;
 
 	// Create a delegate 
-	FForEachAbility BroadcastDelegate;
+	FForEachAbilitySignature BroadcastDelegate;
 
 	// Bind AbilityInfo setup to it
 	BroadcastDelegate.BindUObject(this, &UOverlayWidgetController::BroadcastAbilityInfo);
 
 	// Pass in outcome delegate to the ASC ForEachAbility-function
-	// so it can execute the delegate for each activatable ability
+	// so it can execute the delegate for each active ability
 	GetAuroraASC()->ForEachAbility(BroadcastDelegate);
 }
 

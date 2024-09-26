@@ -2,7 +2,7 @@
 
 void USpellMenuWidgetController::BroadcastInitialValues()
 {
-	//AbilitySystemComponent->
+	BroadcastAbilityInfo();
 }
 
 void USpellMenuWidgetController::BindCallbacksToDependencies()

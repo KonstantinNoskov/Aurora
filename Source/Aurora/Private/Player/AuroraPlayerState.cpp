@@ -18,7 +18,6 @@ AAuroraPlayerState::AAuroraPlayerState()
 	AttributeSet = CreateDefaultSubobject<UAuroraAttributeSet>("AttributeSet");
 }
 
-
 void AAuroraPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -36,15 +35,10 @@ void AAuroraPlayerState::BeginPlay()
 }
 
 #pragma region ABILITY SYSTEM
-
-
 UAbilitySystemComponent* AAuroraPlayerState::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent; 
 }
-
-
-
 #pragma endregion
 
 #pragma region XP & Level UP

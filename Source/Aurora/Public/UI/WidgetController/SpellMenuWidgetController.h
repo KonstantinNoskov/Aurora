@@ -4,7 +4,7 @@
 #include "AuroraWidgetController.h"
 #include "SpellMenuWidgetController.generated.h"
 
-UCLASS()
+UCLASS(BlueprintType, Blueprintable)
 class AURORA_API USpellMenuWidgetController : public UAuroraWidgetController
 {
 	GENERATED_BODY()
