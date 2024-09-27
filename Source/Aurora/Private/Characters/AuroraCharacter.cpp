@@ -104,6 +104,12 @@ void AAuroraCharacter::AddToPlayerLevel_Implementation(int32 InPlayerLevel)
 	checkf(AuroraPlayerState, TEXT("[%hs] - Aurora playerstate is null!"), __FUNCTION__)
 
 	AuroraPlayerState->AddToLevel(InPlayerLevel);
+
+	if (UAuroraAbilitySystemComponent* AuroraASC = Cast<UAuroraAbilitySystemComponent>(GetAbilitySystemComponent()))
+	{
+		AuroraASC->UpdateAbilityStatus(AuroraPlayerState->GetPlayerLevel());
+	}
+	
 }
 
 void AAuroraCharacter::MulticastLevelUpParticles_Implementation() const
@@ -205,7 +211,7 @@ int32 AAuroraCharacter::GetPlayerLevel_Implementation()
 	AAuroraPlayerState* AuroraPlayerState = GetPlayerState<AAuroraPlayerState>();
 	checkf(AuroraPlayerState, TEXT("AuroraCharacter.cpp - Aurora playerstate is null!"))
 
-	return AuroraPlayerState->GetPlayerLevel_Implementation();
+	return AuroraPlayerState->GetPlayerLevel();
 }
 
 void AAuroraCharacter::OnRep_PlayerState()

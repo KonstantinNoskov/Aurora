@@ -74,6 +74,7 @@ void UAuroraWidgetController::BroadcastAbilityInfo(const FGameplayAbilitySpec& A
 
 	// Set AbilityInfo InputTag if ability have it
 	Info.InputTag = GetAuroraASC()->GetInputTagFromSpec(AbilitySpec);
+	Info.AbilityStatusTag = GetAuroraASC()->GetAbilityStatusTagFromSpec(AbilitySpec);
 
 	// Broadcast outcome AbilityInfo to the widgets
 	AbilityInfoDelegate.Broadcast(Info);

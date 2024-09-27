@@ -65,7 +65,7 @@ private:
 
 public:
 	
-	FORCEINLINE int32 GetPlayerLevel_Implementation() const	{ return Level; }
+	FORCEINLINE int32 GetPlayerLevel() const				{ return Level; }
 	FORCEINLINE int32 GetXP() const							{ return XP; }
 	FORCEINLINE int32 GetAttributePoints() const			{ return AttributePoints; }
 	FORCEINLINE int32 GetSpellPoints() const				{ return SpellPoints; }
@@ -95,7 +95,7 @@ private:
 	int32 AttributePoints = 0;
 
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_XP, Category = "Level")
-	int32 SpellPoints = 1;
+	int32 SpellPoints = 0;
 
 #pragma endregion
 	
