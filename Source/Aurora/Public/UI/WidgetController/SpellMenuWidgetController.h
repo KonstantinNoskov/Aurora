@@ -10,7 +10,6 @@ struct FAuroraGameplayTags;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSpellGlobeSelectedSignature, bool, bSpendPointsButtonEnabled, bool,
                                              bEquipButtonEnabled);
 
-
 struct FSelectedAbility
 {
 	FGameplayTag Ability = FGameplayTag();
@@ -39,6 +38,9 @@ private:
 	
 	UFUNCTION(BlueprintCallable)
 	void SpellGlobeSelected(const FGameplayTag& InAbilityTag);
+
+	UFUNCTION(BlueprintCallable)
+	void SpendPointButtonPressed();
 
 	FSelectedAbility SelectedAbility = {FAuroraGameplayTags::Get().Abilities_None, FAuroraGameplayTags::Get().Abilities_Status_Locked };
 	int32 CurrentSpellPoints = 0;

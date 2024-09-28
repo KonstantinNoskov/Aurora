@@ -17,7 +17,7 @@ void USpellMenuWidgetController::BindCallbacksToDependencies()
 {
 	// Ability status change
 	GetAuroraASC()->AbilityStatusChanged.AddLambda(
-		[this](const FGameplayTag& AbilityTag, const FGameplayTag& AbilityStatusTag)
+		[this](const FGameplayTag& AbilityTag, const FGameplayTag& AbilityStatusTag, int32 NewLevel)
 		{
 			// #290
 			if (SelectedAbility.Ability.MatchesTagExact(AbilityTag))
@@ -79,9 +79,15 @@ void USpellMenuWidgetController::SpellGlobeSelected(const FGameplayTag& InAbilit
 	ShouldEnableButtons(AbilityStatus, SpellPoints, bEnableSpendPoints, bEnableEquip);
 	OnSpellGlobeSelected.Broadcast(bEnableSpendPoints, bEnableEquip);
 }
+void USpellMenuWidgetController::SpendPointButtonPressed()
+{
+	if (!GetAuroraASC()) return;
+	
+	GetAuroraASC()->ServerSpendSpellPoint(SelectedAbility.Ability);
+}
 
 void USpellMenuWidgetController::ShouldEnableButtons(const FGameplayTag& AbilityStatus, int32 SpellPoints,
-	bool& bShouldEnableSpellPointsButton, bool& bShouldEnableEquipButton)
+                                                     bool& bShouldEnableSpellPointsButton, bool& bShouldEnableEquipButton)
 {
 	const FAuroraGameplayTags AuroraGameplayTags = FAuroraGameplayTags::Get();
 
@@ -93,7 +99,7 @@ void USpellMenuWidgetController::ShouldEnableButtons(const FGameplayTag& Ability
 	if (AbilityStatus.MatchesTagExact(AuroraGameplayTags.Abilities_Status_Equipped))
 	{
 		//bShouldEnableEquipButton = true; // Equip button enable 
-		//if (SpellPoints > 0) bShouldEnableSpellPointsButton = true; // SpellPoints button enable if Spell points > 0 
+		if (SpellPoints > 0) bShouldEnableSpellPointsButton = true; // SpellPoints button enable if Spell points > 0 
 	}
 
 	// If Spell Eligible...

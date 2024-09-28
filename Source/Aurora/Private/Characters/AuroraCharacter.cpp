@@ -109,9 +109,7 @@ void AAuroraCharacter::AddToPlayerLevel_Implementation(int32 InPlayerLevel)
 	{
 		AuroraASC->UpdateAbilityStatus(AuroraPlayerState->GetPlayerLevel());
 	}
-	
 }
-
 void AAuroraCharacter::MulticastLevelUpParticles_Implementation() const
 {
 	if (IsValid(LevelUpNiagaraComponent))
