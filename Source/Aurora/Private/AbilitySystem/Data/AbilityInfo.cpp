@@ -2,7 +2,7 @@
 
 #include "Aurora/AuroraLogChannels.h"
 
-FAuroraAbilityInfo UAbilityInfo::FindAbilityInfoForTag(const FGameplayTag& AbilityTag, bool bLogNotFound) const
+FAuroraAbilityInfo UAbilityInfo::FindAbilityInfoByTag(const FGameplayTag& AbilityTag, bool bLogNotFound) const
 {
 	for (const FAuroraAbilityInfo& Info : AbilityInformation)
 	{

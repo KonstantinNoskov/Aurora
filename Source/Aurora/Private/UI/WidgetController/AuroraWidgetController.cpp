@@ -70,7 +70,7 @@ void UAuroraWidgetController::BroadcastAbilityInfo()
 void UAuroraWidgetController::BroadcastAbilityInfo(const FGameplayAbilitySpec& AbilitySpec)
 {
 	// Try to get ability info if it has an "Abilities" tag.
-	FAuroraAbilityInfo Info = AbilityInfo->FindAbilityInfoForTag(GetAuroraASC()->GetAbilityTagFromSpec(AbilitySpec));
+	FAuroraAbilityInfo Info = AbilityInfo->FindAbilityInfoByTag(GetAuroraASC()->GetAbilityTagFromSpec(AbilitySpec));
 
 	// Set AbilityInfo InputTag if ability have it
 	Info.InputTag = GetAuroraASC()->GetInputTagFromSpec(AbilitySpec);
