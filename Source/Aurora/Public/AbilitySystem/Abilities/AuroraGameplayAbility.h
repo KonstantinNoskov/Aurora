@@ -10,6 +10,17 @@ class AURORA_API UAuroraGameplayAbility : public UGameplayAbility
 {
 	GENERATED_BODY()
 
+
+#pragma region Ability Description Format
+
+#pragma endregion
+public:
+	
+	virtual FString GetDescription(int32 Level);
+	virtual FString GetNextLevelDescription(int32 Level);
+	
+	static FString GetLockedDescription(int32 Level);
+
 protected:
 	
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Debug")

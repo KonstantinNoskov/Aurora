@@ -7,13 +7,12 @@
 
 
 struct FAuroraGameplayTags;
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSpellGlobeSelectedSignature, bool, bSpendPointsButtonEnabled, bool,
-                                             bEquipButtonEnabled);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnSpellGlobeSelectedSignature, bool, bSpendPointsButtonEnabled, bool, bEquipButtonEnabled, FString, DescriptionString, FString, NextLevelDescriptionString);
 
 struct FSelectedAbility
 {
-	FGameplayTag Ability = FGameplayTag();
-	FGameplayTag Status = FGameplayTag();
+	FGameplayTag AbilityTag = FGameplayTag();
+	FGameplayTag StatusTag = FGameplayTag();
 };
 
 UCLASS(BlueprintType, Blueprintable)
