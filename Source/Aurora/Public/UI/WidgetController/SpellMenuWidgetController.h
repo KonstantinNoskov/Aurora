@@ -1,11 +1,21 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "AuroraGameplayTags.h"
 #include "AuroraWidgetController.h"
 #include "SpellMenuWidgetController.generated.h"
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSpellGlobeSelectedSignature, bool, bSpendPointsButtonEnabled, bool, bEquipButtonEnabled);
+struct FAuroraGameplayTags;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSpellGlobeSelectedSignature, bool, bSpendPointsButtonEnabled, bool,
+                                             bEquipButtonEnabled);
+
+
+struct FSelectedAbility
+{
+	FGameplayTag Ability = FGameplayTag();
+	FGameplayTag Status = FGameplayTag();
+};
 
 UCLASS(BlueprintType, Blueprintable)
 class AURORA_API USpellMenuWidgetController : public UAuroraWidgetController
@@ -30,6 +40,7 @@ private:
 	UFUNCTION(BlueprintCallable)
 	void SpellGlobeSelected(const FGameplayTag& InAbilityTag);
 
-	
+	FSelectedAbility SelectedAbility = {FAuroraGameplayTags::Get().Abilities_None, FAuroraGameplayTags::Get().Abilities_Status_Locked };
+	int32 CurrentSpellPoints = 0;
 	
 };
