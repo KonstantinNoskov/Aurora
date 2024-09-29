@@ -15,6 +15,12 @@ FTaggedMontage UAuroraDamageGameplayAbility::GetRandomTaggedMontageFromArray(
 	return FTaggedMontage();
 }
 
+float UAuroraDamageGameplayAbility::GetDamageByDamageType(float Inlevel, const FGameplayTag& DamageType)
+{
+	checkf(DamageTypes.Contains(DamageType), TEXT("[%hs]: GameplayAbility [%s] doesn't contain DamageType [%s]"), __FUNCTION__, *GetNameSafe(this), *DamageType.ToString())
+	return DamageTypes[DamageType].GetValueAtLevel(Inlevel);
+}
+
 void UAuroraDamageGameplayAbility::CauseDamage(AActor* TargetActor)
 {
 	FGameplayEffectSpecHandle DamageSpecHandle = MakeOutgoingGameplayEffectSpec(DamageEffectClass, 1.f);

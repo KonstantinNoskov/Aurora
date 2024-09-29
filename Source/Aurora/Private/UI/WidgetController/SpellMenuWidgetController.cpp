@@ -83,7 +83,6 @@ void USpellMenuWidgetController::SpellGlobeSelected(const FGameplayTag& InAbilit
 
 	SelectedAbility.AbilityTag = InAbilityTag;
 	SelectedAbility.StatusTag = AbilityStatus;
-
 	
 	bool bEnableSpendPoints = false;
 	bool bEnableEquip = false;
@@ -99,6 +98,13 @@ void USpellMenuWidgetController::SpendPointButtonPressed()
 	if (!GetAuroraASC()) return;
 	
 	GetAuroraASC()->ServerSpendSpellPoint(SelectedAbility.AbilityTag);
+}
+void USpellMenuWidgetController::GlobeDeselect()
+{
+	SelectedAbility.AbilityTag = FAuroraGameplayTags::Get().Abilities_None;
+	SelectedAbility.StatusTag = FAuroraGameplayTags::Get().Abilities_Status_Locked;
+
+	OnSpellGlobeSelected.Broadcast(false, false, FString(), FString());
 }
 
 void USpellMenuWidgetController::ShouldEnableButtons(const FGameplayTag& AbilityStatus, int32 SpellPoints,

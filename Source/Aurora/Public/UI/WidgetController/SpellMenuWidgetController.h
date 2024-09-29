@@ -31,6 +31,7 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangedSignature SpellPointsUpdated;
 
+
 private:
 
 	static void ShouldEnableButtons(const FGameplayTag& AbilityStatus, int32 SpellPoints, bool& bShouldEnableSpellPointsButton, bool& bShouldEnableEquipButton);
@@ -40,6 +41,11 @@ private:
 
 	UFUNCTION(BlueprintCallable)
 	void SpendPointButtonPressed();
+
+public:
+
+	UFUNCTION(BlueprintCallable)
+	void GlobeDeselect();
 
 	FSelectedAbility SelectedAbility = {FAuroraGameplayTags::Get().Abilities_None, FAuroraGameplayTags::Get().Abilities_Status_Locked };
 	int32 CurrentSpellPoints = 0;

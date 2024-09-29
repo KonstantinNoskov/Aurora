@@ -23,6 +23,9 @@ public:
 
 protected:
 	
+	float GetManaCost(float InLevel = 1.f) const;
+	float GetCooldown(float InLevel = 1.f) const;
+	
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Debug")
 	bool bDebug = false;
 
