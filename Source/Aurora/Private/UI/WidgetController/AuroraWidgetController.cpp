@@ -51,7 +51,6 @@ UAuroraAttributeSet* UAuroraWidgetController::GetAuroraAS()
 	}
 	return AuroraAttributeSet; 
 }
-
 void UAuroraWidgetController::BroadcastAbilityInfo()
 {
 	if (!GetAuroraASC()->bStartupAbilitiesGiven) return;
@@ -66,7 +65,6 @@ void UAuroraWidgetController::BroadcastAbilityInfo()
 	// so it can execute the delegate for each active ability
 	GetAuroraASC()->ForEachAbility(BroadcastDelegate);
 }
-
 void UAuroraWidgetController::BroadcastAbilityInfo(const FGameplayAbilitySpec& AbilitySpec)
 {
 	// Try to get ability info if it has an "Abilities" tag.
