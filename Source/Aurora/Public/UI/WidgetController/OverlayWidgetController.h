@@ -100,6 +100,10 @@ public:
 
 #pragma endregion
 
+protected:
+	
+	void OnAbilityEquipped(const FGameplayTag& AbilityTag, const FGameplayTag& AbilityStatusTag, const FGameplayTag& SlotTag, const FGameplayTag& PrevSlotTag) const;
+	
 
 };
 

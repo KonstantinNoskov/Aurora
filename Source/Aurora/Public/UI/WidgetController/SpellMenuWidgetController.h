@@ -7,6 +7,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnSpellGlobeSelectedSignature, bool, bSpendPointsButtonEnabled, bool, bEquipButtonEnabled, FString, DescriptionString, FString, NextLevelDescriptionString);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWaitForEquipSelectionSignature, const FGameplayTag&, AbilityTypeTag);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSpellGlobeReAssignedSignature, const FGameplayTag&, AbilityTag);
 
 
 struct FAuroraGameplayTags;
@@ -40,6 +41,9 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FWaitForEquipSelectionSignature StopWaitingForEquip;
 
+	UPROPERTY(BlueprintAssignable)
+	FOnSpellGlobeReAssignedSignature SpellGlobeReAssigned;
+
 
 private:
 
@@ -59,10 +63,25 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void EquipButtonPressed();
 
+	UFUNCTION(BlueprintCallable)
+	void SpellRowGlobePressed(const FGameplayTag& SlotTag, const FGameplayTag& AbilityTypeTag);
+
+	UFUNCTION()
+	void OnAbilityEquipped(const FGameplayTag& AbilityTag, const FGameplayTag& AbilityStatusTag, const FGameplayTag& SlotTag, const FGameplayTag& PrevSlotTag);
+	
+	FSelectedAbility SelectedAbility = {FAuroraGameplayTags::Get().Abilities_None, FAuroraGameplayTags::Get().Abilities_Status_Locked };
+
 private:
 
-	FSelectedAbility SelectedAbility = {FAuroraGameplayTags::Get().Abilities_None, FAuroraGameplayTags::Get().Abilities_Status_Locked };
+	
+
+	UPROPERTY()
 	int32 CurrentSpellPoints = 0;
+
+	UPROPERTY()
 	bool bWaitingForEquipSelection = false;
+
+	UPROPERTY()
+	FGameplayTag SelectedSlot;
 	
 };

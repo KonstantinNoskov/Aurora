@@ -59,6 +59,9 @@ void USpellMenuWidgetController::BindCallbacksToDependencies()
 		ShouldEnableButtons(SelectedAbility.StatusTag, CurrentSpellPoints, bEnableSpendPoints, bEnableEquip);
 		OnSpellGlobeSelected.Broadcast(bEnableSpendPoints, bEnableEquip, Description, NextLevelDescription);
 	});
+
+	// On Ability Equipped
+	GetAuroraASC()->OnAbilityEquipped.AddUObject(this, &USpellMenuWidgetController::OnAbilityEquipped); 
 }
 void USpellMenuWidgetController::SpellGlobeSelected(const FGameplayTag& InAbilityTag)
 {
@@ -77,7 +80,7 @@ void USpellMenuWidgetController::SpellGlobeSelected(const FGameplayTag& InAbilit
 	const bool bTagNone = InAbilityTag.MatchesTag(AuroraGameplayTags.Abilities_None);
 	
 	FGameplayTag AbilityStatus;
-	const FGameplayAbilitySpec* AbilitySpec = GetAuroraASC()->GetSpecFromAbilityTag(InAbilityTag);
+	const FGameplayAbilitySpec* AbilitySpec = GetAuroraASC()->GetAbilitySpecFromTag(InAbilityTag);
 	const bool bSpecValid = AbilitySpec != nullptr;
 	
 	if (!bTagValid || bTagNone || !bSpecValid)
@@ -86,7 +89,7 @@ void USpellMenuWidgetController::SpellGlobeSelected(const FGameplayTag& InAbilit
 	}
 	else
 	{
-		AbilityStatus = GetAuroraASC()->GetAbilityStatusTagFromSpec(*AbilitySpec);
+		AbilityStatus = GetAuroraASC()->GetAbilityStatusFromSpec(*AbilitySpec);
 	}
 
 	SelectedAbility.AbilityTag = InAbilityTag;
@@ -126,10 +129,54 @@ void USpellMenuWidgetController::GlobeDeselect()
 void USpellMenuWidgetController::EquipButtonPressed()
 {
 	const FGameplayTag AbilityType = AbilityInfo->FindAbilityInfoByTag(SelectedAbility.AbilityTag).AbilityTypeTag;
-
+	
 	WaitForEquip.Broadcast(AbilityType);
 	bWaitingForEquipSelection = true;
+
+	const FGameplayTag SelectedStatus = GetAuroraASC()->GetAbilityStatusFromTag(SelectedAbility.AbilityTag);
+	if (SelectedStatus.MatchesTagExact(FAuroraGameplayTags::Get().Abilities_Status_Equipped))
+	{
+		SelectedSlot = GetAuroraASC()->GetInputTagFromAbilityTag(SelectedAbility.AbilityTag);
+	}
 }
+void USpellMenuWidgetController::SpellRowGlobePressed(const FGameplayTag& SlotTag, const FGameplayTag& AbilityTypeTag)
+{
+	if (!bWaitingForEquipSelection) return;
+
+	// Check selected ability against the slot's ability type.
+	// (don't equip on offensive spell in a passive slot and vice versa)
+	const FGameplayTag& SelectedAbilityType = AbilityInfo->FindAbilityInfoByTag(SelectedAbility.AbilityTag).AbilityTypeTag;
+
+	// Valid check
+	if (!SelectedAbilityType.MatchesTagExact(AbilityTypeTag)) return;
+
+	GetAuroraASC()->ServerEquipAbility(SelectedAbility.AbilityTag, SlotTag);
+	
+	
+}
+void USpellMenuWidgetController::OnAbilityEquipped(const FGameplayTag& AbilityTag, const FGameplayTag& AbilityStatusTag, const FGameplayTag& SlotTag, const FGameplayTag& PrevSlotTag)
+{
+	bWaitingForEquipSelection = false;
+	const FAuroraGameplayTags GameplayTags = FAuroraGameplayTags::Get();
+	
+	FAuroraAbilityInfo LastSlotInfo;
+	LastSlotInfo.AbilityStatusTag = GameplayTags.Abilities_Status_Unlocked;
+	LastSlotInfo.InputTag = PrevSlotTag;
+	LastSlotInfo.AbilityTag = GameplayTags.Abilities_None;
+
+	// Broadcast empty info if PrevSlot is a valid slot. Only if equipping an already-equipped spell;
+	AbilityInfoDelegate.Broadcast(LastSlotInfo);
+
+	FAuroraAbilityInfo Info = AbilityInfo->FindAbilityInfoByTag(AbilityTag);
+	Info.AbilityStatusTag = AbilityStatusTag;
+	Info.InputTag = SlotTag;
+	AbilityInfoDelegate.Broadcast(Info);
+
+	StopWaitingForEquip.Broadcast(AbilityInfo->FindAbilityInfoByTag(AbilityTag).AbilityTypeTag);
+	SpellGlobeReAssigned.Broadcast(AbilityTag);
+	GlobeDeselect();
+}
+
 void USpellMenuWidgetController::ShouldEnableButtons(const FGameplayTag& AbilityStatus, int32 SpellPoints,
                                                      bool& bShouldEnableSpellPointsButton, bool& bShouldEnableEquipButton)
 {
