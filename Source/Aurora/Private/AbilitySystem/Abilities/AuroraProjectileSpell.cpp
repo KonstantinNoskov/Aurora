@@ -41,46 +41,7 @@ void UAuroraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLoca
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn
 		);
 	
-	// Set damage gameplay effect on projectile through creating new spec handle 
-	const UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
-
-#pragma region Creating custom effect context
-		
-	// Create custom EffectContextHandle so we can pass in all data we want.
-	// More about FAuroraGameplayEffectContext info in AuroraAbilityTypes.h
-	FGameplayEffectContextHandle EffectContextHandle = SourceASC->MakeEffectContext();
-	
-	// Ability Data
-	EffectContextHandle.SetAbility(this);
-	
-	// SourceObject
-	EffectContextHandle.AddSourceObject(Projectile);
-	
-	// Actors
-	TArray<TWeakObjectPtr<AActor>> Actors;
-	Actors.Add(Projectile);
-	EffectContextHandle.AddActors(Actors);
-
-	// Hit Result
-	FHitResult HitResult;
-	HitResult.Location = ProjectileTargetLocation;
-	EffectContextHandle.AddHitResult(HitResult);
-
-#pragma endregion
-
-	const FAuroraGameplayTags GameplayTags = FAuroraGameplayTags::Get();
-	
-	const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), EffectContextHandle);
-
-	// Set damage value to a projectile
-	// Scaled damage = Damage based on ability level from Damage curve
-	for (auto& Pair : DamageTypes)
-	{
-		const float ScaledDamage = Pair.Value.GetValueAtLevel(GetAbilityLevel());
-		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, Pair.Key, ScaledDamage);
-	}
-	
-	Projectile->DamageEffectSpecHandle = SpecHandle;
+	Projectile->DamageEffectParams = MakeDamageEffectParamsFromClassDefaults();
 	
 	Projectile->FinishSpawning(SpawnTransform);
 }

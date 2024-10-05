@@ -12,7 +12,13 @@ class AURORA_API UExecCalc_Damage : public UGameplayEffectExecutionCalculation
 public:
 
 	UExecCalc_Damage();
+	
+	void DetermineDebuff(
+		const FGameplayEffectCustomExecutionParameters& ExecutionParams,
+		FGameplayEffectSpec Spec,
+		FAggregatorEvaluateParameters EvaluationParams,
+		const TMap<FGameplayTag, FGameplayEffectAttributeCaptureDefinition>&InTagsToCaptureDefs) const;
 
 	virtual void Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
-		FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const override;
+	                                    FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const override;
 };

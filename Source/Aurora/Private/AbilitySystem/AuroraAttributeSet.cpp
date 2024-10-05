@@ -2,6 +2,7 @@
 #include "AbilitySystem/AuroraAttributeSet.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "AuroraAbilityTypes.h"
 #include "AuroraGameplayTags.h"
 #include "GameplayEffectExtension.h"
 #include "AbilitySystem/AuroraAbilitySystemLibrary.h"
@@ -9,6 +10,7 @@
 #include "Aurora/AuroraLogChannels.h"
 #include "Controllers/PlayerControllers/AuroraPlayerController.h"
 #include "GameFramework/Character.h"
+#include "GameplayEffectComponents/TargetTagsGameplayEffectComponent.h"
 #include "Interfaces/Interaction/CombatInterface.h"
 #include "Interfaces/Interaction/PlayerInterface.h"
 #include "Net/UnrealNetwork.h"
@@ -113,6 +115,7 @@ void UAuroraAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribut
 	}
 }
 
+
 void UAuroraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
@@ -132,84 +135,94 @@ void UAuroraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCall
 		SetMana(FMath::CeilToFloat(FMath::Clamp(GetMana(), 0 , GetMaxMana())));
 	}
 
-	// Damage taken
-	if (Data.EvaluatedData.Attribute == GetIncomingDamageAttribute())
+	// Incoming Damage Taken
+	if (Data.EvaluatedData.Attribute == GetIncomingDamageAttribute()) HandleIncomingDamage(Props);
+
+	// Incoming XP Gained
+	if (Data.EvaluatedData.Attribute == GetIncomingXPAttribute()) HandelIncomingXP(Props);
+}
+
+void UAuroraAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
+{
+	
+	// Store Incoming damage in local variable so we can reset Incoming damage attribute value
+	const float LocalIncomingDamage = GetIncomingDamage();
+
+	// Reset incoming damage
+	SetIncomingDamage(0.f);
+
+	// Apply incoming damage if > 0
+	if (LocalIncomingDamage > 0.f)
 	{
-		// Store Incoming damage in local variable so we can reset Incoming damage attribute value
-		const float LocalIncomingDamage = GetIncomingDamage();
-
-		// Reset incoming damage
-		SetIncomingDamage(0.f);
-
-		// Apply incoming damage if > 0
-		if (LocalIncomingDamage > 0.f)
-		{
-			// New Health = Old Health - Incoming damage
-			const float NewHealth = GetHealth() - LocalIncomingDamage;
-			SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
-
-			// Handle behavior after taken damage
-			TakenDamageHandle(Props, NewHealth);
-
-			// Pass in an additional info about the damage so the widget can use it (such as whether damage was critical, blocked etc.) 
-			const bool bBlock = UAuroraAbilitySystemLibrary::IsBlockedHit(Props.EffectContextHandle);
-			const bool bCritical = UAuroraAbilitySystemLibrary::IsCriticalHit(Props.EffectContextHandle);
-			
-			// Show damage as a floating widget
-			ShowFloatingText(Props, LocalIncomingDamage, bBlock, bCritical);
-		}
-	}
-
-	// XP gained
-	if (Data.EvaluatedData.Attribute == GetIncomingXPAttribute())
-	{
-		const float LocalIncomingXP = GetIncomingXP();
-		SetIncomingXP(0.f);
 		
-		UE_LOG(LogAurora, Warning, TEXT("[%hs] Incoming %f XP!"), __FUNCTION__, LocalIncomingXP)
-		
-		// Source Character is the owner, since GA_ListenForEvents applies GE_EventBasedEffect, adding to IncomingXP
-		if (Props.SourceCharacter->Implements<UPlayerInterface>() && Props.SourceCharacter->Implements<UCombatInterface>())
-		{
-			const int32 CurrentLevel = ICombatInterface::Execute_GetPlayerLevel(Props.SourceCharacter);
-			const int32 CurrentXP = IPlayerInterface::Execute_GetXP(Props.SourceCharacter);
+		// New Health = Old Health - Incoming damage
+		const float NewHealth = GetHealth() - LocalIncomingDamage;
+		SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
 
-			const int32 NewLevel = IPlayerInterface::Execute_FindLevelForXP(Props.SourceCharacter, CurrentXP + LocalIncomingXP);
-			const int32 NumLevelUps = NewLevel - CurrentLevel;
+		// Handle behavior after taken damage
+		TakenDamageHandle(Props, NewHealth);
 
-			// Initiate Level up if level ups amount > 0 
-			if (NumLevelUps > 0)
-			{
-				
-				int32 AttributePointsReward = IPlayerInterface::Execute_GetAttributePointsReward(Props.SourceCharacter, CurrentLevel);
-				int32 SpellPointsReward = IPlayerInterface::Execute_GetAttributePointsReward(Props.SourceCharacter, CurrentLevel);
-
-				// Add levels
-				IPlayerInterface::Execute_AddToPlayerLevel(Props.SourceCharacter, NumLevelUps);
-
-				// Add attribute points depending on level
-				IPlayerInterface::Execute_AddToAttributePoints(Props.SourceCharacter, AttributePointsReward);
-
-				// Add spell points depending on level
-				IPlayerInterface::Execute_AddToSpellPoints(Props.SourceCharacter, SpellPointsReward);
-				
-				// Fill up Health and Mana
-				SetHealth(GetMaxHealth());
-				SetMana(GetMaxMana());
-
-				
-				bTopOffHealth = true;
-				bTopOffMana = true;
-
-				// Call avatar level up handle
-				IPlayerInterface::Execute_LevelUp(Props.SourceCharacter);
-			}
+		// Pass in an additional info about the damage so the widget can use it (such as whether damage was critical, blocked etc.) 
+		const bool bBlock = UAuroraAbilitySystemLibrary::IsBlockedHit(Props.EffectContextHandle);
+		const bool bCritical = UAuroraAbilitySystemLibrary::IsCriticalHit(Props.EffectContextHandle);
 			
-			IPlayerInterface::Execute_AddToXP(Props.SourceCharacter, LocalIncomingXP);
+		// Show damage as a floating widget
+		ShowFloatingText(Props, LocalIncomingDamage, bBlock, bCritical);
+
+		Debuff(Props);
+		if (UAuroraAbilitySystemLibrary::IsDebuffSuccessfull(Props.EffectContextHandle))
+		{
+			
+			Debuff(Props);
 		}
 	}
 }
+void UAuroraAttributeSet::HandelIncomingXP(const FEffectProperties& Props)
+{
+	const float LocalIncomingXP = GetIncomingXP();
+	SetIncomingXP(0.f);
+		
+	UE_LOG(LogAurora, Warning, TEXT("[%hs] Incoming %f XP!"), __FUNCTION__, LocalIncomingXP)
+		
+	// Source Character is the owner, since GA_ListenForEvents applies GE_EventBasedEffect, adding to IncomingXP
+	if (Props.SourceCharacter->Implements<UPlayerInterface>() && Props.SourceCharacter->Implements<UCombatInterface>())
+	{
+		const int32 CurrentLevel = ICombatInterface::Execute_GetPlayerLevel(Props.SourceCharacter);
+		const int32 CurrentXP = IPlayerInterface::Execute_GetXP(Props.SourceCharacter);
 
+		const int32 NewLevel = IPlayerInterface::Execute_FindLevelForXP(Props.SourceCharacter, CurrentXP + LocalIncomingXP);
+		const int32 NumLevelUps = NewLevel - CurrentLevel;
+
+		// Initiate Level up if level ups amount > 0 
+		if (NumLevelUps > 0)
+		{
+				
+			int32 AttributePointsReward = IPlayerInterface::Execute_GetAttributePointsReward(Props.SourceCharacter, CurrentLevel);
+			int32 SpellPointsReward = IPlayerInterface::Execute_GetAttributePointsReward(Props.SourceCharacter, CurrentLevel);
+
+			// Add levels
+			IPlayerInterface::Execute_AddToPlayerLevel(Props.SourceCharacter, NumLevelUps);
+
+			// Add attribute points depending on level
+			IPlayerInterface::Execute_AddToAttributePoints(Props.SourceCharacter, AttributePointsReward);
+
+			// Add spell points depending on level
+			IPlayerInterface::Execute_AddToSpellPoints(Props.SourceCharacter, SpellPointsReward);
+				
+			// Fill up Health and Mana
+			SetHealth(GetMaxHealth());
+			SetMana(GetMaxMana());
+				
+			bTopOffHealth = true;
+			bTopOffMana = true;
+
+			// Call avatar level up handle
+			IPlayerInterface::Execute_LevelUp(Props.SourceCharacter);
+		}
+			
+		IPlayerInterface::Execute_AddToXP(Props.SourceCharacter, LocalIncomingXP);
+	}
+}
 void UAuroraAttributeSet::TakenDamageHandle(const FEffectProperties& Props, const float NewHealth)
 {
 	// Check if taken damage is fatal
@@ -229,8 +242,7 @@ void UAuroraAttributeSet::TakenDamageHandle(const FEffectProperties& Props, cons
 	// If damage not fatal activate HitReact ability (which is basically hit react animation montage)
 	else 
 	{
-		// TryActivateAbilitiesByTag function receives only TagContainer as an argument
-		// so we create TagContainer and add HitReact Tag to it.
+		// Local TagContainer
 		FGameplayTagContainer TagContainer;
 		TagContainer.AddTag(FAuroraGameplayTags::Get().Effects_HitReact);
 				
@@ -254,6 +266,60 @@ void UAuroraAttributeSet::SendXPEvent(const FEffectProperties& Props)
 		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Props.SourceCharacter, GameplayTags.Attributes_Meta_IncomingXP, Payload);
 	}
 }
+
+void UAuroraAttributeSet::Debuff(const FEffectProperties& InProps)
+{
+	const FAuroraGameplayTags& GameplayTags = FAuroraGameplayTags::Get();
+	FGameplayEffectContextHandle EffectContext = InProps.SourceASC->MakeEffectContext();
+	EffectContext.AddSourceObject(InProps.SourceAvatarActor);
+	
+	const FGameplayTag DamageTypeTag = UAuroraAbilitySystemLibrary::GetDamageType(InProps.EffectContextHandle);
+	const float DebuffDamage = UAuroraAbilitySystemLibrary::GetDebuffDamage(InProps.EffectContextHandle);
+	const float DebuffDuration = UAuroraAbilitySystemLibrary::GetDebuffDuration(InProps.EffectContextHandle);
+	const float DebuffFrequency = UAuroraAbilitySystemLibrary::GetDebuffFrequency(InProps.EffectContextHandle);
+
+	// Create a new Gameplay Effect
+	FString DebuffName = FString::Printf(TEXT("DynamicDebuff_%s"), *DamageTypeTag.ToString());
+	UGameplayEffect* Effect = NewObject<UGameplayEffect>(GetTransientPackage(), FName(DebuffName));
+
+	// Set Duration Policy, Period and Duration Magnitude
+	Effect->DurationPolicy = EGameplayEffectDurationType::HasDuration;
+	Effect->Period = DebuffFrequency;
+	Effect->DurationMagnitude = FScalableFloat(DebuffDuration);
+
+	// Add Granted tags (UE 5.4)
+	FInheritedTagContainer TagContainer = FInheritedTagContainer();
+	UTargetTagsGameplayEffectComponent& EffectComponent = Effect->FindOrAddComponent<UTargetTagsGameplayEffectComponent>();
+
+	TagContainer.Added.AddTag(GameplayTags.DamageTypesToDebuffs[DamageTypeTag]);
+	EffectComponent.SetAndApplyTargetTagChanges(TagContainer);
+
+	// Stacks
+	Effect->StackingType = EGameplayEffectStackingType::AggregateBySource;
+	Effect->StackLimitCount = 1;
+
+	// Modifiers 
+	const int32 Index = Effect->Modifiers.Num();
+	Effect->Modifiers.Add(FGameplayModifierInfo());
+	FGameplayModifierInfo& ModifierInfo = Effect->Modifiers[Index];
+	ModifierInfo.ModifierMagnitude = FScalableFloat(DebuffDamage);
+	ModifierInfo.ModifierOp = EGameplayModOp::Additive;
+	ModifierInfo.Attribute = GetIncomingDamageAttribute();
+
+	// Apply gameplay effect
+	FGameplayEffectSpec* MutableSpec = new FGameplayEffectSpec(Effect, EffectContext, 1.f);
+	if (MutableSpec)
+	{
+		FAuroraGameplayEffectContext* AuroraContext = static_cast<FAuroraGameplayEffectContext*>(EffectContext.Get());
+
+		TSharedPtr<FGameplayTag> DebuffDamageTypeTag = MakeShareable(new FGameplayTag(DamageTypeTag)); 
+		AuroraContext->SetDebuffDamageType(DebuffDamageTypeTag);
+		
+		InProps.TargetASC->ApplyGameplayEffectSpecToSelf(*MutableSpec);
+	}
+	
+}
+
 void UAuroraAttributeSet::ShowFloatingText(const FEffectProperties& Props, const float Damage, bool bBlockedHit, bool bCriticalHit) const
 {
 	//if (!IsValid(Props.SourceCharacter) || !IsValid(Props.TargetCharacter)) return;
@@ -278,7 +344,13 @@ void UAuroraAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackDa
 	Props.EffectContextHandle = Data.EffectSpec.GetContext();
 	Props.SourceASC = Props.EffectContextHandle.GetOriginalInstigatorAbilitySystemComponent();
 
-	if (IsValid(Props.SourceASC) && Props.SourceASC->AbilityActorInfo.IsValid() && Props.SourceASC->AbilityActorInfo->AvatarActor.IsValid())
+	// Avatar Actor Valid Check
+	bool bAvatarActorValid =
+		IsValid(Props.SourceASC) &&									// SourceASC is valid
+		Props.SourceASC->AbilityActorInfo.IsValid() &&				// Ability Actor Info is valid
+		Props.SourceASC->AbilityActorInfo->AvatarActor.IsValid();	// Avatar Actor is valid
+	
+	if (bAvatarActorValid)
 	{
 		Props.SourceAvatarActor = Props.SourceASC->AbilityActorInfo->AvatarActor.Get();
 		Props.SourceController = Props.SourceASC->AbilityActorInfo->PlayerController.Get();
@@ -303,6 +375,7 @@ void UAuroraAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackDa
 		Props.TargetController = Data.Target.AbilityActorInfo->PlayerController.Get();
 		Props.TargetCharacter = Cast<ACharacter>(Props.TargetAvatarActor);
 		Props.TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Props.TargetAvatarActor);
+		
 	}
 }
 

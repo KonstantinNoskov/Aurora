@@ -1,10 +1,11 @@
 ﻿#include "AbilitySystem/Abilities/AuroraFireBolt.h"
 
-#include "AuroraGameplayTags.h"
-
 FString UAuroraFireBolt::GetDescription(int32 Level)
 {
-	const int32 Damage = GetDamageByDamageType(Level, FAuroraGameplayTags::Get().Damage_Fire);
+	
+	//const int32 Damage = GetDamageByDamageType(Level, FAuroraGameplayTags::Get().Damage_Fire); // Uncomment this for multiple damage types handle
+	
+	const float ScaledDamage = DamageValue.GetValueAtLevel(Level);
 	const float ManaCost = GetManaCost(Level);
 	const float Cooldown = GetCooldown(Level);
 	
@@ -21,7 +22,7 @@ FString UAuroraFireBolt::GetDescription(int32 Level)
 
 			// Details
 			"<Default>Launches a bolt of fire, "
-			"exploding on impact and dealing: </><Damage>%d</>" // Damage
+			"exploding on impact and dealing: </><Damage>%f</>" // Damage
 			"<Default> fire damage with chance to burn</>\n\n"
 			),
 
@@ -29,7 +30,7 @@ FString UAuroraFireBolt::GetDescription(int32 Level)
 			Level,
 			FMath::Abs(ManaCost),
 			Cooldown,
-			Damage);
+			ScaledDamage);
 	}
 	else
 	{
@@ -44,7 +45,7 @@ FString UAuroraFireBolt::GetDescription(int32 Level)
 
 			// Details
 			"<Default>Launches %d bolts of fire, exploding on impact and dealing: </>" // ProjectilesNum 
-			"<Damage>%d</> <Default> fire damage with chance to burn</>\n\n" // Damage
+			"<Damage>%f</> <Default> fire damage with chance to burn</>\n\n" // Damage
 			),
 
 			// Values
@@ -52,13 +53,15 @@ FString UAuroraFireBolt::GetDescription(int32 Level)
 			FMath::Abs(ManaCost),
 			Cooldown,
 			FMath::Min(Level,ProjectilesNum),
-			Damage);
+			ScaledDamage);
 	}
 }
 
 FString UAuroraFireBolt::GetNextLevelDescription(int32 Level)
 {
-	const int32 Damage = GetDamageByDamageType(Level, FAuroraGameplayTags::Get().Damage_Fire);
+	//const int32 Damage = GetDamageByDamageType(Level, FAuroraGameplayTags::Get().Damage_Fire); // Uncomment this for multiple damage types handle
+
+	const float ScaledDamage = DamageValue.GetValueAtLevel(Level);
 	const float ManaCost = GetManaCost(Level);
 	const float Cooldown = GetCooldown(Level);
 	
@@ -73,7 +76,7 @@ FString UAuroraFireBolt::GetNextLevelDescription(int32 Level)
 
 		// Details
 		"<Default>Launches %d bolts of fire, " // ProjectilesNum 
-		"exploding on impact and dealing: </><Damage>%d</>" // Damage
+		"exploding on impact and dealing: </><Damage>%f</>" // Damage
 		"<Default> fire damage with chance to burn</>\n\n"
 		),
 
@@ -82,5 +85,5 @@ FString UAuroraFireBolt::GetNextLevelDescription(int32 Level)
 		FMath::Abs(ManaCost),
 		Cooldown,
 		FMath::Min(Level, ProjectilesNum),
-		Damage);
+		ScaledDamage);
 }

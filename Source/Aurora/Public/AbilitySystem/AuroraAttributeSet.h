@@ -64,6 +64,8 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
+	void HandelIncomingXP(const FEffectProperties& Props);
+	void HandleIncomingDamage(const FEffectProperties& Props);
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 		
 	// [GameplayTag - Gameplay Attribute] Map
@@ -93,6 +95,11 @@ private:
 	 * 
 	 */
 	void SendXPEvent(const FEffectProperties& Props);
+
+	/**
+	 * 
+	 */
+	void Debuff(const FEffectProperties& InProps);
 
 #pragma region VITAL ATTRIBUTES
 
