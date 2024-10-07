@@ -15,7 +15,7 @@ public:
 	
 	void DetermineDebuff(
 		const FGameplayEffectCustomExecutionParameters& ExecutionParams,
-		FGameplayEffectSpec Spec,
+		const FGameplayEffectSpec& Spec,
 		FAggregatorEvaluateParameters EvaluationParams,
 		const TMap<FGameplayTag, FGameplayEffectAttributeCaptureDefinition>&InTagsToCaptureDefs) const;
 

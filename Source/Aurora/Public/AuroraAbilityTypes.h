@@ -29,7 +29,7 @@ struct FDamageEffectParams
 	float BaseDamage = 0;
 
 	UPROPERTY()
-	FGameplayTag DamageType;
+	FGameplayTag DamageType = FGameplayTag();
 	
 	UPROPERTY()
 	float AbilityLevel = 1.f;
@@ -55,12 +55,12 @@ struct FAuroraGameplayEffectContext : public FGameplayEffectContext
 
 public:
 	
-	virtual UScriptStruct* GetScriptStruct() const
+	virtual UScriptStruct* GetScriptStruct() const override
 	{
-		return StaticStruct();
+		return FGameplayEffectContext::StaticStruct();
 	}
 	
-	virtual FAuroraGameplayEffectContext* Duplicate() const
+	virtual FAuroraGameplayEffectContext* Duplicate() const override
 	{
 		FAuroraGameplayEffectContext* NewContext = new FAuroraGameplayEffectContext();
 		*NewContext = *this;
@@ -107,22 +107,22 @@ protected:
 
 public:
 	
-	bool IsDebuffSuccessful() const					{ return bDebuffSuccessful; }
-	float GetDebuffDamage() const					{ return DebuffDamage; }
-	float GetDebuffDuration() const					{ return DebuffDuration; }
-	float GetDebuffFrequency() const				{ return DebuffFrequency; }
-	TSharedPtr<FGameplayTag> GetDamageType() const	{ return DamageTypeTag; }
+	bool IsDebuffSuccessful() const										{ return bIsSuccessfulDebuff; }
+	float GetDebuffDamage() const										{ return DebuffDamage; }
+	float GetDebuffDuration() const										{ return DebuffDuration; }
+	float GetDebuffFrequency() const									{ return DebuffFrequency; }
+	TSharedPtr<FGameplayTag> GetDamageType() const						{ return DamageTypeTag; }
 
-	void SetIsDebuffSuccessfull(bool NewStatus)							{ bDebuffSuccessful = NewStatus; }
+	void SetIsDebuffSuccessfull(bool NewStatus)							{ bIsSuccessfulDebuff = NewStatus; }
 	void SetDebuffDamage(float InDamage)								{ DebuffDamage = InDamage; }
 	void SetDebuffDuration(float InDuration)							{ DebuffDuration = InDuration; }
 	void SetDebuffFrequency(float InFrequency)							{ DebuffFrequency = InFrequency; }
-	void SetDebuffDamageType(TSharedPtr<FGameplayTag> InDamageTypeTag)	{ DamageTypeTag = InDamageTypeTag; }
+	void SetDamageType(TSharedPtr<FGameplayTag> InDamageTypeTag)	{ DamageTypeTag = InDamageTypeTag; }
 
 protected:
 	
 	UPROPERTY()
-	bool bDebuffSuccessful = false;
+	bool bIsSuccessfulDebuff = false;
 	
 	UPROPERTY()
 	float DebuffDamage = 0.f;
@@ -137,9 +137,7 @@ protected:
 	
 #pragma endregion
 	
-	
-	
-	
+
 #pragma endregion
 	
 };

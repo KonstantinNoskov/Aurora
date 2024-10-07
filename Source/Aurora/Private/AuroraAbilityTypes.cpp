@@ -53,7 +53,7 @@ bool FAuroraGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, 
 			RepBits |= 1 << 8;
 		}
 
-		if (bDebuffSuccessful)
+		if (bIsSuccessfulDebuff)
 		{
 			RepBits |= 1 << 9;
 		}
@@ -134,7 +134,7 @@ bool FAuroraGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, 
 
 	if (RepBits & (1 << 9))
 	{
-		Ar << bDebuffSuccessful;
+		Ar << bIsSuccessfulDebuff;
 	}
 
 	if (RepBits & (1 << 10))

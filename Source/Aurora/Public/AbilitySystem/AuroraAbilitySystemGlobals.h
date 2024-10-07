@@ -10,5 +10,7 @@ class AURORA_API UAuroraAbilitySystemGlobals : public UAbilitySystemGlobals
 {
 	GENERATED_BODY()
 
+protected:
+	
 	virtual FGameplayEffectContext* AllocGameplayEffectContext() const override;
 };

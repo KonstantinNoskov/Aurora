@@ -95,14 +95,13 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 
 	// Gather tags from source and target spec's
 	const FGameplayTagContainer* SourceTags = Spec.CapturedSourceTags.GetAggregatedTags();
-	const FGameplayTagContainer* TargetTags = Spec.CapturedTargetTags.GetAggregatedTags();
+	const FGameplayTagContainer* TargetTags = Spec.CapturedTargetTags.GetAggregatedTags();		
 
 	// Creating evaluation params and assign tags to it
 	FAggregatorEvaluateParameters EvaluationParams;
 	EvaluationParams.SourceTags = SourceTags;
 	EvaluationParams.TargetTags = TargetTags;
-
-
+	
 	// Debuff
 	DetermineDebuff(ExecutionParams, Spec, EvaluationParams, TagsToCaptureDefs);
 	
@@ -120,7 +119,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 		
 		const FGameplayEffectAttributeCaptureDefinition CaptureDef = TagsToCaptureDefs[ResistanceTag];
 
-		float DamageTypeValue = Spec.GetSetByCallerMagnitude(DamageTypeTag, false, 0.f);
+		float DamageTypeValue = Spec.GetSetByCallerMagnitude(DamageTypeTag, false);
 		
 		float Resistance = 0.f;
 		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(CaptureDef, EvaluationParams, Resistance);
@@ -240,7 +239,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 
 void UExecCalc_Damage::DetermineDebuff(
 	const FGameplayEffectCustomExecutionParameters& ExecutionParams,
-	const FGameplayEffectSpec Spec,
+	const FGameplayEffectSpec& Spec, 
 	FAggregatorEvaluateParameters EvaluationParams,
 	const TMap <FGameplayTag, FGameplayEffectAttributeCaptureDefinition>& InTagsToCaptureDefs) const
 {
@@ -252,9 +251,9 @@ void UExecCalc_Damage::DetermineDebuff(
 		const FGameplayTag& DamageType = Pair.Key;
 		const FGameplayTag& DebuffType = Pair.Value;
 		
-		const float TypeDamage = Spec.GetSetByCallerMagnitude(DamageType, false, -1.f);
+		float TypeDamage = Spec.GetSetByCallerMagnitude(DamageType, false, -1.f);
 
-		if (TypeDamage > -1)
+		if (TypeDamage > -1.f)
 		{
 			// Determine if there was a successful debuff
 			const float SourceDebuffChance = Spec.GetSetByCallerMagnitude(GameplayTags.Debuff_Chance, false, -1.f);
@@ -274,12 +273,13 @@ void UExecCalc_Damage::DetermineDebuff(
 
 				// Assign debuff status and DebuffDamageType to our GameplayEffectSpecHandle
 				UAuroraAbilitySystemLibrary::SetIsDebuffSuccessfull(ContextHandle, true);
-				UAuroraAbilitySystemLibrary::SetDebuffDamageType(ContextHandle, DamageType);
+				UAuroraAbilitySystemLibrary::SetDamageType(ContextHandle, DamageType);
 
 				// Assign debuff damage, duration and frequency to our GameplayEffectSpecHandle
 				const float DebuffDamage = Spec.GetSetByCallerMagnitude(GameplayTags.Debuff_Damage, false, -1.f);
 				const float DebuffDuration = Spec.GetSetByCallerMagnitude(GameplayTags.Debuff_Duration, false, -1.f);
 				const float DebuffFrequency = Spec.GetSetByCallerMagnitude(GameplayTags.Debuff_Frequency, false, -1.f);
+
 				UAuroraAbilitySystemLibrary::SetDebuffDamage(ContextHandle, DebuffDamage);
 				UAuroraAbilitySystemLibrary::SetDebuffDuration(ContextHandle, DebuffDuration);
 				UAuroraAbilitySystemLibrary::SetDebuffFrequency(ContextHandle, DebuffFrequency);

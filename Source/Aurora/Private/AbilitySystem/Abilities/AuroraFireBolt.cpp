@@ -5,7 +5,7 @@ FString UAuroraFireBolt::GetDescription(int32 Level)
 	
 	//const int32 Damage = GetDamageByDamageType(Level, FAuroraGameplayTags::Get().Damage_Fire); // Uncomment this for multiple damage types handle
 	
-	const float ScaledDamage = DamageValue.GetValueAtLevel(Level);
+	const int32 ScaledDamage = Damage.GetValueAtLevel(Level);
 	const float ManaCost = GetManaCost(Level);
 	const float Cooldown = GetCooldown(Level);
 	
@@ -22,7 +22,7 @@ FString UAuroraFireBolt::GetDescription(int32 Level)
 
 			// Details
 			"<Default>Launches a bolt of fire, "
-			"exploding on impact and dealing: </><Damage>%f</>" // Damage
+			"exploding on impact and dealing: </><Damage>%d</>" // Damage
 			"<Default> fire damage with chance to burn</>\n\n"
 			),
 
@@ -45,7 +45,7 @@ FString UAuroraFireBolt::GetDescription(int32 Level)
 
 			// Details
 			"<Default>Launches %d bolts of fire, exploding on impact and dealing: </>" // ProjectilesNum 
-			"<Damage>%f</> <Default> fire damage with chance to burn</>\n\n" // Damage
+			"<Damage>%d</> <Default> fire damage with chance to burn</>\n\n" // Damage
 			),
 
 			// Values
@@ -61,7 +61,7 @@ FString UAuroraFireBolt::GetNextLevelDescription(int32 Level)
 {
 	//const int32 Damage = GetDamageByDamageType(Level, FAuroraGameplayTags::Get().Damage_Fire); // Uncomment this for multiple damage types handle
 
-	const float ScaledDamage = DamageValue.GetValueAtLevel(Level);
+	const float ScaledDamage = Damage.GetValueAtLevel(Level);
 	const float ManaCost = GetManaCost(Level);
 	const float Cooldown = GetCooldown(Level);
 	

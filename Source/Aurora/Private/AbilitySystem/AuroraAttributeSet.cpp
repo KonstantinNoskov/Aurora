@@ -6,7 +6,6 @@
 #include "AuroraGameplayTags.h"
 #include "GameplayEffectExtension.h"
 #include "AbilitySystem/AuroraAbilitySystemLibrary.h"
-#include "AbilitySystem/Abilities/AuroraGameplayAbility.h"
 #include "Aurora/AuroraLogChannels.h"
 #include "Controllers/PlayerControllers/AuroraPlayerController.h"
 #include "GameFramework/Character.h"
@@ -114,14 +113,18 @@ void UAuroraAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribut
 		bTopOffMana = false;
 	}
 }
-
-
 void UAuroraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
 
 	FEffectProperties Props;
 	SetEffectProperties(Data,Props);
+
+	// Check if Character is Dead 
+	if (Props.TargetCharacter->Implements<UCombatInterface>() && ICombatInterface::Execute_IsDead(Props.TargetCharacter))
+	{
+		return;
+	}
 
 	// Health Changed
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
@@ -169,10 +172,9 @@ void UAuroraAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 		// Show damage as a floating widget
 		ShowFloatingText(Props, LocalIncomingDamage, bBlock, bCritical);
 
-		Debuff(Props);
+		
 		if (UAuroraAbilitySystemLibrary::IsDebuffSuccessfull(Props.EffectContextHandle))
 		{
-			
 			Debuff(Props);
 		}
 	}
@@ -266,7 +268,6 @@ void UAuroraAttributeSet::SendXPEvent(const FEffectProperties& Props)
 		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Props.SourceCharacter, GameplayTags.Attributes_Meta_IncomingXP, Payload);
 	}
 }
-
 void UAuroraAttributeSet::Debuff(const FEffectProperties& InProps)
 {
 	const FAuroraGameplayTags& GameplayTags = FAuroraGameplayTags::Get();
@@ -290,12 +291,11 @@ void UAuroraAttributeSet::Debuff(const FEffectProperties& InProps)
 	// Add Granted tags (UE 5.4)
 	FInheritedTagContainer TagContainer = FInheritedTagContainer();
 	UTargetTagsGameplayEffectComponent& EffectComponent = Effect->FindOrAddComponent<UTargetTagsGameplayEffectComponent>();
-
 	TagContainer.Added.AddTag(GameplayTags.DamageTypesToDebuffs[DamageTypeTag]);
 	EffectComponent.SetAndApplyTargetTagChanges(TagContainer);
 
 	// Stacks
-	Effect->StackingType = EGameplayEffectStackingType::AggregateBySource;
+	Effect->StackingType = EGameplayEffectStackingType::AggregateByTarget;
 	Effect->StackLimitCount = 1;
 
 	// Modifiers 
@@ -307,17 +307,15 @@ void UAuroraAttributeSet::Debuff(const FEffectProperties& InProps)
 	ModifierInfo.Attribute = GetIncomingDamageAttribute();
 
 	// Apply gameplay effect
-	FGameplayEffectSpec* MutableSpec = new FGameplayEffectSpec(Effect, EffectContext, 1.f);
-	if (MutableSpec)
+	if (FGameplayEffectSpec* MutableSpec = new FGameplayEffectSpec(Effect, EffectContext, 1.f))
 	{
-		FAuroraGameplayEffectContext* AuroraContext = static_cast<FAuroraGameplayEffectContext*>(EffectContext.Get());
+		FAuroraGameplayEffectContext* AuroraContext = static_cast<FAuroraGameplayEffectContext*>(MutableSpec->GetContext().Get());
 
 		TSharedPtr<FGameplayTag> DebuffDamageTypeTag = MakeShareable(new FGameplayTag(DamageTypeTag)); 
-		AuroraContext->SetDebuffDamageType(DebuffDamageTypeTag);
+		AuroraContext->SetDamageType(DebuffDamageTypeTag);
 		
 		InProps.TargetASC->ApplyGameplayEffectSpecToSelf(*MutableSpec);
 	}
-	
 }
 
 void UAuroraAttributeSet::ShowFloatingText(const FEffectProperties& Props, const float Damage, bool bBlockedHit, bool bCriticalHit) const

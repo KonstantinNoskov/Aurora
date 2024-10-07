@@ -36,30 +36,30 @@ public:
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damage")
 	TSubclassOf<UGameplayEffect> DamageEffectClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
 	FGameplayTag DamageType;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
-	FScalableFloat DamageValue;
+	FScalableFloat Damage;
 
 #pragma region Debuff properties
 
 protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Debuff" )
-	float DebuffChance = 10.f;
+	float DebuffChance = 13.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Debuff" )
-	float DebuffDamage = 5.f;
+	float DebuffDamage = 13.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Debuff" )
 	float DebuffFrequency = 1.f;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Debuff" )
-	float DebuffDuration = 5.f;
+	float DebuffDuration = 13.f;
 	
 #pragma endregion
 	

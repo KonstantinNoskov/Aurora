@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "AuroraAbilityTypes.h"
-#include "GameplayEffectTypes.h"
 #include "GameFramework/Actor.h"
 #include "AuroraProjectile.generated.h"
 

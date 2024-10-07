@@ -4,11 +4,9 @@
 #include "AbilitySystemComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "AbilitySystem/AuroraAbilitySystemLibrary.h"
-#include "AbilitySystem/Abilities/AuroraGameplayAbility.h"
 #include "Aurora/Aurora.h"
 #include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
-#include "Debug/DebugMacros.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -75,7 +73,7 @@ void AAuroraProjectile::Destroyed()
 }
 void AAuroraProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	AActor* SourceAvatarActor = DamageEffectParams.SourceASC->GetAvatarActor();
+	const AActor* SourceAvatarActor = DamageEffectParams.SourceASC->GetAvatarActor();
 	if (SourceAvatarActor == OtherActor) return;
 	
 	if (UAuroraAbilitySystemLibrary::IsActorsFriendly(SourceAvatarActor, OtherActor)) return;
@@ -86,13 +84,10 @@ void AAuroraProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent
 	{
 		
 		 UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor);
-		
 		if (TargetASC)
 		{
 			DamageEffectParams.TargetASC = TargetASC;
-			
 			UAuroraAbilitySystemLibrary::ApplyDamageEffect(DamageEffectParams);
-			
 		}
 		
 		Destroy();
