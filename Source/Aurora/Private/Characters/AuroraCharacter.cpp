@@ -179,7 +179,7 @@ void AAuroraCharacter::InitAbilityActorInfo()
 	AAuroraPlayerState* AuroraPlayerState = GetPlayerState<AAuroraPlayerState>();
 	
 	checkf(AuroraPlayerState, TEXT("AuroraPlayerState not set. Checkout for Auto Posses Player paramater in Pawn settings."));
-	//if (!AuroraPlayerState) return;
+	//if (!AuroraPlayerState) return;	
 	
 	// Set ability actor info
 	AuroraPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(AuroraPlayerState, this);
@@ -191,6 +191,20 @@ void AAuroraCharacter::InitAbilityActorInfo()
 
 	// Set attribute set
 	AttributeSet = AuroraPlayerState->GetAttributeSet();
+
+	// On AbilitySystemComponent assigned.
+	// WARNING: It should be called after ASC initialized.
+	OnASCRegistered.Broadcast(AbilitySystemComponent);
+
+	// If AuroraHUD initialized, assign widget controllers to their widgets. 
+	AssignWidgetControllers(AuroraPlayerState);
+	
+	// Set default attributes
+	InitializeDefaultAttributes();
+}
+
+void AAuroraCharacter::AssignWidgetControllers(AAuroraPlayerState* AuroraPlayerState)
+{
 	
 	if (AAuroraPlayerController* AuroraPlayerController = Cast<AAuroraPlayerController>(GetController()))
 	{
@@ -200,10 +214,8 @@ void AAuroraCharacter::InitAbilityActorInfo()
 			//AuroraHUD->InitAttributeMenu(AuroraPlayerController, AuroraPlayerState, AbilitySystemComponent, AttributeSet);
 		}
 	}
-	
-	// Set default attributes
-	InitializeDefaultAttributes();
 }
+
 int32 AAuroraCharacter::GetPlayerLevel_Implementation()
 {
 	AAuroraPlayerState* AuroraPlayerState = GetPlayerState<AAuroraPlayerState>();

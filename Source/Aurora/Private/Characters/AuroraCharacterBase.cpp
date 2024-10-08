@@ -3,6 +3,7 @@
 #include "AbilitySystemComponent.h"
 #include "AuroraGameplayTags.h"
 #include "AbilitySystem/AuroraAbilitySystemComponent.h"
+#include "AbilitySystem/Debuff/DebuffNiagaraComponent.h"
 #include "Aurora/Aurora.h"
 #include "Components/CapsuleComponent.h"
 #include "Debug/DebugMacros.h"
@@ -26,6 +27,11 @@ AAuroraCharacterBase::AAuroraCharacterBase()
 	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>("Weapon");
 	Weapon->SetupAttachment(GetMesh(), FName("SKT_WeaponHand"));
 	Weapon->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	// Debuff Niagara Component
+	DebuffNiagaraComponent = CreateDefaultSubobject<UDebuffNiagaraComponent>("Debuff Component");
+	DebuffNiagaraComponent->SetupAttachment(GetRootComponent());
+	DebuffNiagaraComponent->DebuffTag = FAuroraGameplayTags::Get().Debuff_Burn;
 }
 
 void AAuroraCharacterBase::BeginPlay()
@@ -116,13 +122,12 @@ void AAuroraCharacterBase::IncrementMinionCount_Implementation(int32 Increment)
 {
 	MinionCount += Increment;
 }
-
-void AAuroraCharacterBase::Die()
+void AAuroraCharacterBase::Die(const FVector& InDeathImpulse)
 {
 	Weapon->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
-	MulticastHandleDeath();
+	MulticastHandleDeath(InDeathImpulse);
 }
-void AAuroraCharacterBase::MulticastHandleDeath_Implementation()
+void AAuroraCharacterBase::MulticastHandleDeath_Implementation(const FVector& InDeathImpulse)
 {
 	// Play death sound
 	UGameplayStatics::PlaySoundAtLocation(this, DeathSound, GetActorLocation(), GetActorRotation());
@@ -131,14 +136,16 @@ void AAuroraCharacterBase::MulticastHandleDeath_Implementation()
 	Weapon->SetSimulatePhysics(true);
 	Weapon->SetEnableGravity(true);
 	Weapon->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
-
+	
 	GetMesh()->SetSimulatePhysics(true);
 	GetMesh()->SetEnableGravity(true);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+	GetMesh()->AddImpulse(InDeathImpulse, NAME_None, true);
 	
 	//GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
+	//
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn,ECR_Ignore);
 
 	// Start to dissolve the died character and his weapon 
@@ -146,6 +153,18 @@ void AAuroraCharacterBase::MulticastHandleDeath_Implementation()
 
 	// Set bDead flag;
 	bDead = true;
+	
+	// Broadcast On Death delegate
+	OnDeath.Broadcast(this);
+}
+FOnASCRegisteredSignature AAuroraCharacterBase::GetOnAscRegisteredDelegate()
+{
+	return OnASCRegistered;
+}
+
+FOnDeathSignature& AAuroraCharacterBase::GetOnDeathDelegate()
+{
+	return OnDeath;
 }
 
 #pragma endregion

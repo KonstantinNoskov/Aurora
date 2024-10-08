@@ -5,9 +5,9 @@
 #include "AbilitySystemInterface.h"
 #include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "Interfaces/Interaction/CombatInterface.h"
-#include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "AuroraCharacterBase.generated.h"
 
+class UDebuffNiagaraComponent;
 enum class ECharacterClass : uint8;
 
 // VFX
@@ -17,6 +17,7 @@ class UNiagaraSystem;
 class UAttributeSet;
 class UGameplayEffect;
 class UGameplayAbility;
+
 
 
 UCLASS(Abstract)
@@ -32,20 +33,22 @@ public:
 
 public:
 	
-	virtual void Die() override;
-	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag) override;
-	virtual FTaggedMontage GetTaggedMontageByTag_Implementation(const FGameplayTag& InMontageTag) override;
-	virtual void SetMinionCount_Implementation(int32 NewMinionCount) override;
-	virtual void IncrementMinionCount_Implementation(int32 Increment) override;
+	virtual void Die											(const FVector& InDeathImpulse)		override;
+	virtual FVector GetCombatSocketLocation_Implementation		(const FGameplayTag& MontageTag)	override;
+	virtual FTaggedMontage GetTaggedMontageByTag_Implementation	(const FGameplayTag& InMontageTag)	override;
+	virtual void SetMinionCount_Implementation					(int32 NewMinionCount)				override;
+	virtual void IncrementMinionCount_Implementation			(int32 Increment)					override;
+	virtual FOnASCRegisteredSignature GetOnAscRegisteredDelegate()									override;
+	virtual FOnDeathSignature& GetOnDeathDelegate				()									override;
 
-	FORCEINLINE virtual UAnimMontage* GetHitReactMontage_Implementation() const				override	{ return HitReactMontage; }
-	FORCEINLINE virtual TArray<FTaggedMontage> GetAttackMontages_Implementation() const		override	{ return AttackMontages; }
-	FORCEINLINE virtual float GetMeleeAttackRadius_Implementation() const					override	{ return MeleeAttackRadius; }
-	FORCEINLINE virtual UNiagaraSystem* GetBloodEffect_Implementation() const				override	{ return BloodEffect; };
-	FORCEINLINE virtual AActor* GetAvatar_Implementation()									override	{ return this; }
-	FORCEINLINE virtual bool IsDead_Implementation() const									override	{ return bDead; }
-	FORCEINLINE virtual int32 GetMinionCount_Implementation() const							override	{ return MinionCount; }
-	FORCEINLINE virtual ECharacterClass GetCharacterClass_Implementation()					override	{ return CharacterClass; }
+	FORCEINLINE virtual UAnimMontage* GetHitReactMontage_Implementation() const						override	{ return HitReactMontage; }
+	FORCEINLINE virtual TArray<FTaggedMontage> GetAttackMontages_Implementation() const				override	{ return AttackMontages; }
+	FORCEINLINE virtual float GetMeleeAttackRadius_Implementation() const							override	{ return MeleeAttackRadius; }
+	FORCEINLINE virtual UNiagaraSystem* GetBloodEffect_Implementation() const						override	{ return BloodEffect; };
+	FORCEINLINE virtual AActor* GetAvatar_Implementation()											override	{ return this; }
+	FORCEINLINE virtual bool IsDead_Implementation() const											override	{ return bDead; }
+	FORCEINLINE virtual int32 GetMinionCount_Implementation() const									override	{ return MinionCount; }
+	FORCEINLINE virtual ECharacterClass GetCharacterClass_Implementation()							override	{ return CharacterClass; }
 
 #pragma endregion
 
@@ -56,12 +59,16 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
 	ECharacterClass CharacterClass = ECharacterClass::Warrior;
 
+	// Delegates
+	FOnASCRegisteredSignature OnASCRegistered;
+	FOnDeathSignature OnDeath;
+
 #pragma region COMBAT
 
 protected:
 	
 	UFUNCTION(NetMulticast, Reliable)
-	virtual void MulticastHandleDeath();
+	virtual void MulticastHandleDeath(const FVector& InDeathImpulse);
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
@@ -200,6 +207,11 @@ protected:
 #pragma endregion
 	
 #pragma endregion
+
+protected:
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UDebuffNiagaraComponent> DebuffNiagaraComponent;
 
 	
 

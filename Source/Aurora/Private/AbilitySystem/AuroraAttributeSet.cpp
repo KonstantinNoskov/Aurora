@@ -171,7 +171,6 @@ void UAuroraAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 			
 		// Show damage as a floating widget
 		ShowFloatingText(Props, LocalIncomingDamage, bBlock, bCritical);
-
 		
 		if (UAuroraAbilitySystemLibrary::IsDebuffSuccessfull(Props.EffectContextHandle))
 		{
@@ -234,14 +233,16 @@ void UAuroraAttributeSet::TakenDamageHandle(const FEffectProperties& Props, cons
 	// and if it does, call die function from it.
 	if (bFatal)
 	{
+		// Apply Death impulse
 		if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(Props.TargetAvatarActor))
 		{
-			CombatInterface->Die();
+			const FVector Impulse = UAuroraAbilitySystemLibrary::GetDeathImpulse(Props.EffectContextHandle);
+			CombatInterface->Die(Impulse);
 		}
 
 		SendXPEvent(Props);
 	}
-	// If damage not fatal activate HitReact ability (which is basically hit react animation montage)
+	// If damage not fatal, activate HitReact ability (which is basically hit react animation montage)
 	else 
 	{
 		// Local TagContainer
@@ -288,7 +289,7 @@ void UAuroraAttributeSet::Debuff(const FEffectProperties& InProps)
 	Effect->Period = DebuffFrequency;
 	Effect->DurationMagnitude = FScalableFloat(DebuffDuration);
 
-	// Add Granted tags (UE 5.4)
+	// Add Granted tags (UE 5.4) InheritedTags == GrantedTags
 	FInheritedTagContainer TagContainer = FInheritedTagContainer();
 	UTargetTagsGameplayEffectComponent& EffectComponent = Effect->FindOrAddComponent<UTargetTagsGameplayEffectComponent>();
 	TagContainer.Added.AddTag(GameplayTags.DamageTypesToDebuffs[DamageTypeTag]);

@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "AuroraCharacterBase.h"
 #include "Interfaces/Interaction/PlayerInterface.h"
+#include "Player/AuroraPlayerState.h"
 #include "AuroraCharacter.generated.h"
 
 class UNiagaraComponent;
@@ -16,7 +17,13 @@ class AURORA_API AAuroraCharacter : public AAuroraCharacterBase, public IPlayerI
 
 public:
 	AAuroraCharacter();
+
+#pragma region Combat Interface overriden functions
+
+	UFUNCTION()
+	virtual int32 GetPlayerLevel_Implementation() override;
 	
+#pragma endregion
 #pragma region Player Interface overriden functions
 
 public:
@@ -37,11 +44,11 @@ public:
 
 	// Spell Points
 	virtual void AddToSpellPoints_Implementation(int32 InSpellPoints) override;
+	void AssignWidgetControllers(AAuroraPlayerState* AuroraPlayerState);
 	virtual int32 GetSpellPointsReward_Implementation(int32 Level) const override;
 	virtual int32 GetSpellPoints_Implementation() const override;
 
 #pragma endregion
-	
 
 protected:
 	virtual void BeginPlay() override;
@@ -70,13 +77,7 @@ private:
 	virtual void InitAbilityActorInfo() override;
 
 #pragma endregion
-#pragma region COMBAT INTERFACE
-
-	UFUNCTION()
-	virtual int32 GetPlayerLevel_Implementation() override;
 	
-#pragma endregion
-
 	UFUNCTION(NetMulticast, Unreliable)
 	void MulticastLevelUpParticles() const;
 

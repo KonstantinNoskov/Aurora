@@ -86,7 +86,11 @@ void AAuroraProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent
 		 UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor);
 		if (TargetASC)
 		{
-			DamageEffectParams.TargetASC = TargetASC;
+			const FVector DeathImpulse = GetActorForwardVector() * DamageEffectParams.DeathImpulseMagnitude;
+
+			// Pass in  DamageEffectParams...
+			DamageEffectParams.DeathImpulse = DeathImpulse; // Death impulse vector
+			DamageEffectParams.TargetASC = TargetASC; // Target ability system component
 			UAuroraAbilitySystemLibrary::ApplyDamageEffect(DamageEffectParams);
 		}
 		

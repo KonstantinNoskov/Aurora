@@ -44,7 +44,13 @@ struct FDamageEffectParams
 	float DebuffDuration = 0.f;
 
 	UPROPERTY()
-	float DebuffFrequency = 0.f;	
+	float DebuffFrequency = 0.f;
+
+	UPROPERTY()
+	float DeathImpulseMagnitude = 60.f;
+
+	UPROPERTY()
+	FVector DeathImpulse = FVector::ZeroVector; 
 	
 };
 
@@ -136,7 +142,20 @@ protected:
 	TSharedPtr<FGameplayTag> DamageTypeTag;
 	
 #pragma endregion
+#pragma region Death Impulse
+
+public:
+
+	FVector GetDeathImpulse() const						{ return DeathImpulse; }
+	void SetDeathImpulse(const FVector& InDeathImpulse)	{ DeathImpulse = InDeathImpulse; }
 	
+protected:
+
+	UPROPERTY()
+	FVector DeathImpulse = FVector::ZeroVector;
+
+#pragma endregion
+
 
 #pragma endregion
 	
