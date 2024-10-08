@@ -14,16 +14,17 @@ void UAuroraProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 
 void UAuroraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocation, const FGameplayTag& SocketTag, bool bOverridePitch, float PitchOverride)
 {
+	// Authority check
 	const bool bIsServer = GetAvatarActorFromActorInfo()->HasAuthority(); 
-	
 	if (!bIsServer) return;
 
-	// GetCombatSocketLocation is a Combat Interface native function. 
-	const FVector SocketLocation = ICombatInterface::Execute_GetCombatSocketLocation(
-		GetAvatarActorFromActorInfo(),
-		SocketTag);
+	// Get the location where the projectile is gonna be spawn from
+	const FVector SocketLocation = ICombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo(), SocketTag);
 	
 	FRotator Rotation = (ProjectileTargetLocation - SocketLocation).Rotation();
+
+	// bOverridePitch == false - Projectile can be shoot to the floor.
+	// bOverridePitch == true && PitchOverride == 0 - Z-axis is locked and projectile fly straight forward 
 	Rotation.Pitch = bOverridePitch ? PitchOverride : Rotation.Pitch;
 	
 	FTransform SpawnTransform;
@@ -38,17 +39,6 @@ void UAuroraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLoca
 		Cast<APawn>(GetAvatarActorFromActorInfo()),
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn
 		);
-
-	// Context
-	/*FGameplayEffectContextHandle EffectContextHandle = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
-	EffectContextHandle.SetAbility(this);
-	EffectContextHandle.AddSourceObject(Projectile);
-	TArray<TWeakObjectPtr<AActor>> Actors;
-	Actors.Add(Projectile);
-	EffectContextHandle.AddActors(Actors);
-	FHitResult HitResult;
-	HitResult.Location = ProjectileTargetLocation;
-	EffectContextHandle.AddHitResult(HitResult);*/
 	
 	Projectile->DamageEffectParams = MakeDamageEffectParamsFromClassDefaults();
 	

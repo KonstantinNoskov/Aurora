@@ -1,5 +1,9 @@
 ﻿#include "AbilitySystem/Abilities/AuroraFireBolt.h"
 
+#include "AbilitySystem/AuroraAbilitySystemLibrary.h"
+#include "Actor/AuroraProjectile.h"
+
+
 FString UAuroraFireBolt::GetDescription(int32 Level)
 {
 	
@@ -56,7 +60,6 @@ FString UAuroraFireBolt::GetDescription(int32 Level)
 			ScaledDamage);
 	}
 }
-
 FString UAuroraFireBolt::GetNextLevelDescription(int32 Level)
 {
 	//const int32 Damage = GetDamageByDamageType(Level, FAuroraGameplayTags::Get().Damage_Fire); // Uncomment this for multiple damage types handle
@@ -86,4 +89,79 @@ FString UAuroraFireBolt::GetNextLevelDescription(int32 Level)
 		Cooldown,
 		FMath::Min(Level, ProjectilesNum),
 		ScaledDamage);
+}
+
+void UAuroraFireBolt::SpawnProjectiles(const FVector& ProjectileTargetLocation, const FGameplayTag& SocketTag, bool bOverridePitch, float PitchOverride, AActor* HomingTarget)
+{
+	// Authority check
+	const bool bIsServer = GetAvatarActorFromActorInfo()->HasAuthority(); 
+	if (!bIsServer) return;
+
+	// Get the location where the projectile is gonna be spawn from
+	const FVector SocketLocation = ICombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo(), SocketTag);
+	
+	FRotator Rotation = (ProjectileTargetLocation - SocketLocation).Rotation();
+
+	// bOverridePitch == false - Projectile can be shoot to the floor.
+	// bOverridePitch == true && PitchOverride == 0 - Z-axis is locked and projectile fly straight forward 
+	Rotation.Pitch = bOverridePitch ? PitchOverride : Rotation.Pitch;
+	
+	const FVector Forward = Rotation.Vector();
+
+	int32 ProjectilesToSpawn = GetAbilityLevel();
+	
+	TArray<FRotator> Rotations = UAuroraAbilitySystemLibrary::EvenlySpacedRotators(Forward, FVector::UpVector, ProjectileSpread, ProjectilesToSpawn);
+
+	for (const FRotator& Rot : Rotations)
+	{
+		FTransform SpawnTransform;
+		SpawnTransform.SetLocation(SocketLocation);
+		SpawnTransform.SetRotation(Rot.Quaternion());
+
+		// Spawn projectile
+		AAuroraProjectile* Projectile = GetWorld()->SpawnActorDeferred<AAuroraProjectile>(
+			ProjectileClass,
+			SpawnTransform,
+			GetOwningActorFromActorInfo(),
+			Cast<APawn>(GetAvatarActorFromActorInfo()),
+			ESpawnActorCollisionHandlingMethod::AlwaysSpawn
+			);
+	
+		Projectile->DamageEffectParams = MakeDamageEffectParamsFromClassDefaults();
+	
+		Projectile->FinishSpawning(SpawnTransform);
+	}
+	
+	/*// Projectile Forward
+	UKismetSystemLibrary::DrawDebugArrow(
+		GetAvatarActorFromActorInfo(),
+		SocketLocation, 
+		SocketLocation + Forward * 100.f,
+		1,		
+		FLinearColor::White,	
+		120,					
+		1						
+		);
+
+	// Right of Spread
+	UKismetSystemLibrary::DrawDebugArrow(
+		GetAvatarActorFromActorInfo(),
+		SocketLocation, 
+		SocketLocation + RightOfSpread * 100.f,
+		1,		
+		FLinearColor::Green,	
+		120,					
+		1						
+		);
+
+	// Left of Spread 
+	UKismetSystemLibrary::DrawDebugArrow(
+		GetAvatarActorFromActorInfo(),
+		SocketLocation, 
+		SocketLocation + LeftOfSpread * 100.f,
+		1,		
+		FLinearColor::Blue,	
+		120,					
+		1						
+		);*/
 }

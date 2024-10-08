@@ -287,6 +287,7 @@ void UAuroraAttributeSet::Debuff(const FEffectProperties& InProps)
 	// Set Duration Policy, Period and Duration Magnitude
 	Effect->DurationPolicy = EGameplayEffectDurationType::HasDuration;
 	Effect->Period = DebuffFrequency;
+	Effect->bExecutePeriodicEffectOnApplication = false;
 	Effect->DurationMagnitude = FScalableFloat(DebuffDuration);
 
 	// Add Granted tags (UE 5.4) InheritedTags == GrantedTags
