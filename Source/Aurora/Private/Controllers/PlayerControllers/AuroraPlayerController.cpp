@@ -23,6 +23,7 @@
 
 // Debug
 #include "NavigationPath.h"
+#include "NiagaraFunctionLibrary.h"
 
 
 AAuroraPlayerController::AAuroraPlayerController()
@@ -202,6 +203,8 @@ void AAuroraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 				bTargeting = false;
 				bAutoRunning = true;
 			}
+
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ClickNiagaraSystem, CachedDestination);
 		}
 
 		FollowTime = 0.f;

@@ -7,6 +7,7 @@
 #include "AuroraPlayerController.generated.h"
 
 
+class UNiagaraSystem;
 class UDamageTextComponent;
 class USplineComponent;
 class UAuroraAbilitySystemComponent;
@@ -124,6 +125,9 @@ private:
 
 	FHitResult CursorHit;
 
-	
+private:
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UNiagaraSystem> ClickNiagaraSystem;
 	
 };

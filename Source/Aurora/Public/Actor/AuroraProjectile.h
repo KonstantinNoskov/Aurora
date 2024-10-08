@@ -27,6 +27,16 @@ public:
 	/*UPROPERTY(BlueprintReadWrite, meta = (ExposeOnSpawn = true))
 	FGameplayEffectSpecHandle DamageEffectSpecHandle;*/
 
+private:
+	
+	UFUNCTION()
+	void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+public:
+
+	FORCEINLINE USphereComponent* GetSphereCollision() { return Sphere; }
+	FORCEINLINE UProjectileMovementComponent* GetProjectileMovement() { return ProjectileMovement; }
+
 	UPROPERTY(BlueprintReadWrite, meta = (ExposeOnSpawn = true))
 	FDamageEffectParams DamageEffectParams; 
 	
@@ -55,10 +65,8 @@ private:
 
 	bool bHit = false;
 
-	UFUNCTION()
-	void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
 public:
 
-	FORCEINLINE USphereComponent* GetSphereCollision() { return Sphere; }
+	UPROPERTY()
+	TObjectPtr<USceneComponent> HomingTargetSceneComponent;
 };
