@@ -6,6 +6,7 @@
 #include "AuroraDamageGameplayAbility.generated.h"
 
 struct FDamageEffectParams;
+struct FProjectileBehaviorParams; 
 
 
 UCLASS()
@@ -34,6 +35,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FDamageEffectParams MakeDamageEffectParamsFromClassDefaults(AActor* TargetActor = nullptr) const;
 
+	UFUNCTION(BlueprintCallable)
+	FProjectileBehaviorParams MakeProjectileBehaviorParams() const;
+
 protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damage")
@@ -47,6 +51,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
 	float DeathImpulseMagnitude = 60.f;
+
+	
 
 #pragma region Debuff properties
 

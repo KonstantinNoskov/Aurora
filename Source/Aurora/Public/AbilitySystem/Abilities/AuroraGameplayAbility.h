@@ -10,10 +10,6 @@ class AURORA_API UAuroraGameplayAbility : public UGameplayAbility
 {
 	GENERATED_BODY()
 
-
-#pragma region Ability Description Format
-
-#pragma endregion
 public:
 	
 	virtual FString GetDescription(int32 Level);
@@ -28,6 +24,12 @@ protected:
 	
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Debug")
 	bool bDebug = false;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Projectile Behavior")
+	float ProjectileActivationSpan = 1.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Projectile Behavior")
+	bool bHoming = false;
 
 public:
 

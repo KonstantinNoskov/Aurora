@@ -51,7 +51,20 @@ struct FDamageEffectParams
 
 	UPROPERTY()
 	FVector DeathImpulse = FVector::ZeroVector; 
+};
+
+USTRUCT(BlueprintType)
+struct FProjectileBehaviorParams
+{
+	GENERATED_BODY()
+
+	FProjectileBehaviorParams(){}
 	
+	UPROPERTY()
+	float ActivationSpan = 0.f;
+
+	UPROPERTY()
+	bool bHoming = false;
 };
 
 USTRUCT(BlueprintType)

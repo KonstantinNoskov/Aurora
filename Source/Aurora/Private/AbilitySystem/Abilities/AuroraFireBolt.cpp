@@ -127,12 +127,13 @@ void UAuroraFireBolt::SpawnProjectiles(const FVector& ProjectileTargetLocation, 
 			Cast<APawn>(GetAvatarActorFromActorInfo()),
 			ESpawnActorCollisionHandlingMethod::AlwaysSpawn
 			);
-	
+
+		Projectile->ProjectileBehaviorParams = MakeProjectileBehaviorParams();
 		Projectile->DamageEffectParams = MakeDamageEffectParamsFromClassDefaults();
 
-		if (bLaunchHomingProjectiles)
+		if (Projectile->ProjectileBehaviorParams.bHoming)
 		{
-			if (HomingTarget &&  HomingTarget->Implements<UCombatInterface>())
+			if (HomingTarget && HomingTarget->Implements<UCombatInterface>())
 			{
 				Projectile->GetProjectileMovement()->HomingTargetComponent = HomingTarget->GetRootComponent();
 			}

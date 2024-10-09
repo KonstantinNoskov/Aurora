@@ -56,3 +56,13 @@ FDamageEffectParams UAuroraDamageGameplayAbility::MakeDamageEffectParamsFromClas
 	
 	return Params; 
 }
+
+FProjectileBehaviorParams UAuroraDamageGameplayAbility::MakeProjectileBehaviorParams() const
+{
+	FProjectileBehaviorParams Params;
+
+	Params.ActivationSpan = ProjectileActivationSpan;
+	Params.bHoming = bHoming;
+		
+	return Params;
+}

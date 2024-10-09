@@ -38,7 +38,13 @@ public:
 	FORCEINLINE UProjectileMovementComponent* GetProjectileMovement() { return ProjectileMovement; }
 
 	UPROPERTY(BlueprintReadWrite, meta = (ExposeOnSpawn = true))
-	FDamageEffectParams DamageEffectParams; 
+	FDamageEffectParams DamageEffectParams;
+
+	UPROPERTY(BlueprintReadWrite, meta = (ExposeOnSpawn = true))
+	FProjectileBehaviorParams ProjectileBehaviorParams;
+
+	UFUNCTION()
+	virtual void OnProjectileActivate();
 	
 private:
 

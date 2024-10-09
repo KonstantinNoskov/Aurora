@@ -44,6 +44,9 @@ void AAuroraProjectile::BeginPlay()
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &AAuroraProjectile::OnSphereOverlap);
 	
 	LoopingSoundComponent = UGameplayStatics::SpawnSoundAttached(LoopingSound, GetRootComponent());
+
+	FTimerHandle ProjectileActivateTimer;
+	GetWorld()->GetTimerManager().SetTimer(ProjectileActivateTimer, this, &AAuroraProjectile::OnProjectileActivate, ProjectileBehaviorParams.ActivationSpan);
 }
 
 void AAuroraProjectile::OnHit()
@@ -100,5 +103,17 @@ void AAuroraProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent
 	else bHit = true;
 	
 }
+
+void AAuroraProjectile::OnProjectileActivate()
+{
+	GEngine->AddOnScreenDebugMessage(1, 3.f, FColor::Green, FString::Printf(
+		TEXT("[%hs]: Activated after %f. bHoming = %hhd"),
+		__FUNCTION__,
+		ProjectileBehaviorParams.ActivationSpan,
+		ProjectileBehaviorParams.bHoming
+		));
+	
+}
+
 
 
