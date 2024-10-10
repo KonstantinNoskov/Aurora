@@ -30,6 +30,8 @@ FString UAuroraGameplayAbility::GetLockedDescription(int32 Level)
 		Level);
 }
 
+
+
 float UAuroraGameplayAbility::GetManaCost(float InLevel) const
 {
 	float ManaCost = 0.f;

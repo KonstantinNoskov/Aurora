@@ -65,6 +65,18 @@ struct FProjectileBehaviorParams
 
 	UPROPERTY()
 	bool bHoming = false;
+
+	UPROPERTY()
+	AActor* HomingActor = nullptr;
+
+	UPROPERTY()
+	FVector ProjectileTargetLocation = FVector(0,0,0);
+
+	UPROPERTY()
+	float HomingAccelerationMin = 0.f;
+	
+	UPROPERTY()
+	float HomingAccelerationMax = 0.f;
 };
 
 USTRUCT(BlueprintType)

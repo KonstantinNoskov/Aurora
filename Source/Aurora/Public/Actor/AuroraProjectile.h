@@ -42,9 +42,6 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, meta = (ExposeOnSpawn = true))
 	FProjectileBehaviorParams ProjectileBehaviorParams;
-
-	UFUNCTION()
-	virtual void OnProjectileActivate();
 	
 private:
 

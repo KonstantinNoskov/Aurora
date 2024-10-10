@@ -36,7 +36,7 @@ public:
 	FDamageEffectParams MakeDamageEffectParamsFromClassDefaults(AActor* TargetActor = nullptr) const;
 
 	UFUNCTION(BlueprintCallable)
-	FProjectileBehaviorParams MakeProjectileBehaviorParams() const;
+	FProjectileBehaviorParams MakeProjectileBehaviorParams(AActor* InHomingActor, const FVector& InTargetLocation) const;
 
 protected:
 
@@ -52,6 +52,19 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
 	float DeathImpulseMagnitude = 60.f;
 
+
+#pragma region Projectile Behavior Params
+
+	UPROPERTY(EditDefaultsOnly, Category = " Projectile Behavior")
+	float ProjectileSpread = 90.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = " Projectile Behavior")
+	float HomingAccelerationMin = 1600.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = " Projectile Behavior")
+	float HomingAccelerationMax = 3200.f;
+
+#pragma endregion
 	
 
 #pragma region Debuff properties

@@ -109,10 +109,14 @@ void UAuroraFireBolt::SpawnProjectiles(const FVector& ProjectileTargetLocation, 
 	
 	const FVector Forward = Rotation.Vector();
 
-	const int32 EffectiveProjectilesNum = FMath::Min(ProjectilesNum, GetAbilityLevel());
+	//const int32 EffectiveProjectilesNum = FMath::Min(ProjectilesNum, GetAbilityLevel());
+	const int32 EffectiveProjectilesNum = ProjectilesNum;
 	
 	TArray<FRotator> Rotations = UAuroraAbilitySystemLibrary::EvenlySpacedRotators(Forward, FVector::UpVector, ProjectileSpread, EffectiveProjectilesNum);
 
+	FProjectileBehaviorParams ProjectileBehaviorParam = MakeProjectileBehaviorParams(HomingTarget, ProjectileTargetLocation);
+	FDamageEffectParams DamageEffectParams = MakeDamageEffectParamsFromClassDefaults();
+	
 	for (const FRotator& Rot : Rotations)
 	{
 		FTransform SpawnTransform;
@@ -128,10 +132,10 @@ void UAuroraFireBolt::SpawnProjectiles(const FVector& ProjectileTargetLocation, 
 			ESpawnActorCollisionHandlingMethod::AlwaysSpawn
 			);
 
-		Projectile->ProjectileBehaviorParams = MakeProjectileBehaviorParams();
-		Projectile->DamageEffectParams = MakeDamageEffectParamsFromClassDefaults();
+		Projectile->ProjectileBehaviorParams = ProjectileBehaviorParam;
+		Projectile->DamageEffectParams = DamageEffectParams;
 
-		if (Projectile->ProjectileBehaviorParams.bHoming)
+		if (bHoming)
 		{
 			if (HomingTarget && HomingTarget->Implements<UCombatInterface>())
 			{
@@ -147,45 +151,33 @@ void UAuroraFireBolt::SpawnProjectiles(const FVector& ProjectileTargetLocation, 
 
 			Projectile->GetProjectileMovement()->HomingAccelerationMagnitude = FMath::FRandRange(HomingAccelerationMin, HomingAccelerationMax);
 			Projectile->GetProjectileMovement()->bIsHomingProjectile = true;
+
+			// Debug
+			if (bDebug)
+			{
+				
+				GEngine->AddOnScreenDebugMessage(1, 120.f, FColor::Green, FString::Printf(
+				TEXT("[%hs]: "
+					"Activated after %f."
+					"bHoming = %hhd "
+					"HomingTarget = %s "
+					"MinAcceleration = %f "
+					"MaxAccleration = %f"
+					"TargetLocation = %s"),
+					__FUNCTION__,
+					ProjectileActivationSpan,
+					bHoming,
+					*HomingTarget->GetName(),
+					HomingAccelerationMin,
+					HomingAccelerationMax,
+					*ProjectileTargetLocation.ToString()
+					));
+			}
+			
 		}
 		
-	
 		Projectile->FinishSpawning(SpawnTransform);
 	}
-
-
-	
-	
-	/*// Projectile Forward
-	UKismetSystemLibrary::DrawDebugArrow(
-		GetAvatarActorFromActorInfo(),
-		SocketLocation, 
-		SocketLocation + Forward * 100.f,
-		1,		
-		FLinearColor::White,	
-		120,					
-		1						
-		);
-
-	// Right of Spread
-	UKismetSystemLibrary::DrawDebugArrow(
-		GetAvatarActorFromActorInfo(),
-		SocketLocation, 
-		SocketLocation + RightOfSpread * 100.f,
-		1,		
-		FLinearColor::Green,	
-		120,					
-		1						
-		);
-
-	// Left of Spread 
-	UKismetSystemLibrary::DrawDebugArrow(
-		GetAvatarActorFromActorInfo(),
-		SocketLocation, 
-		SocketLocation + LeftOfSpread * 100.f,
-		1,		
-		FLinearColor::Blue,	
-		120,					
-		1						
-		);*/
 }
+
+

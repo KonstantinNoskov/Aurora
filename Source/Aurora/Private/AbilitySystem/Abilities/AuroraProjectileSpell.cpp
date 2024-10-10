@@ -40,7 +40,7 @@ void UAuroraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLoca
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn
 		);
 
-	Projectile->ProjectileBehaviorParams = MakeProjectileBehaviorParams();
+	//Projectile->ProjectileBehaviorParams = MakeProjectileBehaviorParams();
 	Projectile->DamageEffectParams = MakeDamageEffectParamsFromClassDefaults();
 	
 	Projectile->FinishSpawning(SpawnTransform);

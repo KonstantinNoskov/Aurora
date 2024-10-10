@@ -57,12 +57,16 @@ FDamageEffectParams UAuroraDamageGameplayAbility::MakeDamageEffectParamsFromClas
 	return Params; 
 }
 
-FProjectileBehaviorParams UAuroraDamageGameplayAbility::MakeProjectileBehaviorParams() const
+FProjectileBehaviorParams UAuroraDamageGameplayAbility::MakeProjectileBehaviorParams(AActor* InHomingActor, const FVector& InTargetLocation) const
 {
 	FProjectileBehaviorParams Params;
 
 	Params.ActivationSpan = ProjectileActivationSpan;
 	Params.bHoming = bHoming;
-		
+	Params.HomingActor = InHomingActor;
+	Params.ProjectileTargetLocation = InTargetLocation;
+	Params.HomingAccelerationMin = HomingAccelerationMin;
+	Params.HomingAccelerationMax = HomingAccelerationMax;
+	
 	return Params;
 }
