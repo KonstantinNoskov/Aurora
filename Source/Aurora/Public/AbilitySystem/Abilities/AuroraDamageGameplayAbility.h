@@ -38,6 +38,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FProjectileBehaviorParams MakeProjectileBehaviorParams(AActor* InHomingActor, const FVector& InTargetLocation) const;
 
+	UFUNCTION(BlueprintCallable)
+	float GetDamageAtLevel() const ;
+
 protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damage")
@@ -65,8 +68,6 @@ protected:
 	float HomingAccelerationMax = 3200.f;
 
 #pragma endregion
-	
-
 #pragma region Debuff properties
 
 protected:

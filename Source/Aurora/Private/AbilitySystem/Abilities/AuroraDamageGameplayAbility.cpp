@@ -56,7 +56,6 @@ FDamageEffectParams UAuroraDamageGameplayAbility::MakeDamageEffectParamsFromClas
 	
 	return Params; 
 }
-
 FProjectileBehaviorParams UAuroraDamageGameplayAbility::MakeProjectileBehaviorParams(AActor* InHomingActor, const FVector& InTargetLocation) const
 {
 	FProjectileBehaviorParams Params;
@@ -69,4 +68,9 @@ FProjectileBehaviorParams UAuroraDamageGameplayAbility::MakeProjectileBehaviorPa
 	Params.HomingAccelerationMax = HomingAccelerationMax;
 	
 	return Params;
+}
+
+float UAuroraDamageGameplayAbility::GetDamageAtLevel() const
+{
+	return  Damage.GetValueAtLevel(GetAbilityLevel());
 }

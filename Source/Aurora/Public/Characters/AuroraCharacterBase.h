@@ -28,18 +28,21 @@ class AURORA_API AAuroraCharacterBase : public ACharacter, public IAbilitySystem
 public:
 	
 	AAuroraCharacterBase();
-
+	
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&) const override;
+	
 #pragma region Combat Interface overrided functions
 
 public:
 	
-	virtual void Die											(const FVector& InDeathImpulse)		override;
-	virtual FVector GetCombatSocketLocation_Implementation		(const FGameplayTag& MontageTag)	override;
-	virtual FTaggedMontage GetTaggedMontageByTag_Implementation	(const FGameplayTag& InMontageTag)	override;
-	virtual void SetMinionCount_Implementation					(int32 NewMinionCount)				override;
-	virtual void IncrementMinionCount_Implementation			(int32 Increment)					override;
-	virtual FOnASCRegisteredSignature GetOnAscRegisteredDelegate()									override;
-	virtual FOnDeathSignature& GetOnDeathDelegate				()									override;
+	virtual void Die														(const FVector& InDeathImpulse)				override;
+	virtual FVector GetCombatSocketLocation_Implementation					(const FGameplayTag& MontageTag)			override;
+	virtual FTaggedMontage GetTaggedMontageByTag_Implementation				(const FGameplayTag& InMontageTag)			override;
+	virtual void SetMinionCount_Implementation								(int32 NewMinionCount)						override;
+	virtual void IncrementMinionCount_Implementation						(int32 Increment)							override;
+	virtual FOnASCRegisteredSignature GetOnAscRegisteredDelegate			()											override;
+	virtual FOnDeathSignature& GetOnDeathDelegate							()											override;
+	virtual const USkeletalMeshSocket* GetCombatSocketByTag_Implementation	(const FGameplayTag& MontageTag)			override;
 
 	FORCEINLINE virtual UAnimMontage* GetHitReactMontage_Implementation() const						override	{ return HitReactMontage; }
 	FORCEINLINE virtual TArray<FTaggedMontage> GetAttackMontages_Implementation() const				override	{ return AttackMontages; }
@@ -49,6 +52,8 @@ public:
 	FORCEINLINE virtual bool IsDead_Implementation() const											override	{ return bDead; }
 	FORCEINLINE virtual int32 GetMinionCount_Implementation() const									override	{ return MinionCount; }
 	FORCEINLINE virtual ECharacterClass GetCharacterClass_Implementation()							override	{ return CharacterClass; }
+	FORCEINLINE virtual USkeletalMeshComponent* GetWeapon_Implementation()							override	{ return Weapon; }
+	
 
 #pragma endregion
 
@@ -69,6 +74,8 @@ protected:
 	
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MulticastHandleDeath(const FVector& InDeathImpulse);
+
+	virtual void StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
@@ -108,6 +115,14 @@ protected:
 	USoundBase* DeathSound;
 
 	int32 MinionCount = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
+	float BaseWalkSpeed = 250.f;
+
+public:
+
+	UPROPERTY(Replicated, BlueprintReadOnly)
+	bool bStunned = false;
 
 #pragma endregion
 

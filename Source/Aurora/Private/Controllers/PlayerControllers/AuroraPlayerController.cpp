@@ -85,6 +85,9 @@ void AAuroraPlayerController::SetupInputComponent()
 
 void AAuroraPlayerController::Move(const FInputActionValue& InputActionValue)
 {
+	// Blocking Tags Check
+	if (GetASC() && GetASC()->HasMatchingGameplayTag(FAuroraGameplayTags::Get().Player_Block_InputPressed)) return;
+	
 	const FVector2d InputAxisVector = InputActionValue.Get<FVector2D>();
 
 	const FRotator Rotation = GetControlRotation();
@@ -101,29 +104,31 @@ void AAuroraPlayerController::Move(const FInputActionValue& InputActionValue)
 }
 
 #pragma endregion
-#pragma region ABILITIES
 
-UAuroraAbilitySystemComponent* AAuroraPlayerController::GetASC()
-{
-	if (!AuroraAbilitySystemComponent)
-	{
-		AuroraAbilitySystemComponent = Cast<UAuroraAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn<APawn>()));  
-	}
 
-	return AuroraAbilitySystemComponent;
-}
+#pragma region Input
 
 void AAuroraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 {
+	// Blocking Tags Check
+	if (GetASC() && GetASC()->HasMatchingGameplayTag(FAuroraGameplayTags::Get().Player_Block_InputPressed)) return;
+	
 	if (InputTag.MatchesTagExact(FAuroraGameplayTags::Get().InputTag_LMB))
 	{
 		bTargeting = ThisActor ? true : false;
 		bAutoRunning = false;
 	}
+	if (GetASC())
+	{
+		GetASC()->AbilityInputTagPressed(InputTag);
+	}
 }
-
 void AAuroraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 {
+
+	// Blocking Tags Check
+	if (GetASC() && GetASC()->HasMatchingGameplayTag(FAuroraGameplayTags::Get().Player_Block_InputHeld)) return;
+	
 	// Case #1: Holding not LMB input over target object. Try to use ability bind to this input
 	if (!InputTag.MatchesTagExact(FAuroraGameplayTags::Get().InputTag_LMB))
 	{
@@ -160,9 +165,11 @@ void AAuroraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 		}
 	}
 }
-
 void AAuroraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 {
+	// Blocking Tags Check
+	if (GetASC() && GetASC()->HasMatchingGameplayTag(FAuroraGameplayTags::Get().Player_Block_InputReleased)) return;
+	
 	// Case #1:
 	if (!InputTag.MatchesTagExact(FAuroraGameplayTags::Get().InputTag_LMB))
 	{
@@ -204,10 +211,15 @@ void AAuroraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 				bAutoRunning = true;
 			}
 
-			UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ClickNiagaraSystem, CachedDestination);
+			// Blocking Tags Check
+			if (GetASC() && !GetASC()->HasMatchingGameplayTag(FAuroraGameplayTags::Get().Player_Block_InputReleased))
+			{
+				UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ClickNiagaraSystem, CachedDestination);
+			}
 		}
 
 		FollowTime = 0.f;
+		bTargeting = false;
 	}
 }
 
@@ -252,39 +264,58 @@ void AAuroraPlayerController::ShowDamageNumber_Implementation(float DamageAmount
 
 void AAuroraPlayerController::CursorTrace()
 {
+	if (GetASC() && GetASC()->HasMatchingGameplayTag(FAuroraGameplayTags::Get().Player_Block_CursorTrace))
+	{
+		if (LastActor) LastActor->UnHighLightActor();
+		if (ThisActor) ThisActor->UnHighLightActor();
+		LastActor = nullptr;
+		ThisActor = nullptr;
+		
+		return;
+	}
+		
+		
 	
 	GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
 	
-	if (CursorHit.bBlockingHit)
-	{
-		LastActor = ThisActor;
-		ThisActor = CursorHit.GetActor();
+	if (!CursorHit.bBlockingHit) return;
+	
+	LastActor = ThisActor;
+	ThisActor = CursorHit.GetActor();
 		
-		/*	We have several cases:
-		 *	
-		 *  1. LastActor is null && ThisActor is null. (Hovering cursor over something else than enemies)
-		 *		- Do nothing
-		 *
-		 *	2. LastActor is Target && ThisActor is Target and they are the same target. (Keep hovering cursor over the same enemy)
-		 *		- Do nothing
-		 *	
-		 *  3. LastActor is null && ThisActor is Target. (Start hovering cursor over the enemy)
-		 *		- HighLight this Target.
-		 *		
-		 *  4. LastActor is Target && ThisActor is null. (Stop hovering cursor over the enemy)
-		 *		- Unhighlight last Target.
-		 *		
-		 *  5. LastActor is Target && ThisActor is Target, but LastActor != ThisActor. (Different enemies)
-		 *		- Unhighlight LastActor and Highlight ThisActor.
-		 */
+	/*	We have several cases:
+	 *	
+	 *  1. LastActor is null && ThisActor is null. (Hovering cursor over something else than enemies)
+	 *		- Do nothing
+	 *
+	 *	2. LastActor is Target && ThisActor is Target and they are the same target. (Keep hovering cursor over the same enemy)
+	 *		- Do nothing
+	 *	
+	 *  3. LastActor is null && ThisActor is Target. (Start hovering cursor over the enemy)
+	 *		- HighLight this Target.
+	 *		
+	 *  4. LastActor is Target && ThisActor is null. (Stop hovering cursor over the enemy)
+	 *		- Unhighlight last Target.
+	 *		
+	 *  5. LastActor is Target && ThisActor is Target, but LastActor != ThisActor. (Different enemies)
+	 *		- Unhighlight LastActor and Highlight ThisActor.
+	 */
 
-		if (LastActor == ThisActor) return;							// Case #1 and Case #2
-		if (!LastActor && ThisActor) ThisActor->HighLightActor();	// Case #3
-		if (LastActor && !ThisActor) LastActor->UnHighLightActor(); // Case #4
-		if (LastActor && ThisActor && LastActor != ThisActor)		// Case #5  
+	if (LastActor == ThisActor) return;							// Case #1 and Case #2
+	if (!LastActor && ThisActor) ThisActor->HighLightActor();	// Case #3
+	if (LastActor && !ThisActor) LastActor->UnHighLightActor(); // Case #4
+	if (LastActor && ThisActor && LastActor != ThisActor)		// Case #5  
 		{
 			LastActor->UnHighLightActor();
 			ThisActor->HighLightActor();
 		}
+}
+UAuroraAbilitySystemComponent* AAuroraPlayerController::GetASC()
+{
+	if (!AuroraAbilitySystemComponent)
+	{
+		AuroraAbilitySystemComponent = Cast<UAuroraAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn<APawn>()));  
 	}
+
+	return AuroraAbilitySystemComponent;
 }

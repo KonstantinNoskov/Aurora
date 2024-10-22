@@ -6,8 +6,9 @@
 #include "AbilitySystem/Debuff/DebuffNiagaraComponent.h"
 #include "Aurora/Aurora.h"
 #include "Components/CapsuleComponent.h"
-#include "Debug/DebugMacros.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 
 
 AAuroraCharacterBase::AAuroraCharacterBase()
@@ -34,9 +35,25 @@ AAuroraCharacterBase::AAuroraCharacterBase()
 	DebuffNiagaraComponent->DebuffTag = FAuroraGameplayTags::Get().Debuff_Burn;
 }
 
+void AAuroraCharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+
+	DOREPLIFETIME(AAuroraCharacterBase, bStunned)
+}
+
+
 void AAuroraCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void AAuroraCharacterBase::StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+	bStunned = NewCount > 0;
+				
+	GetCharacterMovement()->MaxWalkSpeed = bStunned ? 0.f : BaseWalkSpeed;
 }
 
 #pragma region ABILITY SYSTEM
@@ -101,6 +118,21 @@ FVector AAuroraCharacterBase::GetCombatSocketLocation_Implementation(const FGame
 
 	return FVector();
 }
+const USkeletalMeshSocket* AAuroraCharacterBase::GetCombatSocketByTag_Implementation(const FGameplayTag& MontageTag)
+{
+	for (TTuple<FGameplayTag, FName> Socket : CombatSockets)
+	{
+		if (MontageTag.MatchesTagExact(Socket.Key))
+		{
+			return
+			Socket.Key == FAuroraGameplayTags::Get().CombatSocket_Weapon
+			? Weapon->GetSocketByName(WeaponTipSocketName) 
+			: GetMesh()->GetSocketByName(Socket.Value);
+		}
+	}
+	
+	return nullptr;
+}
 
 FTaggedMontage AAuroraCharacterBase::GetTaggedMontageByTag_Implementation(const FGameplayTag& InMontageTag)
 {
@@ -113,7 +145,6 @@ FTaggedMontage AAuroraCharacterBase::GetTaggedMontageByTag_Implementation(const 
 	}
 	return FTaggedMontage();
 }
-
 void AAuroraCharacterBase::SetMinionCount_Implementation(int32 NewMinionCount)
 {
 	MinionCount = NewMinionCount;
@@ -166,6 +197,7 @@ FOnDeathSignature& AAuroraCharacterBase::GetOnDeathDelegate()
 {
 	return OnDeath;
 }
+
 
 #pragma endregion
 

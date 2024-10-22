@@ -26,5 +26,5 @@ protected:
 	TSubclassOf<AAuroraProjectile> ProjectileClass;
 
 	UPROPERTY(EditDefaultsOnly)
-	int32 ProjectilesNum = 5;	
+	int32 ProjectilesNum = 5;
 };

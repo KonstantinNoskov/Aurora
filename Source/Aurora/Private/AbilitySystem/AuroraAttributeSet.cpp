@@ -292,8 +292,20 @@ void UAuroraAttributeSet::Debuff(const FEffectProperties& InProps)
 
 	// Add Granted tags (UE 5.4) InheritedTags == GrantedTags
 	FInheritedTagContainer TagContainer = FInheritedTagContainer();
+	const FGameplayTag DebuffTag = GameplayTags.DamageTypesToDebuffs[DamageTypeTag];
+	
 	UTargetTagsGameplayEffectComponent& EffectComponent = Effect->FindOrAddComponent<UTargetTagsGameplayEffectComponent>();
-	TagContainer.Added.AddTag(GameplayTags.DamageTypesToDebuffs[DamageTypeTag]);
+	TagContainer.Added.AddTag(DebuffTag);
+	
+	
+	if (DebuffTag.MatchesTagExact(GameplayTags.Debuff_Shock))
+	{
+		TagContainer.AddTag(GameplayTags.Player_Block_CursorTrace);
+		TagContainer.AddTag(GameplayTags.Player_Block_InputHeld);
+		TagContainer.AddTag(GameplayTags.Player_Block_InputPressed);
+		TagContainer.AddTag(GameplayTags.Player_Block_InputReleased);
+	}
+
 	EffectComponent.SetAndApplyTargetTagChanges(TagContainer);
 
 	// Stacks

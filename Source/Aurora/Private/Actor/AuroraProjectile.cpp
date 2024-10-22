@@ -58,12 +58,20 @@ void AAuroraProjectile::OnHit()
 	if (LoopingSoundComponent)
 	{
 		LoopingSoundComponent->Stop();
+		LoopingSoundComponent->DestroyComponent();
 	}
 
 	bHit = true;
 }
 void AAuroraProjectile::Destroyed()
 {
+	// Stop looping sound
+	if (LoopingSoundComponent)
+	{
+		LoopingSoundComponent->Stop();
+		LoopingSoundComponent->DestroyComponent();
+	}
+	
 	if (!bHit && !HasAuthority())
 	{
 		OnHit();
@@ -88,7 +96,7 @@ void AAuroraProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent
 		{
 			const FVector DeathImpulse = GetActorForwardVector() * DamageEffectParams.DeathImpulseMagnitude;
 
-			// Pass in  DamageEffectParams...
+			// Pass in DamageEffectParams...
 			DamageEffectParams.DeathImpulse = DeathImpulse; // Death impulse vector
 			DamageEffectParams.TargetASC = TargetASC; // Target ability system component
 			UAuroraAbilitySystemLibrary::ApplyDamageEffect(DamageEffectParams);

@@ -31,6 +31,7 @@ protected:
 
 	virtual void InitAbilityActorInfo() override;
 	virtual void InitializeDefaultAttributes() const override;
+	virtual void StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount) override;
 
 #pragma region CHARACTER CLASS DEFAULTS
 
@@ -54,9 +55,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void SetHitReacting(bool NewHitReacting) { bHitReacting = NewHitReacting;}
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
-	float BaseWalkSpeed = 250.f;
+	
 
+public:
 	UFUNCTION(BlueprintCallable)
 	void MyFunction() { DEBUG_MESSAGE_TEXT("Hello World!")}
 	

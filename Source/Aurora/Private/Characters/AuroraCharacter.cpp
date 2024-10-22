@@ -1,15 +1,14 @@
 ﻿#include "Characters/AuroraCharacter.h"
 
 #include "AbilitySystemComponent.h"
+#include "AuroraGameplayTags.h"
 #include "NiagaraComponent.h"
 #include "AbilitySystem/AuroraAbilitySystemComponent.h"
 #include "AbilitySystem/Data/LevelUpInfo.h"
 #include "Camera/CameraComponent.h"
 #include "Controllers/PlayerControllers/AuroraPlayerController.h"
-#include "Debug/DebugMacros.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Kismet/GameplayStatics.h"
 #include "Player/AuroraPlayerState.h"
 #include "UI/HUD/AuroraHUD.h"
 
@@ -195,6 +194,8 @@ void AAuroraCharacter::InitAbilityActorInfo()
 	// On AbilitySystemComponent assigned.
 	// WARNING: It should be called after ASC initialized.
 	OnASCRegistered.Broadcast(AbilitySystemComponent);
+
+	AbilitySystemComponent->RegisterGameplayTagEvent(FAuroraGameplayTags::Get().Debuff_Shock, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AAuroraCharacter::StunTagChanged);
 
 	// If AuroraHUD initialized, assign widget controllers to their widgets. 
 	AssignWidgetControllers(AuroraPlayerState);
