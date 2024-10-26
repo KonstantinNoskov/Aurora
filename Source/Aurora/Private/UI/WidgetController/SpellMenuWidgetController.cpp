@@ -136,11 +136,12 @@ void USpellMenuWidgetController::EquipButtonPressed()
 	const FGameplayTag SelectedStatus = GetAuroraASC()->GetAbilityStatusFromTag(SelectedAbility.AbilityTag);
 	if (SelectedStatus.MatchesTagExact(FAuroraGameplayTags::Get().Abilities_Status_Equipped))
 	{
-		SelectedSlot = GetAuroraASC()->GetInputTagFromAbilityTag(SelectedAbility.AbilityTag);
+		SelectedSlot = GetAuroraASC()->GetSlotFromAbilityTag(SelectedAbility.AbilityTag);
 	}
 }
 void USpellMenuWidgetController::SpellRowGlobePressed(const FGameplayTag& SlotTag, const FGameplayTag& AbilityTypeTag)
 {
+	
 	if (!bWaitingForEquipSelection) return;
 
 	// Check selected ability against the slot's ability type.
@@ -149,10 +150,8 @@ void USpellMenuWidgetController::SpellRowGlobePressed(const FGameplayTag& SlotTa
 
 	// Valid check
 	if (!SelectedAbilityType.MatchesTagExact(AbilityTypeTag)) return;
-
+	
 	GetAuroraASC()->ServerEquipAbility(SelectedAbility.AbilityTag, SlotTag);
-	
-	
 }
 void USpellMenuWidgetController::OnAbilityEquipped(const FGameplayTag& AbilityTag, const FGameplayTag& AbilityStatusTag, const FGameplayTag& SlotTag, const FGameplayTag& PrevSlotTag)
 {

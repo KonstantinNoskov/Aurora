@@ -7,6 +7,7 @@
 #include "Interfaces/Interaction/CombatInterface.h"
 #include "AuroraCharacterBase.generated.h"
 
+class UPassiveNiagaraComponent;
 class UDebuffNiagaraComponent;
 enum class ECharacterClass : uint8;
 
@@ -18,8 +19,6 @@ class UAttributeSet;
 class UGameplayEffect;
 class UGameplayAbility;
 
-
-
 UCLASS(Abstract)
 class AURORA_API AAuroraCharacterBase : public ACharacter, public IAbilitySystemInterface, public ICombatInterface
 {
@@ -30,7 +29,7 @@ public:
 	AAuroraCharacterBase();
 	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&) const override;
-	
+
 #pragma region Combat Interface overrided functions
 
 public:
@@ -60,7 +59,11 @@ public:
 protected:
 
 	virtual void BeginPlay() override;
-	
+
+public:
+	virtual void Tick(float DeltaSeconds) override;
+
+protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
 	ECharacterClass CharacterClass = ECharacterClass::Warrior;
 
@@ -170,6 +173,20 @@ protected:
 	void AddCharacterAbilities();
 
 #pragma endregion
+
+private:
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UPassiveNiagaraComponent> HaloOfProtectionNiagaraComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UPassiveNiagaraComponent> LifeSiphonNiagaraComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UPassiveNiagaraComponent> ManaSiphonNiagaraComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USceneComponent> EffectAttachComponent;
 	
 protected:
 	
@@ -228,6 +245,6 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UDebuffNiagaraComponent> DebuffNiagaraComponent;
 
-	
+
 
 };

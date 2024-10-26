@@ -3,6 +3,7 @@
 #include "AbilitySystemComponent.h"
 #include "AuroraGameplayTags.h"
 #include "AbilitySystem/AuroraAbilitySystemComponent.h"
+#include "AbilitySystem/Abilities/Passive/PassiveNiagaraComponent.h"
 #include "AbilitySystem/Debuff/DebuffNiagaraComponent.h"
 #include "Aurora/Aurora.h"
 #include "Components/CapsuleComponent.h"
@@ -33,13 +34,27 @@ AAuroraCharacterBase::AAuroraCharacterBase()
 	DebuffNiagaraComponent = CreateDefaultSubobject<UDebuffNiagaraComponent>("Debuff Component");
 	DebuffNiagaraComponent->SetupAttachment(GetRootComponent());
 	DebuffNiagaraComponent->DebuffTag = FAuroraGameplayTags::Get().Debuff_Burn;
+
+	EffectAttachComponent = CreateDefaultSubobject<USceneComponent>("EffectAttachPoint");
+	EffectAttachComponent->SetupAttachment(GetRootComponent());
+
+	HaloOfProtectionNiagaraComponent = CreateDefaultSubobject<UPassiveNiagaraComponent>("HaloOfProtection");
+	HaloOfProtectionNiagaraComponent->SetupAttachment(EffectAttachComponent);
+	HaloOfProtectionNiagaraComponent->bAutoActivate = false;
+
+	LifeSiphonNiagaraComponent = CreateDefaultSubobject<UPassiveNiagaraComponent>("LifeSiphon");
+	LifeSiphonNiagaraComponent->SetupAttachment(EffectAttachComponent);
+	LifeSiphonNiagaraComponent->bAutoActivate = false;
+
+	ManaSiphonNiagaraComponent = CreateDefaultSubobject<UPassiveNiagaraComponent>("ManaSiphon");
+	ManaSiphonNiagaraComponent->SetupAttachment(EffectAttachComponent);
+	ManaSiphonNiagaraComponent->bAutoActivate = false;
 }
 
 void AAuroraCharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-
+	
 	DOREPLIFETIME(AAuroraCharacterBase, bStunned)
 }
 
@@ -47,6 +62,12 @@ void AAuroraCharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 void AAuroraCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void AAuroraCharacterBase::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	EffectAttachComponent->SetWorldRotation(FRotator::ZeroRotator);
 }
 
 void AAuroraCharacterBase::StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
