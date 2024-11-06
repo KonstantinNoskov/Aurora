@@ -58,7 +58,6 @@ void AAuroraCharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 	DOREPLIFETIME(AAuroraCharacterBase, bStunned)
 }
 
-
 void AAuroraCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
@@ -76,6 +75,8 @@ void AAuroraCharacterBase::StunTagChanged(const FGameplayTag CallbackTag, int32 
 				
 	GetCharacterMovement()->MaxWalkSpeed = bStunned ? 0.f : BaseWalkSpeed;
 }
+
+
 
 #pragma region ABILITY SYSTEM
 
@@ -123,6 +124,15 @@ void AAuroraCharacterBase::AddCharacterAbilities()
 #pragma endregion
 
 #pragma region COMBAT
+
+float AAuroraCharacterBase::TakeDamage(float Damage, const FDamageEvent& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	const float DamageTaken = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser); 
+
+	OnDamageDelegate.Broadcast(DamageTaken);
+
+	return DamageTaken;
+}
 
 FVector AAuroraCharacterBase::GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag)
 {
@@ -209,16 +219,6 @@ void AAuroraCharacterBase::MulticastHandleDeath_Implementation(const FVector& In
 	// Broadcast On Death delegate
 	OnDeath.Broadcast(this);
 }
-FOnASCRegisteredSignature AAuroraCharacterBase::GetOnAscRegisteredDelegate()
-{
-	return OnASCRegistered;
-}
-
-FOnDeathSignature& AAuroraCharacterBase::GetOnDeathDelegate()
-{
-	return OnDeath;
-}
-
 
 #pragma endregion
 

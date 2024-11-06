@@ -13,15 +13,14 @@ void UAttributeMenuWidgetController::BindCallbacksToDependencies()
 	// Looping through all attributes the actor has. 
 	for (auto& Pair : GetAuroraAS()->TagsToAttributes)
 	{
-		// ... then bind callbacks to each one of this attribute's OnChangeDelegate
+		// ... then bind callbacks to each one of them OnChangeDelegate
 		GetAuroraASC()->GetGameplayAttributeValueChangeDelegate(
 			Pair.Value()).AddLambda
 			(
 				[this, Pair](const FOnAttributeChangeData& Data)
 				{
-					// This function give a command to attribute menu widget to update values of all attribute's
-					// have been changed.
-					// Pair.Key - Attribute Tag. Pair.Value - Attribute itself
+				  // This function give a command to attribute menu widget to update values of all attribute's have been changed.
+				  // Pair.Key - Attribute Tag. Pair.Value - Getter which is returns Attribute itself
 					BroadcastAttributeInfo(Pair.Key, Pair.Value());
 				}
 			);
@@ -29,8 +28,7 @@ void UAttributeMenuWidgetController::BindCallbacksToDependencies()
 
 	// On Attribute Points changed
 	GetAuroraPS()->OnAttributePointsChanged.AddUObject(this, &UAttributeMenuWidgetController::OnAttributePointsUpdate);
-
-	// On Spell Points changed
+	
 }
 
 /* BroadcastAttributeInfo

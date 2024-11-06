@@ -50,7 +50,21 @@ struct FDamageEffectParams
 	float DeathImpulseMagnitude = 60.f;
 
 	UPROPERTY(BlueprintReadWrite )
-	FVector DeathImpulse = FVector::ZeroVector; 
+	FVector DeathImpulse = FVector::ZeroVector;
+
+	UPROPERTY(BlueprintReadWrite )
+	bool bIsRadialDamage = false;
+	
+	UPROPERTY(BlueprintReadWrite )
+	float RadialDamageInnerRadius = 0.f;
+
+	UPROPERTY(BlueprintReadWrite )
+	float RadialDamageOuterRadius = 0.f;
+
+	UPROPERTY(BlueprintReadWrite )
+	FVector RadialDamageOrigin = FVector::ZeroVector;
+
+	
 };
 
 USTRUCT(BlueprintType)
@@ -79,6 +93,7 @@ struct FProjectileBehaviorParams
 	float HomingAccelerationMax = 0.f;
 };
 
+
 USTRUCT(BlueprintType)
 struct FAuroraGameplayEffectContext : public FGameplayEffectContext
 {
@@ -90,7 +105,6 @@ public:
 	{
 		return FGameplayEffectContext::StaticStruct();
 	}
-	
 	virtual FAuroraGameplayEffectContext* Duplicate() const override
 	{
 		FAuroraGameplayEffectContext* NewContext = new FAuroraGameplayEffectContext();
@@ -180,7 +194,41 @@ protected:
 	FVector DeathImpulse = FVector::ZeroVector;
 
 #pragma endregion
+#pragma region Radial Damage
 
+public:
+
+	// Is Radial Damage?
+	bool IsRadialDamage() const												{ return bIsRadialDamage; }
+	void SetIsRadialDamage(const bool InbIsRadialDamage)					{ bIsRadialDamage = InbIsRadialDamage; }
+
+	// Inner Damage
+	float GetRadialDamageInnerRadius() const								{ return RadialDamageInnerRadius; }
+	void SetRadialDamageInnerRadius(const float InRadialDamageInnerRadius)	{ RadialDamageInnerRadius = InRadialDamageInnerRadius; }
+
+	// Outer Damage
+	float GetRadialDamageOuterRadius() const								{ return RadialDamageOuterRadius; }
+	void SetRadialDamageOuterRadius(const float InRadialDamageOuterRadius)	{ RadialDamageOuterRadius = InRadialDamageOuterRadius; }
+
+	// Origin Location
+	FVector GetRadialDamageOrigin() const									{ return RadialDamageOrigin; }
+	void SetRadialDamageOrigin(const FVector& InRadialDamageOrigin)			{ RadialDamageOrigin = InRadialDamageOrigin; }
+	
+protected:
+	
+	UPROPERTY()
+	bool bIsRadialDamage = false;
+	
+	UPROPERTY()
+	float RadialDamageInnerRadius = 0.f;
+
+	UPROPERTY()
+	float RadialDamageOuterRadius = 0.f;
+
+	UPROPERTY()
+	FVector RadialDamageOrigin = FVector::ZeroVector;
+	
+#pragma endregion
 
 #pragma endregion
 	

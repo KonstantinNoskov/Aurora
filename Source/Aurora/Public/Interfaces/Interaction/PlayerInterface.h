@@ -4,6 +4,8 @@
 #include "UObject/Interface.h"
 #include "PlayerInterface.generated.h"
 
+class AMagicCircle;
+
 UINTERFACE()
 class UPlayerInterface : public UInterface
 {
@@ -48,4 +50,10 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent)
 	void LevelUp();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	AMagicCircle* ShowMagicCircle(UMaterialInterface* DecalMaterial = nullptr, float InMagicCircleRadius = 0.f);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void HideMagicCircle();
 };

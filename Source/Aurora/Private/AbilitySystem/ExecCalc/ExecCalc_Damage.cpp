@@ -6,6 +6,7 @@
 #include "AbilitySystem/AuroraAttributeSet.h"
 #include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "Interfaces/Interaction/CombatInterface.h"
+#include "Kismet/GameplayStatics.h"
 
 struct AuroraDamageStatics
 {
@@ -73,23 +74,26 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Arcane,				DamageStatics().ArcaneResistanceDef);
 	TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Physical,				DamageStatics().PhysicalResistanceDef);
 	
-	// Source/Target references
+	// Source/Target Ability Systems
 	const UAbilitySystemComponent* SourceASC = ExecutionParams.GetSourceAbilitySystemComponent();
 	const UAbilitySystemComponent* TargetASC = ExecutionParams.GetTargetAbilitySystemComponent();
-	
+
+	// Source/Target Avatars
 	AActor* SourceAvatar = SourceASC ? SourceASC->GetAvatarActor() : nullptr;
 	AActor* TargetAvatar = TargetASC ? TargetASC->GetAvatarActor() : nullptr;
 
+	// Source/Target Avatar's Levels
 	int32 SourcePlayerLevel = 1;
 	if (SourceAvatar->Implements<UCombatInterface>()) { SourcePlayerLevel = ICombatInterface::Execute_GetPlayerLevel(SourceAvatar); }
 
 	int32 TargetPlayerLevel = 1;
 	if (TargetAvatar->Implements<UCombatInterface>()) { TargetPlayerLevel = ICombatInterface::Execute_GetPlayerLevel(TargetAvatar); }
-	
+
+	// Source/Target Character Class Info
 	const UCharacterClassInfo* SourceCharacterClassInfo = UAuroraAbilitySystemLibrary::GetCharacterClassInfo(SourceAvatar);
 	const UCharacterClassInfo* TargetCharacterClassInfo = UAuroraAbilitySystemLibrary::GetCharacterClassInfo(TargetAvatar);
 	
-	// Creating spec
+	// Creating spec & Context
 	const FGameplayEffectSpec Spec = ExecutionParams.GetOwningSpec();
 	FGameplayEffectContextHandle EffectContextHandle = Spec.GetContext();
 
@@ -109,7 +113,8 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	
 	// Get Damage Set by Caller Magnitude
 	float Damage = 0.0f;
-	
+
+	// Calculate damage amount for each damage type that was applied by Ability.  
 	for (const TTuple<FGameplayTag, FGameplayTag>& Pair : FAuroraGameplayTags::Get().DamageTypesToResistances)
 	{
 		const FGameplayTag DamageTypeTag = Pair.Key;
@@ -120,14 +125,51 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 		const FGameplayEffectAttributeCaptureDefinition CaptureDef = TagsToCaptureDefs[ResistanceTag];
 
 		float DamageTypeValue = Spec.GetSetByCallerMagnitude(DamageTypeTag, false);
+
+		// If damage <= 0, skip to the next damage type calculation
+		if (DamageTypeValue <= 0.f)
+		{
+			continue;
+		}
 		
 		float Resistance = 0.f;
 		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(CaptureDef, EvaluationParams, Resistance);
 		Resistance = FMath::Clamp(Resistance, 0.f, 100.f); 
 		
 		DamageTypeValue *= (100.f - Resistance) / 100.f;
+
+		// Handle Radial damage calculation if needed
+		if (UAuroraAbilitySystemLibrary::IsRadialDamage(EffectContextHandle))
+		{
+			if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(TargetAvatar))
+			{
+				
+				CombatInterface->GetOnDamageSignature().AddLambda([&](float InDamageAmount)
+				{
+					DamageTypeValue = InDamageAmount;
+					
+				});
+			}
+
+			UGameplayStatics::ApplyRadialDamageWithFalloff(
+				TargetAvatar,
+				DamageTypeValue,
+				0.f,
+				UAuroraAbilitySystemLibrary::GetRadialDamageOrigin(EffectContextHandle),
+				UAuroraAbilitySystemLibrary::GetRadialDamageInnerRadius(EffectContextHandle),
+				UAuroraAbilitySystemLibrary::GetRadialDamageOuterRadius(EffectContextHandle),
+				1.f,
+				UDamageType::StaticClass(),
+				TArray<AActor*>(),
+				SourceAvatar,
+				nullptr
+				);
+			
+		}
+
 		
 		Damage += DamageTypeValue;
+		
 	}
 
 #pragma endregion

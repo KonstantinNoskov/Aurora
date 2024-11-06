@@ -24,14 +24,16 @@
 // Debug
 #include "NavigationPath.h"
 #include "NiagaraFunctionLibrary.h"
-
+#include "Actor/MagicCircle.h"
+#include "Aurora/Aurora.h"
+#include "Components/DecalComponent.h"
+#include "Components/SphereComponent.h"
 
 AAuroraPlayerController::AAuroraPlayerController()
 {
 	bReplicates = true;
 	Spline = CreateDefaultSubobject<USplineComponent>("Spline");
 }
-
 void AAuroraPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -57,7 +59,6 @@ void AAuroraPlayerController::BeginPlay()
 	InputModeData.SetHideCursorDuringCapture(false);
 	SetInputMode(InputModeData);
 }
-
 void AAuroraPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
@@ -65,6 +66,8 @@ void AAuroraPlayerController::PlayerTick(float DeltaTime)
 	CursorTrace();
 	
 	AutoRun();
+
+	UpdateMagicCircleLocation();
 }
 
 #pragma region INPUT
@@ -82,7 +85,6 @@ void AAuroraPlayerController::SetupInputComponent()
 	
 	AuroraInputComponent->BindAbilityActions(InputConfig, this, &ThisClass::AbilityInputTagPressed, &ThisClass::AbilityInputTagReleased, &ThisClass::AbilityInputTagHeld);
 }
-
 void AAuroraPlayerController::Move(const FInputActionValue& InputActionValue)
 {
 	// Blocking Tags Check
@@ -102,11 +104,6 @@ void AAuroraPlayerController::Move(const FInputActionValue& InputActionValue)
 		ControlledPawn->AddMovementInput(RightDirection,	InputAxisVector.X);
 	}
 }
-
-#pragma endregion
-
-
-#pragma region Input
 
 void AAuroraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 {
@@ -222,7 +219,6 @@ void AAuroraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 		bTargeting = false;
 	}
 }
-
 void AAuroraPlayerController::AutoRun()
 {
 	if (!bAutoRunning) return;
@@ -242,6 +238,46 @@ void AAuroraPlayerController::AutoRun()
 }
 
 #pragma endregion
+
+#pragma region Abilities
+
+AMagicCircle* AAuroraPlayerController::ShowMagicCircle(UMaterialInterface* DecalMaterial, float InMagicCircleRadius)
+{
+	if (!IsValid(MagicCircle))
+	{
+		MagicCircle = GetWorld()->SpawnActor<AMagicCircle>(MagicCircleClass);
+		MagicCircle->MagicCircleSphere->SetSphereRadius(InMagicCircleRadius);
+		
+		if (DecalMaterial)
+		{
+			MagicCircle->MagicCircleDecal->SetMaterial(0, DecalMaterial);
+			MagicCircle->MagicCircleDecal->DecalSize = FVector(InMagicCircleRadius);
+		}
+		
+		return MagicCircle;
+	}
+
+	return nullptr;
+}
+
+void AAuroraPlayerController::HideMagicCircle()
+{
+	if (MagicCircle)
+	{
+		MagicCircle->Destroy();	
+	}
+}
+
+void AAuroraPlayerController::UpdateMagicCircleLocation()
+{
+	if (IsValid(MagicCircle))
+	{
+		MagicCircle->SetActorLocation(CursorHit.ImpactPoint);
+	}
+}
+
+#pragma endregion
+
 #pragma region DAMAGE
 
 void AAuroraPlayerController::ShowDamageNumber_Implementation(float DamageAmount, ACharacter* TargetCharacter, bool bBlockedHit, bool bCriticalHit)
@@ -273,19 +309,18 @@ void AAuroraPlayerController::CursorTrace()
 		
 		return;
 	}
-		
-		
-	
-	GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
+
+	const ECollisionChannel TraceChannel = IsValid(MagicCircle) ? ECC_ExcludePlayers : ECC_Visibility;
+	GetHitResultUnderCursor(TraceChannel, false, CursorHit);
 	
 	if (!CursorHit.bBlockingHit) return;
 	
 	LastActor = ThisActor;
 	ThisActor = CursorHit.GetActor();
 		
-	/*	We have several cases:
+	/*	We have to take care of several cases:
 	 *	
-	 *  1. LastActor is null && ThisActor is null. (Hovering cursor over something else than enemies)
+	 *  1. LastActor is null && ThisActor is null. (Hovering cursor over something else than enemy)
 	 *		- Do nothing
 	 *
 	 *	2. LastActor is Target && ThisActor is Target and they are the same target. (Keep hovering cursor over the same enemy)

@@ -1,5 +1,7 @@
 ﻿#include "Characters/AuroraCharacter.h"
 
+#include <string>
+
 #include "AbilitySystemComponent.h"
 #include "AuroraGameplayTags.h"
 #include "NiagaraComponent.h"
@@ -7,6 +9,7 @@
 #include "AbilitySystem/Data/LevelUpInfo.h"
 #include "Camera/CameraComponent.h"
 #include "Controllers/PlayerControllers/AuroraPlayerController.h"
+#include "Debug/DebugMacros.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Player/AuroraPlayerState.h"
@@ -50,10 +53,15 @@ AAuroraCharacter::AAuroraCharacter()
 void AAuroraCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	
 }
+
+
 void AAuroraCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	
 }
 void AAuroraCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -161,6 +169,28 @@ int32 AAuroraCharacter::GetSpellPoints_Implementation() const
 
 	return AuroraPlayerState->GetSpellPoints();
 }
+
+AMagicCircle* AAuroraCharacter::ShowMagicCircle_Implementation(UMaterialInterface* DecalMaterial, float InMagicCircleRadius)
+{
+	if (AAuroraPlayerController* AuroraPlayerController = Cast<AAuroraPlayerController>(GetController()))
+	{
+		AMagicCircle* MagicCircle = AuroraPlayerController->ShowMagicCircle(DecalMaterial, InMagicCircleRadius);
+		AuroraPlayerController->bShowMouseCursor = false;
+
+		return MagicCircle;
+	}
+	
+	return nullptr;
+}
+void AAuroraCharacter::HideMagicCircle_Implementation()
+{
+	if (AAuroraPlayerController* AuroraPlayerController = Cast<AAuroraPlayerController>(GetController()))
+	{
+		AuroraPlayerController->HideMagicCircle();
+		AuroraPlayerController->bShowMouseCursor = true;
+	}
+}
+
 void AAuroraCharacter::AddToSpellPoints_Implementation(int32 InSpellPoints)
 {
 	AAuroraPlayerState* AuroraPlayerState = GetPlayerState<AAuroraPlayerState>();
@@ -212,7 +242,6 @@ void AAuroraCharacter::AssignWidgetControllers(AAuroraPlayerState* AuroraPlayerS
 		if (AAuroraHUD* AuroraHUD = Cast<AAuroraHUD>(AuroraPlayerController->GetHUD()))
 		{
 			AuroraHUD->InitOverlay(AuroraPlayerController, AuroraPlayerState, AbilitySystemComponent, AttributeSet);
-			//AuroraHUD->InitAttributeMenu(AuroraPlayerController, AuroraPlayerState, AbilitySystemComponent, AttributeSet);
 		}
 	}
 }

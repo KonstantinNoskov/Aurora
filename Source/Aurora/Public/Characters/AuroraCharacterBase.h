@@ -7,14 +7,12 @@
 #include "Interfaces/Interaction/CombatInterface.h"
 #include "AuroraCharacterBase.generated.h"
 
+
+// Forward Declarations
 class UPassiveNiagaraComponent;
 class UDebuffNiagaraComponent;
 enum class ECharacterClass : uint8;
-
-// VFX
 class UNiagaraSystem;
-
-// Ability System
 class UAttributeSet;
 class UGameplayEffect;
 class UGameplayAbility;
@@ -39,10 +37,8 @@ public:
 	virtual FTaggedMontage GetTaggedMontageByTag_Implementation				(const FGameplayTag& InMontageTag)			override;
 	virtual void SetMinionCount_Implementation								(int32 NewMinionCount)						override;
 	virtual void IncrementMinionCount_Implementation						(int32 Increment)							override;
-	virtual FOnASCRegisteredSignature GetOnAscRegisteredDelegate			()											override;
-	virtual FOnDeathSignature& GetOnDeathDelegate							()											override;
 	virtual const USkeletalMeshSocket* GetCombatSocketByTag_Implementation	(const FGameplayTag& MontageTag)			override;
-
+	
 	FORCEINLINE virtual UAnimMontage* GetHitReactMontage_Implementation() const						override	{ return HitReactMontage; }
 	FORCEINLINE virtual TArray<FTaggedMontage> GetAttackMontages_Implementation() const				override	{ return AttackMontages; }
 	FORCEINLINE virtual float GetMeleeAttackRadius_Implementation() const							override	{ return MeleeAttackRadius; }
@@ -52,7 +48,10 @@ public:
 	FORCEINLINE virtual int32 GetMinionCount_Implementation() const									override	{ return MinionCount; }
 	FORCEINLINE virtual ECharacterClass GetCharacterClass_Implementation()							override	{ return CharacterClass; }
 	FORCEINLINE virtual USkeletalMeshComponent* GetWeapon_Implementation()							override	{ return Weapon; }
-	
+	FORCEINLINE virtual FOnASCRegisteredSignature GetOnAscRegisteredDelegate()						override	{ return OnASCRegistered; }
+	FORCEINLINE virtual FOnDeathSignature& GetOnDeathDelegate()										override	{ return OnDeath; }
+	FORCEINLINE virtual FOnDamageSignature& GetOnDamageSignature()									override	{ return OnDamageDelegate; }
+
 
 #pragma endregion
 
@@ -73,12 +72,25 @@ protected:
 
 #pragma region COMBAT
 
+// Delegates
+public:
+	
+	FOnDamageSignature OnDamageDelegate;
+	
 protected:
 	
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MulticastHandleDeath(const FVector& InDeathImpulse);
 
 	virtual void StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+
+
+public:
+	
+	virtual float TakeDamage(float Damage, const FDamageEvent& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
+protected:
+	
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;

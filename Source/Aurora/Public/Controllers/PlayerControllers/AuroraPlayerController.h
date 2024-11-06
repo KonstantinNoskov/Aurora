@@ -7,6 +7,7 @@
 #include "AuroraPlayerController.generated.h"
 
 
+class AMagicCircle;
 class UNiagaraSystem;
 class UDamageTextComponent;
 class USplineComponent;
@@ -32,9 +33,6 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
 
-
-
-	
 #pragma region DAMAGE
 	
 public:
@@ -87,10 +85,38 @@ private:
 
 	UFUNCTION()
 	void AbilityInputTagHeld(FGameplayTag InputTag);
+
+public:
+	
+	UFUNCTION(BlueprintCallable)
+	AMagicCircle* ShowMagicCircle(UMaterialInterface* DecalMaterial = nullptr, float InMagicCircleRadius = 0.f);
+
+	UFUNCTION(BlueprintCallable)
+	void HideMagicCircle();
+
+	
+
+	UFUNCTION()
+	void UpdateMagicCircleLocation();
+
+private:
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UNiagaraSystem> ClickNiagaraSystem;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AMagicCircle> MagicCircleClass;
+
+public:
+	
+	UPROPERTY(BlueprintReadOnly)
+	TObjectPtr<AMagicCircle> MagicCircle;
 	
 #pragma endregion
 #pragma region MOVEMENT NAVIGATION
 
+private:
+	
 	UPROPERTY()
 	FVector CachedDestination = FVector::Zero();
 
@@ -111,9 +137,7 @@ private:
 
 	UPROPERTY()
 	bool bTargeting = false;
-
-private:
-
+	
 	void AutoRun();
 	
 #pragma endregion
@@ -125,9 +149,5 @@ private:
 
 	FHitResult CursorHit;
 
-private:
-
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UNiagaraSystem> ClickNiagaraSystem;
 	
 };

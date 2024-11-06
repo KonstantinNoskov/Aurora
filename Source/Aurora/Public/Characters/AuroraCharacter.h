@@ -48,6 +48,10 @@ public:
 	virtual int32 GetSpellPointsReward_Implementation(int32 Level) const override;
 	virtual int32 GetSpellPoints_Implementation() const override;
 
+	// Cursor Magic Circle
+	virtual AMagicCircle* ShowMagicCircle_Implementation(UMaterialInterface* DecalMaterial, float InMagicCircleRadius) override;
+	virtual void HideMagicCircle_Implementation() override;
+
 #pragma endregion
 
 protected:
