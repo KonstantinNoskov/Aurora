@@ -396,6 +396,8 @@ void UAuroraAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackDa
 	}
 }
 
+#pragma region Replication Callbacks
+
 #pragma region VITAL ATTRIBUTES
 
 void UAuroraAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth) const
@@ -428,6 +430,7 @@ void UAuroraAttributeSet::OnRep_Vigor(const FGameplayAttributeData& OldVigor) co
 }
 
 #pragma endregion
+
 #pragma region SECONDARY ATTRIBUTES
 
 void UAuroraAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth) const
@@ -489,4 +492,7 @@ void UAuroraAttributeSet::OnRep_PhysicalResistance(const FGameplayAttributeData&
 }
 
 #pragma endregion
+
+#pragma endregion
+
 

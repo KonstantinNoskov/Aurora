@@ -29,7 +29,6 @@ void AMagicCircle::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-
 void AMagicCircle::SetTargetingRadius(float InRadius)
 {
 	MagicCircleSphere->SetSphereRadius(InRadius);
