@@ -280,7 +280,7 @@ void AAuroraPlayerController::UpdateMagicCircleLocation()
 
 #pragma region DAMAGE
 
-void AAuroraPlayerController::ShowDamageNumber_Implementation(float DamageAmount, ACharacter* TargetCharacter, bool bBlockedHit, bool bCriticalHit)
+void AAuroraPlayerController::ShowDamageNumber_Implementation(float DamageAmount, ACharacter* TargetCharacter, bool bBlockedHit, bool bCriticalHit, const FColor& DamageTypeColor)
 {
 	if (IsValid(TargetCharacter) && DamageTextComponentClass && IsLocalController())
 	{
@@ -292,7 +292,8 @@ void AAuroraPlayerController::ShowDamageNumber_Implementation(float DamageAmount
 		DamageText->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
 	
 		// Set Damage value
-		DamageText->SetDamageText(DamageAmount, bBlockedHit, bCriticalHit);
+		DamageText->SetDamageText(DamageAmount, bBlockedHit, bCriticalHit, DamageTypeColor);
+		
 	}
 }
 

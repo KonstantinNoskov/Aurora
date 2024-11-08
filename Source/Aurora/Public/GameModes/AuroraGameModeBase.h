@@ -4,6 +4,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "AuroraGameModeBase.generated.h"
 
+class UAuroraColors;
 class UAbilityInfo;
 class UCharacterClassInfo;
 
@@ -20,5 +21,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Ability Info")
 	TObjectPtr<UAbilityInfo> AbilityInfo;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Aurora Colors", DisplayName = "Aurora Colors")
+	TObjectPtr<UAuroraColors> AuroraColorsMap;
 	
 };

@@ -10,7 +10,7 @@ FString UArcaneShards::GetDescription(int32 Level)
 	{
 		return FString::Printf(TEXT(
 			// TITLE
-			"<Title>ARCANE SHARDS</>\n\n"
+			"<AbilityName.Arcane>ARCANE SHARDS</>\n\n"
 
 			// Requirements
 			"<Level>Level: %d</>\n" // Level
@@ -22,7 +22,7 @@ FString UArcaneShards::GetDescription(int32 Level)
 			"causing radial arcane damage of: "
 
 			// Damage
-			"</><Damage>%d</>"
+			"</><DamageType.Arcane>%d</>"
 			"<Default> at the shard origin</>\n\n"
 			),
 
@@ -36,7 +36,7 @@ FString UArcaneShards::GetDescription(int32 Level)
 	{
 		return FString::Printf(TEXT(
 			// TITLE
-			"<Title>ARCANE SHARDS</>\n\n"
+			"<AbilityName.Arcane>ARCANE SHARDS</>\n\n"
 
 			// Requirements
 			"<Level>Level: %d</>\n" // Level
@@ -48,7 +48,7 @@ FString UArcaneShards::GetDescription(int32 Level)
 			"causing radial arcane damage of: "
 
 			// Damage
-			"</><Damage>%d</><Default> at the shard origin</>\n\n"
+			"</><DamageType.Arcane>%d</><Default> at the shard origin</>\n\n"
 			),
 
 			// Values
@@ -68,7 +68,7 @@ FString UArcaneShards::GetNextLevelDescription(int32 Level)
 	
 	return FString::Printf(TEXT(
 			// TITLE
-			"<Title>ARCANE SHARDS</>\n\n"
+			"<AbilityName.Arcane>NEXT LEVEL</>\n\n"
 
 			// Requirements
 			"<Level>Level: %d</>\n" // Level
@@ -80,7 +80,7 @@ FString UArcaneShards::GetNextLevelDescription(int32 Level)
 			"causing radial arcane damage of: "
 
 			// Damage
-			"</><Damage>%d</><Default> at the shard origin</>\n\n"
+			"</><DamageType.Arcane>%d</><Default> at the shard origin</>\n\n"
 			),
 
 			// Values
