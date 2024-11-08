@@ -71,7 +71,7 @@ FString UAuroraFireBolt::GetNextLevelDescription(int32 Level)
 	
 	return FString::Printf(
 		// TITLE
-		TEXT("<Title>FIRE BOLT</>\n\n"
+		TEXT("<Title>NEXT LEVEL</>\n\n"
 
 		// Requirements
 		"<Level>Level: %d</>\n" // Level
@@ -172,7 +172,6 @@ void UAuroraFireBolt::SpawnProjectiles(const FVector& ProjectileTargetLocation, 
 					*ProjectileTargetLocation.ToString()
 					));
 			}
-			
 		}
 		
 		Projectile->FinishSpawning(SpawnTransform);

@@ -1,6 +1,6 @@
-﻿#include "AbilitySystem/Abilities/ArcaneShards.h"
+﻿#include "AbilitySystem/Abilities/ShockWave.h"
 
-FString UArcaneShards::GetDescription(int32 Level)
+FString UShockWave::GetDescription(int32 Level)
 {
 	const int32 ScaledDamage = Damage.GetValueAtLevel(Level);
 	const float ManaCost = GetManaCost(Level);
@@ -10,7 +10,7 @@ FString UArcaneShards::GetDescription(int32 Level)
 	{
 		return FString::Printf(TEXT(
 			// TITLE
-			"<Title>ARCANE SHARDS</>\n\n"
+			"<Title>SHOCK WAVE</>\n\n"
 
 			// Requirements
 			"<Level>Level: %d</>\n" // Level
@@ -18,12 +18,12 @@ FString UArcaneShards::GetDescription(int32 Level)
 			"<Cooldown>Cooldown: %.1f</>\n\n" // Cooldown
 
 			// Details
-			"<Default>Summon shard of arcane energy, "
-			"causing radial arcane damage of: "
+			"<Default>Emits a beam of lightning, "
+			"connecting with the target, repeatedly causing: "
 
 			// Damage
 			"</><Damage>%d</>"
-			"<Default> at the shard origin</>\n\n"
+			"<Default> lightning damage with chance to shock</>\n\n"
 			),
 
 			// Values
@@ -36,7 +36,7 @@ FString UArcaneShards::GetDescription(int32 Level)
 	{
 		return FString::Printf(TEXT(
 			// TITLE
-			"<Title>ARCANE SHARDS</>\n\n"
+			"<Title>SHOCK WAVE</>\n\n"
 
 			// Requirements
 			"<Level>Level: %d</>\n" // Level
@@ -44,23 +44,24 @@ FString UArcaneShards::GetDescription(int32 Level)
 			"<Cooldown>Cooldown: %.1f</>\n\n" // Cooldown
 
 			// Details
-			"<Default>Summon %d shards of arcane energy, "
-			"causing radial arcane damage of: "
+			"<Default>Emits a beam of lightning, "
+			"propagating to %d additional targets nearby, causing: "
 
 			// Damage
-			"</><Damage>%d</><Default> at the shard origin</>\n\n"
+			"</><Damage>%d</>"
+			"<Default> lightning damage with chance to shock</>\n\n"
 			),
 
 			// Values
 			Level,
 			FMath::Abs(ManaCost),
 			Cooldown,
-			FMath::Min(Level,MaxNumShards),
+			FMath::Min(Level,MaxNumShockTargets - 1),
 			ScaledDamage);
 	}
 }
 
-FString UArcaneShards::GetNextLevelDescription(int32 Level)
+FString UShockWave::GetNextLevelDescription(int32 Level)
 {
 	const int32 ScaledDamage = Damage.GetValueAtLevel(Level);
 	const float ManaCost = GetManaCost(Level);
@@ -68,7 +69,7 @@ FString UArcaneShards::GetNextLevelDescription(int32 Level)
 	
 	return FString::Printf(TEXT(
 			// TITLE
-			"<Title>ARCANE SHARDS</>\n\n"
+			"<Title>NEXT LEVEL</>\n\n"
 
 			// Requirements
 			"<Level>Level: %d</>\n" // Level
@@ -76,17 +77,18 @@ FString UArcaneShards::GetNextLevelDescription(int32 Level)
 			"<Cooldown>Cooldown: %.1f</>\n\n" // Cooldown
 
 			// Details
-			"<Default>Summon %d shards of arcane energy, "
-			"causing radial arcane damage of: "
+			"<Default>Emits a beam of lightning, "
+			"propagating to %d additional targets nearby, causing: "
 
 			// Damage
-			"</><Damage>%d</><Default> at the shard origin</>\n\n"
+			"</><Damage>%d</>"
+			"<Default> lightning damage with chance to shock</>\n\n"
 			),
 
 			// Values
 			Level,
 			FMath::Abs(ManaCost),
 			Cooldown,
-			FMath::Min(Level,MaxNumShards),
+			FMath::Min(Level,MaxNumShockTargets - 1),
 			ScaledDamage);
 }
