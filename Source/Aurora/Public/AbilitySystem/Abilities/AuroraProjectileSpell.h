@@ -27,4 +27,15 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	int32 ProjectilesNum = 5;
+
+	/* Enable projectile pitch override at spawn.*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile Behavior")
+	bool bPitchOverride = false;
+
+	/* Adjusting projectile pitch angle at spawn.
+	 * 90 == UpVector
+	 * -90 == DownVector
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile Behavior", meta = (EditCondition = "bPitchOverride"))
+	float PitchAdjustment = 0.f;
 };

@@ -13,6 +13,6 @@ class AURORA_API UDamageTextComponent : public UWidgetComponent
 public:
 	
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-	void SetDamageText(float Damage, bool bBlockedHit, bool bCriticalHit, const FColor& DamageTypeColor);
+	void SetDamageText(float Damage, bool bBlockedHit, bool bCriticalHit, const FGameplayTag& DamageType);
 	
 };

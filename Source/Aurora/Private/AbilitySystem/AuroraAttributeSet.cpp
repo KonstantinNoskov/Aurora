@@ -345,27 +345,13 @@ void UAuroraAttributeSet::ShowFloatingText(const FEffectProperties& Props, const
 	{
 		if (AAuroraPlayerController* PC = Cast<AAuroraPlayerController>(Props.SourceCharacter->Controller))
 		{
-			TArray<FGameplayTag> AbilityTags = Props.EffectContextHandle.Get()->GetAbility()->AbilityTags.GetGameplayTagArray();
-			FColor DamageTypeColor;
-			if (!AbilityTags.IsEmpty())
-			{
-				
-				for (const FGameplayTag& Tag : AbilityTags)
-				{
-					DamageTypeColor = UAuroraLibrary::GetAuroraColors(this)->FindColorByTag(Tag);
-				
-				}
-			}
+
+			// Get Damage Type Tag to pass it in to the Damage Floating Text
+			const FGameplayTag DamageTypeTag = UAuroraAbilitySystemLibrary::GetDamageType(Props.EffectContextHandle);
 			
-			
-			PC->ShowDamageNumber(Damage, Props.TargetCharacter, bBlockedHit, bCriticalHit, DamageTypeColor);
+			PC->ShowDamageNumber(Damage, Props.TargetCharacter, bBlockedHit, bCriticalHit, DamageTypeTag);
 			//return;
 		}
-		/*if (AAuroraPlayerController* PC = Cast<AAuroraPlayerController>(Props.TargetCharacter->Controller))
-		{	
-			PC->ShowDamageNumber(Damage, Props.TargetCharacter, bBlockedHit, bCriticalHit);
-		}*/
-		
 	}
 }
 void UAuroraAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const

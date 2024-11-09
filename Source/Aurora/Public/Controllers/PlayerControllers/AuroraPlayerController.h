@@ -41,7 +41,7 @@ public:
 	TSubclassOf<UDamageTextComponent> DamageTextComponentClass;
 	
 	UFUNCTION(Client, Reliable)
-	void ShowDamageNumber(float DamageAmount, ACharacter* TargetCharacter, bool bBlockedHit, bool bCriticalHit, const FColor& DamageTypeColor);
+	void ShowDamageNumber(float DamageAmount, ACharacter* TargetCharacter, bool bBlockedHit, bool bCriticalHit, const FGameplayTag& DamageType);
 	
 #pragma endregion
 #pragma region INPUT

@@ -14,5 +14,5 @@ FColor UAuroraColors::FindColorByTag(const FGameplayTag& GameplayTag, bool bLogN
 		UE_LOG(LogAurora, Error, TEXT("[%hs]: Can't find Damage Type Color for AbilityTag [%s] on AuroraColor [%s]"), __FUNCTION__ , *GameplayTag.ToString(), *GetNameSafe(this));
 	}
 
-	return FColor();
+	return FColor(1.f,1.f,1.f,1.f);
 }

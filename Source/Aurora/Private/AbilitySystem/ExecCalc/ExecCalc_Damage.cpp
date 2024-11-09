@@ -6,7 +6,6 @@
 #include "AbilitySystem/AuroraAttributeSet.h"
 #include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "Interfaces/Interaction/CombatInterface.h"
-#include "Kismet/GameplayStatics.h"
 
 struct AuroraDamageStatics
 {
