@@ -162,7 +162,7 @@ public:
 	void SetDebuffDamage(float InDamage)								{ DebuffDamage = InDamage; }
 	void SetDebuffDuration(float InDuration)							{ DebuffDuration = InDuration; }
 	void SetDebuffFrequency(float InFrequency)							{ DebuffFrequency = InFrequency; }
-	void SetDamageType(TSharedPtr<FGameplayTag> InDamageTypeTag)	{ DamageTypeTag = InDamageTypeTag; }
+	void SetDamageType(TSharedPtr<FGameplayTag> InDamageTypeTag)		{ DamageTypeTag = InDamageTypeTag; }
 
 protected:
 	
@@ -177,7 +177,7 @@ protected:
 
 	UPROPERTY()
 	float DebuffFrequency = 0.f;
-
+	
 	TSharedPtr<FGameplayTag> DamageTypeTag;
 	
 #pragma endregion
