@@ -19,7 +19,9 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-	void OnHit();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void OnHit();
 
 public:
 	virtual void Destroyed() override;
@@ -29,11 +31,31 @@ public:
 
 private:
 	
-	UFUNCTION()
-	void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	
 
+protected:
+
+	UFUNCTION()
+	virtual void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	
+	/***
+	 *  Check if all condition for triggering overlap logic  is valid.
+	 *  It contains:
+	 *		- Check for valid source actor ability system
+	 *		- Compare source avatar actor with a overlap actor to avoid the projectile to overlap the owner
+	 *		- Check to avoid the projectile to overlap friendly actors
+	 *
+	 *  @param OtherActor - The actor that was overlap.
+	 *
+	 *  @return Whether projectile overlap logic should be triggered  
+	 */
+	bool IsValidOverlap(const AActor* OtherActor) const;
+	
 public:
 
+	/*
+	 * 
+	 */
 	FORCEINLINE USphereComponent* GetSphereCollision() { return Sphere; }
 	FORCEINLINE UProjectileMovementComponent* GetProjectileMovement() { return ProjectileMovement; }
 
@@ -63,9 +85,11 @@ private:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<USoundBase> LoopingSound;
 
+protected:
+
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> LoopingSoundComponent;
-
+	
 	bool bHit = false;
 
 public:

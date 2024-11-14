@@ -40,7 +40,7 @@ void AAuroraProjectile::BeginPlay()
 
 	// Set Projectile life time
 	SetLifeSpan(LifeSpan);
-	
+	SetReplicateMovement(true);
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &AAuroraProjectile::OnSphereOverlap);
 	
 	LoopingSoundComponent = UGameplayStatics::SpawnSoundAttached(LoopingSound, GetRootComponent());
@@ -81,32 +81,48 @@ void AAuroraProjectile::Destroyed()
 }
 void AAuroraProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	const AActor* SourceAvatarActor = DamageEffectParams.SourceASC->GetAvatarActor();
-	if (SourceAvatarActor == OtherActor) return;
-	
-	if (UAuroraAbilitySystemLibrary::IsActorsFriendly(SourceAvatarActor, OtherActor)) return;
-	
+	if (!IsValidOverlap(OtherActor)) return;
+		
 	if (!bHit) OnHit();
 	
 	if (HasAuthority())
 	{
-		
 		 UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor);
 		if (TargetASC)
 		{
+			// Pass in DamageEffectParams...
+
+			// Calculate Death impulse direction
 			const FVector DeathImpulse = GetActorForwardVector() * DamageEffectParams.DeathImpulseMagnitude;
 
-			// Pass in DamageEffectParams...
-			DamageEffectParams.DeathImpulse = DeathImpulse; // Death impulse vector
-			DamageEffectParams.TargetASC = TargetASC; // Target ability system component
+			// Death impulse vector
+			DamageEffectParams.DeathImpulse = DeathImpulse;
+
+			// Target ability system component
+			DamageEffectParams.TargetASC = TargetASC;		
 			UAuroraAbilitySystemLibrary::ApplyDamageEffect(DamageEffectParams);
+			
 		}
 		
 		Destroy();
 	}
 	
 	else bHit = true;
-	
+}
+
+bool AAuroraProjectile::IsValidOverlap(const AActor* OtherActor) const
+{
+	// Source ability system should be valid
+	if (!DamageEffectParams.SourceASC) return false;
+
+	// Projectile shouldn't overlap the owner
+	const AActor* SourceAvatarActor = DamageEffectParams.SourceASC->GetAvatarActor();
+	if (SourceAvatarActor == OtherActor) return false;
+
+	// Projectile shouldn't overlap the friendly actors
+	if (UAuroraAbilitySystemLibrary::IsActorsFriendly(SourceAvatarActor, OtherActor)) return false;
+
+	return true;
 }
 
 
