@@ -19,8 +19,6 @@ class AURORA_API AAuroraHUD : public AHUD
 {
 	GENERATED_BODY()
 
-
-
 #pragma region OVERLAY WIDGET CONTROLLER
 
 public:
@@ -44,7 +42,6 @@ private:
 	TObjectPtr<UOverlayWidgetController> OverlayWidgetController;
 
 #pragma endregion	
-
 #pragma region ATTRIBUTE MENU WIDGET CONTROLLER
 
 public:
@@ -69,7 +66,6 @@ private:
 	TObjectPtr<UAttributeMenuWidgetController> AttributeMenuWidgetController;
 
 #pragma endregion
-
 #pragma region Spell Menu Widget Controller
 
 public:
@@ -95,7 +91,5 @@ private:
 	TObjectPtr<USpellMenuWidgetController> SpellMenuWidgetController;
 	
 #pragma endregion
-
 	
-
 };

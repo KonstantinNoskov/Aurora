@@ -4,6 +4,8 @@
 #include "GameFramework/GameModeBase.h"
 #include "AuroraGameModeBase.generated.h"
 
+class USaveGame;
+class UMVVM_LoadSlot;
 class UAuroraColors;
 class UAbilityInfo;
 class UCharacterClassInfo;
@@ -15,6 +17,8 @@ class AURORA_API AAuroraGameModeBase : public AGameModeBase
 
 public:
 	
+	void SaveSlotData(UMVVM_LoadSlot* LoadSlot, int32 SlotIndex);
+
 	UPROPERTY(EditDefaultsOnly, Category = "Character Class Defaults")
 	TObjectPtr<UCharacterClassInfo> CharacterClassInfo;
 
@@ -23,5 +27,8 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Aurora Colors", DisplayName = "Aurora Colors")
 	TObjectPtr<UAuroraColors> AuroraColorsMap;
+	
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<USaveGame> LoadScreenSaveGameClass;
 	
 };
