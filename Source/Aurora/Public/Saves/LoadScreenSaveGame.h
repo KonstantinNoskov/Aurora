@@ -4,6 +4,17 @@
 #include "GameFramework/SaveGame.h"
 #include "LoadScreenSaveGame.generated.h"
 
+/*
+ *  Order is important. Enum index corresponds with a widget switcher slot index.
+ */
+UENUM(BlueprintType)
+enum ESaveSlotStatus
+{
+	Vacant,
+	EnterName,
+	Taken
+};
+
 UCLASS()
 class AURORA_API ULoadScreenSaveGame : public USaveGame
 {
@@ -19,6 +30,8 @@ public:
 
 	UPROPERTY()
 	FString PlayerName = FString("Default Name");
-
+	
+	UPROPERTY()
+	TEnumAsByte<ESaveSlotStatus> SaveSlotStatus = Vacant;
 	
 };
