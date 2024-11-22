@@ -23,7 +23,7 @@ public:
 	TSubclassOf<UMVVM_LoadSlot> LoadSlotViewModelClass;
 
 	UFUNCTION(BlueprintCallable)
-	void NewSlotButtonPressed(int32 Slot, const FString& EnteredName);
+	void NewSlotButtonPressed(int32 Slot/*, const FString& EnteredName*/);
 
 	UFUNCTION(BlueprintCallable)
 	void NewGameButtonPressed(int32 Slot);
