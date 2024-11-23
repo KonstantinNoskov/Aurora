@@ -5,6 +5,8 @@
 #include "LoadScreenWidget.generated.h"
 
 
+
+
 UCLASS()
 class AURORA_API ULoadScreenWidget : public UUserWidget
 {

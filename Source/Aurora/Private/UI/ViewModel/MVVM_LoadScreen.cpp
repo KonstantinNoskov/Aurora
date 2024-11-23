@@ -45,6 +45,22 @@ void UMVVM_LoadScreen::NewGameButtonPressed(int32 Slot)
 
 void UMVVM_LoadScreen::SelectSlotButtonPressed(int32 Slot)
 {
+	//SlotSelected.Broadcast();
+	for (auto LoadSlot : LoadSlots)
+	{
+		LoadSlot.Value->SetSelectButtonIsEnable(LoadSlot.Key != Slot);
+		/*if (LoadSlot.Key == Slot)
+		{
+			LoadSlot.Value->EnableSelectSlotButton.Broadcast(false);
+		}
+		else
+		{
+			LoadSlot.Value->EnableSelectSlotButton.Broadcast(true);
+		}*/
+	}
+
+	SetPlayButtonIsEnable(true);
+	SetDeleteButtonIsEnable(true);
 }
 
 void UMVVM_LoadScreen::LoadData()
