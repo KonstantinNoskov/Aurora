@@ -18,10 +18,11 @@ class AURORA_API AAuroraGameModeBase : public AGameModeBase
 
 public:
 	
-	void SaveSlotData(UMVVM_LoadSlot* LoadSlot, int32 SlotIndex);
+			void SaveSlotData(UMVVM_LoadSlot* LoadSlot, int32 SlotIndex);
+	static	void DeleteSlot(const FText& SlotName, int32 SlotIndex);
 
 	ULoadScreenSaveGame* GetSaveSlotData(const FString& SlotName, int32 SlotIndex) const;
-
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Character Class Defaults")
 	TObjectPtr<UCharacterClassInfo> CharacterClassInfo;
 

@@ -29,7 +29,7 @@ public:
 	int32 SlotIndex = 0;
 
 	UPROPERTY()
-	FString PlayerName = FString("Default Name");
+	FString PlayerName = FString("");
 	
 	UPROPERTY()
 	TEnumAsByte<ESaveSlotStatus> SaveSlotStatus = Vacant;

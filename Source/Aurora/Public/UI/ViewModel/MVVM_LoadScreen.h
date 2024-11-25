@@ -5,7 +5,7 @@
 
 #include "MVVM_LoadScreen.generated.h"
 
-//DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSlotSelected);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSlotSelected);
 
 class UMVVM_LoadSlot;
 
@@ -38,7 +38,7 @@ public:
 	TSubclassOf<UMVVM_LoadSlot> LoadSlotViewModelClass;
 
 	UFUNCTION(BlueprintCallable)
-	void NewSlotButtonPressed(int32 Slot/*, const FString& EnteredName*/);
+	void NewSlotButtonPressed(int32 Slot/*, const FText& EnteredName*/);
 
 	UFUNCTION(BlueprintCallable)
 	void NewGameButtonPressed(int32 Slot);
@@ -50,10 +50,16 @@ public:
 
 public:
 
-	/*UPROPERTY(BlueprintAssignable)
-	FOnSlotSelected SlotSelected;*/
+	UPROPERTY(BlueprintAssignable)
+	FOnSlotSelected SlotSelected;
+	
+	UFUNCTION(BlueprintCallable)
+	void DeleteButtonPressed();
 	
 private:
+
+	UPROPERTY()
+	TObjectPtr<UMVVM_LoadSlot> SelectedSlot;
 	
 	UPROPERTY()
 	TMap<int32, UMVVM_LoadSlot*> LoadSlots;
