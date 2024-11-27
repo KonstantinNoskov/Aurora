@@ -52,6 +52,9 @@ public:
 	virtual AMagicCircle* ShowMagicCircle_Implementation(UMaterialInterface* DecalMaterial, float InMagicCircleRadius) override;
 	virtual void HideMagicCircle_Implementation() override;
 
+	// Save Progress
+	virtual void SaveProgress_Implementation(const FName& CheckPointTag) override;
+
 #pragma endregion
 
 protected:

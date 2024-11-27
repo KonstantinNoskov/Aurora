@@ -21,11 +21,14 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
+
+	static	void DeleteSlot(const FText& SlotName, int32 SlotIndex);
 	
 	void SaveSlotData(UMVVM_LoadSlot* LoadSlot, int32 SlotIndex);
-	static	void DeleteSlot(const FText& SlotName, int32 SlotIndex);
 	void TravelToMap(UMVVM_LoadSlot* Slot);
-
+	void SaveInGameProgressData(ULoadScreenSaveGame* SaveObject);
+	
+	ULoadScreenSaveGame* RetrieveInGameSaveData();
 	ULoadScreenSaveGame* GetSaveSlotData(const FString& SlotName, int32 SlotIndex) const;
 
 	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;

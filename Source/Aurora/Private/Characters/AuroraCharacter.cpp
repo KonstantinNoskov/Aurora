@@ -6,13 +6,19 @@
 #include "AuroraGameplayTags.h"
 #include "NiagaraComponent.h"
 #include "AbilitySystem/AuroraAbilitySystemComponent.h"
+#include "AbilitySystem/AuroraAttributeSet.h"
 #include "AbilitySystem/Data/LevelUpInfo.h"
 #include "Camera/CameraComponent.h"
+#include "Commandlets/WorldPartitionCommandletHelpers.h"
 #include "Controllers/PlayerControllers/AuroraPlayerController.h"
 #include "Debug/DebugMacros.h"
+#include "Game/AuroraGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GameModes/AuroraGameModeBase.h"
+#include "Kismet/GameplayStatics.h"
 #include "Player/AuroraPlayerState.h"
+#include "Saves/LoadScreenSaveGame.h"
 #include "UI/HUD/AuroraHUD.h"
 
 AAuroraCharacter::AAuroraCharacter()
@@ -169,7 +175,15 @@ int32 AAuroraCharacter::GetSpellPoints_Implementation() const
 
 	return AuroraPlayerState->GetSpellPoints();
 }
+void AAuroraCharacter::AddToSpellPoints_Implementation(int32 InSpellPoints)
+{
+	AAuroraPlayerState* AuroraPlayerState = GetPlayerState<AAuroraPlayerState>();
+	checkf(AuroraPlayerState, TEXT("[%hs] - Aurora playerstate is null!"), __FUNCTION__)
+	
+	AuroraPlayerState->AddToSpellPoints(InSpellPoints);
+}
 
+// Magic Circle
 AMagicCircle* AAuroraCharacter::ShowMagicCircle_Implementation(UMaterialInterface* DecalMaterial, float InMagicCircleRadius)
 {
 	if (AAuroraPlayerController* AuroraPlayerController = Cast<AAuroraPlayerController>(GetController()))
@@ -191,13 +205,43 @@ void AAuroraCharacter::HideMagicCircle_Implementation()
 	}
 }
 
-void AAuroraCharacter::AddToSpellPoints_Implementation(int32 InSpellPoints)
+// Save Progress
+void AAuroraCharacter::SaveProgress_Implementation(const FName& CheckPointTag)
 {
-	AAuroraPlayerState* AuroraPlayerState = GetPlayerState<AAuroraPlayerState>();
-	checkf(AuroraPlayerState, TEXT("[%hs] - Aurora playerstate is null!"), __FUNCTION__)
-	
-	AuroraPlayerState->AddToSpellPoints(InSpellPoints);
+	AAuroraGameModeBase* AuroraGameMode = Cast<AAuroraGameModeBase>(UGameplayStatics::GetGameMode(this));
+	if (!AuroraGameMode) return;
+
+	UAuroraGameInstance* AuroraGameInstance = Cast<UAuroraGameInstance>(AuroraGameMode->GetGameInstance());
+	if (AuroraGameInstance)
+	{
+		ULoadScreenSaveGame* SaveData = AuroraGameMode->RetrieveInGameSaveData();
+		if (!SaveData) return;
+		
+		SaveData->PlayerStartTag = CheckPointTag;
+
+		// Save Player State Data
+		if (AAuroraPlayerState* AuroraPlayerState = Cast<AAuroraPlayerState>(GetPlayerState()))
+		{
+			SaveData->PlayerLevel		= AuroraPlayerState->GetPlayerLevel();
+			SaveData->XP				= AuroraPlayerState->GetXP();
+			SaveData->AttributePoints	= AuroraPlayerState->GetAttributePoints();
+			SaveData->SpellPoints		= AuroraPlayerState->GetSpellPoints();
+		}
+
+		// Save Attributes Data
+		SaveData->Strength		= UAuroraAttributeSet::GetStrengthAttribute().GetNumericValue(GetAttributeSet());
+		SaveData->Intelligence	= UAuroraAttributeSet::GetIntelligenceAttribute().GetNumericValue(GetAttributeSet());
+		SaveData->Resilience	= UAuroraAttributeSet::GetResilienceAttribute().GetNumericValue(GetAttributeSet());
+		SaveData->Vigor			= UAuroraAttributeSet::GetVigorAttribute().GetNumericValue(GetAttributeSet());
+
+		
+		
+
+		AuroraGameMode->SaveInGameProgressData(SaveData);
+	}
 }
+
+
 
 #pragma endregion
 #pragma region ABILITY SYSTEM

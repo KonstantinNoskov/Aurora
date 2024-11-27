@@ -36,5 +36,43 @@ public:
 
 	UPROPERTY()
 	FString MapName = FString("");
+
+	UPROPERTY()
+	FName PlayerStartTag;
+
+#pragma region Data to Save
+
+#pragma region PlayerState
+
+	UPROPERTY()
+	int32 PlayerLevel = 0;
+
+	UPROPERTY()
+	int32 XP = 0;
+	
+	UPROPERTY()
+	int32 SpellPoints = 0;
+
+	UPROPERTY()
+	int32 AttributePoints = 0;
+	
+#pragma endregion
+#pragma region Attributes
+
+	UPROPERTY()
+	float Strength = 0;
+
+	UPROPERTY()
+	float Intelligence = 0;
+
+	UPROPERTY()
+	float Resilience = 0;
+
+	UPROPERTY()
+	float Vigor = 0;
+
+#pragma endregion
+
+#pragma endregion
 	
 };
