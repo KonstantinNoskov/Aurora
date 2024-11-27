@@ -16,10 +16,15 @@ class AURORA_API AAuroraGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 
+protected:
+	
+	virtual void BeginPlay() override;
+
 public:
 	
-			void SaveSlotData(UMVVM_LoadSlot* LoadSlot, int32 SlotIndex);
+	void SaveSlotData(UMVVM_LoadSlot* LoadSlot, int32 SlotIndex);
 	static	void DeleteSlot(const FText& SlotName, int32 SlotIndex);
+	void TravelToMap(UMVVM_LoadSlot* Slot);
 
 	ULoadScreenSaveGame* GetSaveSlotData(const FString& SlotName, int32 SlotIndex) const;
 	
@@ -34,5 +39,14 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<USaveGame> LoadScreenSaveGameClass;
+
+	UPROPERTY(EditDefaultsOnly)
+	FString DefaultMapName;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSoftObjectPtr<UWorld> DefaultMap;
+
+	UPROPERTY(EditDefaultsOnly)
+	TMap<FString, TSoftObjectPtr<UWorld>> Maps;
 	
 };

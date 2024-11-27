@@ -33,6 +33,8 @@ void UMVVM_LoadScreen::NewSlotButtonPressed(int32 Slot/*, const FText& EnteredNa
 
 	//LoadSlots[Slot]->SetPlayerName(EnteredName);
 	LoadSlots[Slot]->SlotStatus = Taken;
+	LoadSlots[Slot]->SetMapName(AuroraGameMode->DefaultMapName);
+	
 	AuroraGameMode->SaveSlotData(LoadSlots[Slot], Slot);
 	
 	LoadSlots[Slot]->InitializeSlot();
@@ -71,8 +73,21 @@ void UMVVM_LoadScreen::SelectSlotButtonPressed(int32 Slot)
 	
 }
 
+void UMVVM_LoadScreen::PlayButtonPressed()
+{
+	
+	AAuroraGameModeBase* AuroraGameModeBase = Cast<AAuroraGameModeBase>(UGameplayStatics::GetGameMode(this));
+
+	if (IsValid(SelectedSlot))
+	{
+		AuroraGameModeBase->TravelToMap(SelectedSlot);	
+	}
+	
+}
+
 void UMVVM_LoadScreen::LoadData()
 {
+	
 	AAuroraGameModeBase* AuroraGameModeBase = Cast<AAuroraGameModeBase>(UGameplayStatics::GetGameMode(this));
 	
 	for (auto LoadSlot : LoadSlots)
@@ -80,12 +95,15 @@ void UMVVM_LoadScreen::LoadData()
 		ULoadScreenSaveGame* SaveObject = AuroraGameModeBase->GetSaveSlotData(LoadSlot.Value->GetLoadSlotName(), LoadSlot.Key);
 
 		const FString PlayerName = SaveObject->PlayerName;
+		const FString MapName = SaveObject->MapName;
 		TEnumAsByte<ESaveSlotStatus> SaveSlotStatus = SaveObject->SaveSlotStatus;
 
 		LoadSlot.Value->SlotStatus;
 		LoadSlot.Value->SetPlayerName(FText::FromString(PlayerName));
 		LoadSlot.Value->SlotStatus = SaveSlotStatus;
 		LoadSlot.Value->InitializeSlot();
+		LoadSlot.Value->SetMapName(MapName);
+		
 	}
 }
 
