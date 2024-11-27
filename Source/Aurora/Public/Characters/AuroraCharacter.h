@@ -60,6 +60,9 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	void LoadProgress();
+	
+
 public:
 	
 	virtual void Tick(float DeltaTime) override;

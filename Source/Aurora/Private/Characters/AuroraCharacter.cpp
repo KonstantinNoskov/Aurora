@@ -62,7 +62,6 @@ void AAuroraCharacter::BeginPlay()
 	
 }
 
-
 void AAuroraCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -78,8 +77,44 @@ void AAuroraCharacter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	InitAbilityActorInfo();
+	
+	// TODO: Load in Abilities from disk
+	
 	AddCharacterAbilities();
 }
+
+void AAuroraCharacter::LoadProgress()
+{
+	AAuroraGameModeBase* AuroraGameMode = Cast<AAuroraGameModeBase>(UGameplayStatics::GetGameMode(this));
+	if (!AuroraGameMode) return;
+
+	UAuroraGameInstance* AuroraGameInstance = Cast<UAuroraGameInstance>(AuroraGameMode->GetGameInstance());
+	if (AuroraGameInstance)
+	{
+		ULoadScreenSaveGame* SaveData = AuroraGameMode->RetrieveInGameSaveData();
+		if (!SaveData) return;
+
+		if (AAuroraPlayerState* AuroraPlayerState = Cast<AAuroraPlayerState>(GetPlayerState()))
+		{
+			AuroraPlayerState->SetLevel(SaveData->PlayerLevel);
+			AuroraPlayerState->SetXP(SaveData->XP);
+			AuroraPlayerState->SetAttributePoints(SaveData->AttributePoints);
+			AuroraPlayerState->SetSpellPoints(SaveData->SpellPoints);
+		}
+		
+		if (SaveData->bFirstTimeLoadIn)
+		{
+			InitializeDefaultAttributes();
+			AddCharacterAbilities();
+		}
+		else
+		{
+			
+		}
+		
+	}
+}
+ 
 
 #pragma region Player Interface overriden functions
 
@@ -233,15 +268,11 @@ void AAuroraCharacter::SaveProgress_Implementation(const FName& CheckPointTag)
 		SaveData->Intelligence	= UAuroraAttributeSet::GetIntelligenceAttribute().GetNumericValue(GetAttributeSet());
 		SaveData->Resilience	= UAuroraAttributeSet::GetResilienceAttribute().GetNumericValue(GetAttributeSet());
 		SaveData->Vigor			= UAuroraAttributeSet::GetVigorAttribute().GetNumericValue(GetAttributeSet());
-
 		
-		
-
+		SaveData->bFirstTimeLoadIn = false;
 		AuroraGameMode->SaveInGameProgressData(SaveData);
 	}
 }
-
-
 
 #pragma endregion
 #pragma region ABILITY SYSTEM
@@ -266,7 +297,7 @@ void AAuroraCharacter::InitAbilityActorInfo()
 	AttributeSet = AuroraPlayerState->GetAttributeSet();
 
 	// On AbilitySystemComponent assigned.
-	// WARNING: It should be called after ASC initialized.
+	// It should be called after ASC initialized.
 	OnASCRegistered.Broadcast(AbilitySystemComponent);
 
 	AbilitySystemComponent->RegisterGameplayTagEvent(FAuroraGameplayTags::Get().Debuff_Shock, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AAuroraCharacter::StunTagChanged);
