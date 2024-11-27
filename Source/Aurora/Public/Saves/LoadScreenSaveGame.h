@@ -5,7 +5,7 @@
 #include "LoadScreenSaveGame.generated.h"
 
 /*
- *  Order is important. Enum index corresponds with a widget switcher slot index.
+ *  The Order is important. Enum index corresponds with a widget switcher slot index.
  */
 UENUM(BlueprintType)
 enum ESaveSlotStatus
