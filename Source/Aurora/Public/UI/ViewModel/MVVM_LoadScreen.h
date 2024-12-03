@@ -81,6 +81,4 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, FieldNotify, Setter, Getter, meta = (AllowPrivateAccess = "true"))
 	bool DeleteButtonIsEnable = false;
-
-	
 };

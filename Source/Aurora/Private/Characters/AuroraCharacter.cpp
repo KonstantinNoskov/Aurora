@@ -4,9 +4,12 @@
 
 #include "AbilitySystemComponent.h"
 #include "AuroraGameplayTags.h"
+#include "IContentBrowserSingleton.h"
 #include "NiagaraComponent.h"
 #include "AbilitySystem/AuroraAbilitySystemComponent.h"
+#include "AbilitySystem/AuroraAbilitySystemLibrary.h"
 #include "AbilitySystem/AuroraAttributeSet.h"
+#include "AbilitySystem/Data/AbilityInfo.h"
 #include "AbilitySystem/Data/LevelUpInfo.h"
 #include "Camera/CameraComponent.h"
 #include "Commandlets/WorldPartitionCommandletHelpers.h"
@@ -77,12 +80,70 @@ void AAuroraCharacter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	InitAbilityActorInfo();
+	LoadProgress();
 	
-	// TODO: Load in Abilities from disk
-	
-	AddCharacterAbilities();
+	//AddCharacterAbilities();
 }
 
+// Save/Load Progress
+void AAuroraCharacter::SaveProgress_Implementation(const FName& CheckPointTag)
+{
+	AAuroraGameModeBase* AuroraGameMode = Cast<AAuroraGameModeBase>(UGameplayStatics::GetGameMode(this));
+	if (!AuroraGameMode) return;
+
+	UAuroraGameInstance* AuroraGameInstance = Cast<UAuroraGameInstance>(AuroraGameMode->GetGameInstance());
+	if (AuroraGameInstance)
+	{
+		ULoadScreenSaveGame* SaveData = AuroraGameMode->RetrieveInGameSaveData();
+		if (!SaveData) return;
+		
+		SaveData->PlayerStartTag = CheckPointTag;
+		
+		// Save Player State Data
+		if (AAuroraPlayerState* AuroraPlayerState = Cast<AAuroraPlayerState>(GetPlayerState()))
+		{
+			SaveData->PlayerLevel		= AuroraPlayerState->GetPlayerLevel();
+			SaveData->XP				= AuroraPlayerState->GetXP();
+			SaveData->AttributePoints	= AuroraPlayerState->GetAttributePoints();
+			SaveData->SpellPoints		= AuroraPlayerState->GetSpellPoints();
+		}
+
+		// Save Attributes Data
+		SaveData->Strength		= UAuroraAttributeSet::GetStrengthAttribute().GetNumericValue(GetAttributeSet());
+		SaveData->Intelligence	= UAuroraAttributeSet::GetIntelligenceAttribute().GetNumericValue(GetAttributeSet());
+		SaveData->Resilience	= UAuroraAttributeSet::GetResilienceAttribute().GetNumericValue(GetAttributeSet());
+		SaveData->Vigor			= UAuroraAttributeSet::GetVigorAttribute().GetNumericValue(GetAttributeSet());
+		
+		SaveData->bFirstTimeLoadIn = false;
+		
+		// Save Abilities Data
+		if (!HasAuthority()) return;
+
+		UAuroraAbilitySystemComponent* AuroraASC = Cast<UAuroraAbilitySystemComponent>(AbilitySystemComponent);
+		FForEachAbilitySignature SaveAbilityDelegate;
+		SaveData->SavedAbilities.Empty();
+		
+		SaveAbilityDelegate.BindLambda([this, AuroraASC, &SaveData](const FGameplayAbilitySpec& AbilitySpec)
+		{
+			const FGameplayTag AbilityTag = AuroraASC->GetAbilityTagFromSpec(AbilitySpec);
+			UAbilityInfo* AbilityInfo = UAuroraAbilitySystemLibrary::GetAbilityInfo(this);
+			FAuroraAbilityInfo Info = AbilityInfo->FindAbilityInfoByTag(AbilityTag);
+			
+			FSavedAbility SavedAbility;
+			SavedAbility.GameplayAbilityClass = Info.Ability;
+			SavedAbility.AbilityLevel = AbilitySpec.Level;
+			SavedAbility.AbilitySlotTag = AuroraASC->GetSlotFromAbilityTag(AbilityTag);
+			SavedAbility.AbilityStatusTag = AuroraASC->GetAbilityStatusFromTag(AbilityTag);
+			SavedAbility.GameplayAbilityTag = AbilityTag;
+			SavedAbility.AbilityTypeTag = Info.AbilityTypeTag;
+
+			SaveData->SavedAbilities.AddUnique(SavedAbility);
+		});
+
+		AuroraASC->ForEachAbility(SaveAbilityDelegate);
+		AuroraGameMode->SaveInGameProgressData(SaveData);
+	}
+}
 void AAuroraCharacter::LoadProgress()
 {
 	AAuroraGameModeBase* AuroraGameMode = Cast<AAuroraGameModeBase>(UGameplayStatics::GetGameMode(this));
@@ -93,14 +154,6 @@ void AAuroraCharacter::LoadProgress()
 	{
 		ULoadScreenSaveGame* SaveData = AuroraGameMode->RetrieveInGameSaveData();
 		if (!SaveData) return;
-
-		if (AAuroraPlayerState* AuroraPlayerState = Cast<AAuroraPlayerState>(GetPlayerState()))
-		{
-			AuroraPlayerState->SetLevel(SaveData->PlayerLevel);
-			AuroraPlayerState->SetXP(SaveData->XP);
-			AuroraPlayerState->SetAttributePoints(SaveData->AttributePoints);
-			AuroraPlayerState->SetSpellPoints(SaveData->SpellPoints);
-		}
 		
 		if (SaveData->bFirstTimeLoadIn)
 		{
@@ -109,12 +162,26 @@ void AAuroraCharacter::LoadProgress()
 		}
 		else
 		{
+			// Load Abilities Data
+			if (UAuroraAbilitySystemComponent* AuroraASC = Cast<UAuroraAbilitySystemComponent>(AbilitySystemComponent))
+			{
+				
+				AuroraASC->AddCharacterAbilitiesFromSaveData(SaveData);
+			}
 			
+			// Load Player State Data
+			if (AAuroraPlayerState* AuroraPlayerState = Cast<AAuroraPlayerState>(GetPlayerState()))
+			{
+				AuroraPlayerState->SetLevel(SaveData->PlayerLevel);
+				AuroraPlayerState->SetXP(SaveData->XP);
+				AuroraPlayerState->SetAttributePoints(SaveData->AttributePoints);
+				AuroraPlayerState->SetSpellPoints(SaveData->SpellPoints);
+			}
+			
+			UAuroraAbilitySystemLibrary::InitializeDefaultAttributesFromSaveData(this, AbilitySystemComponent, SaveData);
 		}
-		
 	}
 }
- 
 
 #pragma region Player Interface overriden functions
 
@@ -150,7 +217,6 @@ void AAuroraCharacter::AddToPlayerLevel_Implementation(int32 InPlayerLevel)
 {
 	AAuroraPlayerState* AuroraPlayerState = GetPlayerState<AAuroraPlayerState>();
 	checkf(AuroraPlayerState, TEXT("[%hs] - Aurora playerstate is null!"), __FUNCTION__)
-
 	AuroraPlayerState->AddToLevel(InPlayerLevel);
 
 	if (UAuroraAbilitySystemComponent* AuroraASC = Cast<UAuroraAbilitySystemComponent>(GetAbilitySystemComponent()))
@@ -237,40 +303,6 @@ void AAuroraCharacter::HideMagicCircle_Implementation()
 	{
 		AuroraPlayerController->HideMagicCircle();
 		AuroraPlayerController->bShowMouseCursor = true;
-	}
-}
-
-// Save Progress
-void AAuroraCharacter::SaveProgress_Implementation(const FName& CheckPointTag)
-{
-	AAuroraGameModeBase* AuroraGameMode = Cast<AAuroraGameModeBase>(UGameplayStatics::GetGameMode(this));
-	if (!AuroraGameMode) return;
-
-	UAuroraGameInstance* AuroraGameInstance = Cast<UAuroraGameInstance>(AuroraGameMode->GetGameInstance());
-	if (AuroraGameInstance)
-	{
-		ULoadScreenSaveGame* SaveData = AuroraGameMode->RetrieveInGameSaveData();
-		if (!SaveData) return;
-		
-		SaveData->PlayerStartTag = CheckPointTag;
-
-		// Save Player State Data
-		if (AAuroraPlayerState* AuroraPlayerState = Cast<AAuroraPlayerState>(GetPlayerState()))
-		{
-			SaveData->PlayerLevel		= AuroraPlayerState->GetPlayerLevel();
-			SaveData->XP				= AuroraPlayerState->GetXP();
-			SaveData->AttributePoints	= AuroraPlayerState->GetAttributePoints();
-			SaveData->SpellPoints		= AuroraPlayerState->GetSpellPoints();
-		}
-
-		// Save Attributes Data
-		SaveData->Strength		= UAuroraAttributeSet::GetStrengthAttribute().GetNumericValue(GetAttributeSet());
-		SaveData->Intelligence	= UAuroraAttributeSet::GetIntelligenceAttribute().GetNumericValue(GetAttributeSet());
-		SaveData->Resilience	= UAuroraAttributeSet::GetResilienceAttribute().GetNumericValue(GetAttributeSet());
-		SaveData->Vigor			= UAuroraAttributeSet::GetVigorAttribute().GetNumericValue(GetAttributeSet());
-		
-		SaveData->bFirstTimeLoadIn = false;
-		AuroraGameMode->SaveInGameProgressData(SaveData);
 	}
 }
 

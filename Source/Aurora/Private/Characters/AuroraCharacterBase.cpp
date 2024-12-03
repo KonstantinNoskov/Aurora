@@ -76,8 +76,6 @@ void AAuroraCharacterBase::StunTagChanged(const FGameplayTag CallbackTag, int32 
 	GetCharacterMovement()->MaxWalkSpeed = bStunned ? 0.f : BaseWalkSpeed;
 }
 
-
-
 #pragma region ABILITY SYSTEM
 
 void AAuroraCharacterBase::InitAbilityActorInfo()
@@ -114,6 +112,7 @@ void AAuroraCharacterBase::AddCharacterAbilities()
 	UAuroraAbilitySystemComponent* AuroraASC = CastChecked<UAuroraAbilitySystemComponent>(AbilitySystemComponent);
 	if (!HasAuthority()) return;
 
+	
 	AuroraASC->AddCharacterAbilities(StartupAbilities);
 	AuroraASC->AddCharacterPassiveAbilities(StartupPassiveAbilities);
 	

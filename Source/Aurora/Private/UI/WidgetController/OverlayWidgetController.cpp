@@ -57,15 +57,15 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 	
 	// On Level changed
 	GetAuroraPS()->OnLevelChanged.AddLambda(
-	[this](int32 NewLevel)
+	[this](int32 NewLevel, bool bLevelUp)
 			{
-				OnLevelUpdated.Broadcast(NewLevel);
+				OnLevelUpdated.Broadcast(NewLevel, bLevelUp);
 			});
 	
 	// On Startup Abilities Initialized
 	if (GetAuroraASC())
 	{
-		// On Ability Equipped bind
+		// On Ability Equipped
 		GetAuroraASC()->OnAbilityEquipped.AddUObject(this, &UOverlayWidgetController::OnAbilityEquipped);
 		
 		if (GetAuroraASC()->bStartupAbilitiesGiven)
@@ -118,8 +118,7 @@ void UOverlayWidgetController::OnXPUpdate(int32 NewXP)
 	}
 }
 
-void UOverlayWidgetController::OnAbilityEquipped(const FGameplayTag& AbilityTag, const FGameplayTag& AbilityStatusTag,
-	const FGameplayTag& SlotTag, const FGameplayTag& PrevSlotTag) const
+void UOverlayWidgetController::OnAbilityEquipped(const FGameplayTag& AbilityTag, const FGameplayTag& AbilityStatusTag, const FGameplayTag& SlotTag, const FGameplayTag& PrevSlotTag) const
 {
 	
 	const FAuroraGameplayTags GameplayTags = FAuroraGameplayTags::Get();
@@ -130,12 +129,14 @@ void UOverlayWidgetController::OnAbilityEquipped(const FGameplayTag& AbilityTag,
 	LastSlotInfo.AbilityTag = GameplayTags.Abilities_None;
 
 	// Broadcast empty info if PrevSlot is a valid slot. Only if equipping an already-equipped spell;
-	AbilityInfoDelegate.Broadcast(LastSlotInfo);
+	//AbilityInfoDelegate.Broadcast(LastSlotInfo);
 
 	FAuroraAbilityInfo Info = AbilityInfo->FindAbilityInfoByTag(AbilityTag);
 	Info.AbilityStatusTag = AbilityStatusTag;
 	Info.InputTag = SlotTag;
+	
 	AbilityInfoDelegate.Broadcast(Info);
+	
 }
 
 template <typename T>

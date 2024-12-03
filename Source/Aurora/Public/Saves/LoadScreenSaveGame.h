@@ -2,6 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
+#include "GameplayTagContainer.h"
+#include "Abilities/GameplayAbility.h"
 #include "LoadScreenSaveGame.generated.h"
 
 /*
@@ -15,10 +17,42 @@ enum ESaveSlotStatus
 	Taken
 };
 
+USTRUCT(BlueprintType)
+struct FSavedAbility
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ClassDefaults")
+	TSubclassOf<UGameplayAbility> GameplayAbilityClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FGameplayTag GameplayAbilityTag = FGameplayTag();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FGameplayTag AbilityStatusTag = FGameplayTag();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FGameplayTag AbilitySlotTag = FGameplayTag();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FGameplayTag AbilityTypeTag = FGameplayTag();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	int32 AbilityLevel = 1;
+
+	bool operator==(const FSavedAbility& Right) const
+	{
+		return this->GameplayAbilityTag.MatchesTagExact(Right.GameplayAbilityTag);
+	}
+};
+
+
 UCLASS()
 class AURORA_API ULoadScreenSaveGame : public USaveGame
 {
 	GENERATED_BODY()
+	
+#pragma region Save Slot
 
 public:
 
@@ -43,12 +77,11 @@ public:
 	UPROPERTY()
 	FName PlayerStartTag;
 
-#pragma region Data to Save
-
+#pragma endregion
 #pragma region PlayerState
 
 	UPROPERTY()
-	int32 PlayerLevel = 0;
+	int32 PlayerLevel = 1;
 
 	UPROPERTY()
 	int32 XP = 0;
@@ -75,7 +108,12 @@ public:
 	float Vigor = 0;
 
 #pragma endregion
+#pragma region Abilities
 
+	UPROPERTY()
+	TArray<FSavedAbility> SavedAbilities;
+	
 #pragma endregion
+	
 	
 };

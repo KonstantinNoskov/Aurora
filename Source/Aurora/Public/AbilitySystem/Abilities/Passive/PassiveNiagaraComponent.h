@@ -6,7 +6,7 @@
 #include "PassiveNiagaraComponent.generated.h"
 
 
-
+class UAuroraAbilitySystemComponent;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class AURORA_API UPassiveNiagaraComponent : public UNiagaraComponent
@@ -25,4 +25,9 @@ protected:
 	virtual void BeginPlay() override;
 
 	void OnPassiveActivate(const FGameplayTag& InAbilityTag, bool bActivate);
+	
+	void ActivateIfEquipped(UAuroraAbilitySystemComponent* AuroraASC);
 };
+
+
+

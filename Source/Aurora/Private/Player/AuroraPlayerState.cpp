@@ -35,10 +35,12 @@ void AAuroraPlayerState::BeginPlay()
 }
 
 #pragma region ABILITY SYSTEM
+
 UAbilitySystemComponent* AAuroraPlayerState::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent; 
 }
+
 #pragma endregion
 
 #pragma region XP & Level UP
@@ -59,14 +61,13 @@ void AAuroraPlayerState::AddToXP(int32 AddXP)
 void AAuroraPlayerState::SetLevel(int32 NewLevel)
 {
 	Level = NewLevel;
-
-	OnLevelChanged.Broadcast(Level);
+	OnLevelChanged.Broadcast(Level, false);
 }
+
 void AAuroraPlayerState::AddToLevel(int32 AddLevel)
 {
 	Level += AddLevel;
-
-	OnLevelChanged.Broadcast(Level);
+	OnLevelChanged.Broadcast(Level, true);
 }
 
 void AAuroraPlayerState::AddToAttributePoints(int32 AddAttributePoints)
@@ -93,7 +94,7 @@ void AAuroraPlayerState::SetSpellPoints(int32 NewSpellPoints)
 
 void AAuroraPlayerState::OnRep_Level(int32 OldLevel) const
 {
-	OnLevelChanged.Broadcast(Level);
+	OnLevelChanged.Broadcast(Level, true);
 }
 void AAuroraPlayerState::OnRep_XP(int32 OldXP) const 
 {
