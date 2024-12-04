@@ -5,7 +5,6 @@
 #include "AbilitySystem/AuroraAbilitySystemComponent.h"
 #include "Interfaces/Interaction/CombatInterface.h"
 
-
 UPassiveNiagaraComponent::UPassiveNiagaraComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
@@ -45,7 +44,6 @@ void UPassiveNiagaraComponent::OnPassiveActivate(const FGameplayTag& InAbilityTa
 		}
 	}
 }
-
 void UPassiveNiagaraComponent::ActivateIfEquipped(UAuroraAbilitySystemComponent* AuroraASC)
 {
 	const bool bStartupAbilitiesGiven = AuroraASC->bStartupAbilitiesGiven;

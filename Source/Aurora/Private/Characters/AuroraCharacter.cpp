@@ -1,10 +1,7 @@
 ﻿#include "Characters/AuroraCharacter.h"
 
-#include <string>
-
 #include "AbilitySystemComponent.h"
 #include "AuroraGameplayTags.h"
-#include "IContentBrowserSingleton.h"
 #include "NiagaraComponent.h"
 #include "AbilitySystem/AuroraAbilitySystemComponent.h"
 #include "AbilitySystem/AuroraAbilitySystemLibrary.h"
@@ -12,9 +9,7 @@
 #include "AbilitySystem/Data/AbilityInfo.h"
 #include "AbilitySystem/Data/LevelUpInfo.h"
 #include "Camera/CameraComponent.h"
-#include "Commandlets/WorldPartitionCommandletHelpers.h"
 #include "Controllers/PlayerControllers/AuroraPlayerController.h"
-#include "Debug/DebugMacros.h"
 #include "Game/AuroraGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -40,7 +35,7 @@ AAuroraCharacter::AAuroraCharacter()
 	AuroraCameraComponent->SetupAttachment(AuroraSpringArmComponent, USpringArmComponent::SocketName);
 	AuroraCameraComponent->bUsePawnControlRotation = false;
 
-	// Orientation 
+	// Character Movement 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 400.f, 0.f);
 	GetCharacterMovement()->bConstrainToPlane = true;
@@ -50,7 +45,7 @@ AAuroraCharacter::AAuroraCharacter()
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
 
-	// Character defaults
+	// Character Class Default Data
 	CharacterClass = ECharacterClass::Elementalist;
 
 	// VFX
@@ -62,14 +57,10 @@ AAuroraCharacter::AAuroraCharacter()
 void AAuroraCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
-
 void AAuroraCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	
 }
 void AAuroraCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -81,8 +72,11 @@ void AAuroraCharacter::PossessedBy(AController* NewController)
 
 	InitAbilityActorInfo();
 	LoadProgress();
-	
-	//AddCharacterAbilities();
+
+	if (AAuroraGameModeBase* AuroraGameMode = Cast<AAuroraGameModeBase>(UGameplayStatics::GetGameMode(this)))
+	{
+		AuroraGameMode->LoadWorldState(GetWorld());
+	}
 }
 
 // Save/Load Progress

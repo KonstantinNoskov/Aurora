@@ -5,6 +5,7 @@
 #include "Interfaces/Interaction/TargetInterface.h"
 #include "UI/WidgetController/AuroraWidgetController.h"
 #include "Debug/DebugMacros.h"
+#include "Interfaces/SaveInterface.h"
 #include "AuroraEnemy.generated.h"
 
 class AAuroraAIController;
@@ -12,7 +13,7 @@ class UBehaviorTree;
 class UWidgetComponent;
 
 UCLASS()
-class AURORA_API AAuroraEnemy : public AAuroraCharacterBase, public ITargetInterface
+class AURORA_API AAuroraEnemy : public AAuroraCharacterBase, public ITargetInterface, public ISaveInterface
 {
 	GENERATED_BODY()
 
@@ -27,11 +28,19 @@ protected:
 public:
 	virtual void Tick(float DeltaTime) override;
 
+#pragma region Save Interface overloads
+
+public:
+	virtual void LoadActor_Implementation() override;
+
+#pragma endregion
+	
 protected:
 
 	virtual void InitAbilityActorInfo() override;
 	virtual void InitializeDefaultAttributes() const override;
 	virtual void StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount) override;
+	virtual void MulticastHandleDeath(const FVector& InDeathImpulse) override;
 
 #pragma region CHARACTER CLASS DEFAULTS
 
@@ -43,23 +52,22 @@ protected:
 #pragma endregion
 
 	void BindingHealthBarCallbacks();
-	
 
 public:
 
 	void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 	
-	UPROPERTY(BlueprintReadOnly, Category = "Combat")
-	bool bHitReacting = false;
-
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void SetHitReacting(bool NewHitReacting) { bHitReacting = NewHitReacting;}
-
 	
-
-public:
 	UFUNCTION(BlueprintCallable)
 	void MyFunction() { DEBUG_MESSAGE_TEXT("Hello World!")}
+
+	UPROPERTY(BlueprintReadOnly, Category = "Combat")
+	bool bHitReacting = false;
+	
+	UPROPERTY(BlueprintReadOnly, SaveGame)
+	bool bShouldBeLoaded = true;
 	
 #pragma region TARGET INTERFACE
 

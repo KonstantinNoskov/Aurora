@@ -46,6 +46,38 @@ struct FSavedAbility
 	}
 };
 
+USTRUCT(BlueprintType)
+struct FSavedActor
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FName ActorName = FName();
+
+	UPROPERTY()
+	FTransform ActorTransform = FTransform();
+
+	// Serialized variables from the Actor - only those marked with SaveGame specifier
+	UPROPERTY()
+	TArray<uint8> Bytes;
+
+	bool operator==(const FSavedActor& Right) const
+	{
+		return this->ActorName == Right.ActorName;
+	}
+};
+
+USTRUCT()
+struct FSavedMap
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FString MapAssetName = FString();
+
+	UPROPERTY()
+	TArray<FSavedActor> SavedActors;
+};
 
 UCLASS()
 class AURORA_API ULoadScreenSaveGame : public USaveGame
@@ -114,6 +146,15 @@ public:
 	TArray<FSavedAbility> SavedAbilities;
 	
 #pragma endregion
+#pragma region WorldState
+
+	FSavedMap GetSavedMapByMapName(const FString& InMapName);
+	bool HasMap(const FString& InMapName);
 	
+	UPROPERTY()
+	TArray<FSavedMap> SavedMaps;
+
+
+#pragma endregion
 	
 };

@@ -28,6 +28,9 @@ public:
 	void TravelToMap(UMVVM_LoadSlot* Slot);
 	void SaveInGameProgressData(ULoadScreenSaveGame* SaveObject);
 	
+	void SaveWorldState(UWorld* World) const;
+	void LoadWorldState(UWorld* World) const;
+	
 	ULoadScreenSaveGame* RetrieveInGameSaveData();
 	ULoadScreenSaveGame* GetSaveSlotData(const FString& SlotName, int32 SlotIndex) const;
 
