@@ -65,6 +65,9 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Combat")
 	bool bHitReacting = false;
 
+	UPROPERTY(BlueprintReadOnly)
+	bool bShouldBeLoaded = true;
+
 #pragma region TARGET INTERFACE
 
 protected:
