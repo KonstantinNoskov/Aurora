@@ -40,7 +40,6 @@ protected:
 	virtual void InitAbilityActorInfo() override;
 	virtual void InitializeDefaultAttributes() const override;
 	virtual void StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount) override;
-	virtual void MulticastHandleDeath(const FVector& InDeathImpulse) override;
 
 #pragma region CHARACTER CLASS DEFAULTS
 
@@ -65,10 +64,7 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Combat")
 	bool bHitReacting = false;
-	
-	UPROPERTY(BlueprintReadOnly, SaveGame)
-	bool bShouldBeLoaded = true;
-	
+
 #pragma region TARGET INTERFACE
 
 protected:

@@ -60,5 +60,6 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	TMap<FString, TSoftObjectPtr<UWorld>> Maps;
 
-	
+	UPROPERTY()
+	TArray<AActor*> DeletedActors;
 };
