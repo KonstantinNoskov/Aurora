@@ -76,7 +76,8 @@ protected:
 public:
 	
 	FOnDamageSignature OnDamageDelegate;
-	
+
+
 protected:
 	
 	UFUNCTION(NetMulticast, Reliable)

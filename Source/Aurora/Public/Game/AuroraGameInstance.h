@@ -11,11 +11,12 @@ class AURORA_API UAuroraGameInstance : public UGameInstance
 
 public:
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	FName PlayerStartTag = FName();
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	FString LoadSlotName = FString();
 
+	UPROPERTY(BlueprintReadOnly)
 	int32 LoadSlotIndex = 0;
 };

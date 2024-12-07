@@ -65,8 +65,12 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Combat")
 	bool bHitReacting = false;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, SaveGame)
 	bool bShouldBeLoaded = true;
+
+protected:
+	
+	virtual void MulticastHandleDeath(const FVector& InDeathImpulse) override;
 
 #pragma region TARGET INTERFACE
 

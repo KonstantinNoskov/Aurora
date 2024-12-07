@@ -67,7 +67,7 @@ struct FSavedActor
 	}
 };
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FSavedMap
 {
 	GENERATED_BODY()
@@ -147,13 +147,14 @@ public:
 	
 #pragma endregion
 #pragma region WorldState
-
+	
+	UFUNCTION(BlueprintCallable)
 	FSavedMap GetSavedMapByMapName(const FString& InMapName);
+	
 	bool HasMap(const FString& InMapName);
 	
 	UPROPERTY()
 	TArray<FSavedMap> SavedMaps;
-
 
 #pragma endregion
 	
