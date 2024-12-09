@@ -27,7 +27,7 @@ void ASpawnPoint::HandleSpawnEnemy()
 
 	// Spawn Enemy
 	SpawnedEnemy = GetWorld()->SpawnActor<AAuroraEnemy>(EnemySpawnClass, GetActorLocation(), GetActorRotation(), SpawnParams);
-		
+	
 	if (IsValid(SpawnedEnemy))
 	{
 		SpawnedEnemy->GetOnDeathDelegate().AddDynamic(this, &ASpawnPoint::OnSpawnedEnemyDied);
@@ -37,4 +37,5 @@ void ASpawnPoint::HandleSpawnEnemy()
 void ASpawnPoint::OnSpawnedEnemyDied(AActor* DeadActor)
 {	
 	bShouldSpawn = false;
+	SpawnedEnemy = nullptr;
 }

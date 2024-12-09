@@ -28,13 +28,6 @@ protected:
 public:
 	virtual void Tick(float DeltaTime) override;
 
-#pragma region Save Interface overloads
-
-public:
-	virtual void LoadActor_Implementation() override;
-
-#pragma endregion
-	
 protected:
 
 	virtual void InitAbilityActorInfo() override;
@@ -65,12 +58,7 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Combat")
 	bool bHitReacting = false;
 
-	UPROPERTY(BlueprintReadOnly, SaveGame)
-	bool bShouldBeLoaded = true;
-
 protected:
-	
-	virtual void MulticastHandleDeath(const FVector& InDeathImpulse) override;
 
 #pragma region TARGET INTERFACE
 

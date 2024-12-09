@@ -2,12 +2,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Interfaces/SaveInterface.h"
 #include "SpawnPoint.generated.h"
 
 class AAuroraEnemy;
 
 UCLASS()
-class AURORA_API ASpawnPoint : public AActor
+class AURORA_API ASpawnPoint : public AActor, public ISaveInterface
 {
 	GENERATED_BODY()
 
