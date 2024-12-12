@@ -69,8 +69,8 @@ protected:
 	
 	virtual void HighLightActor_Implementation() override;
 	virtual void UnHighLightActor_Implementation() override;
+	virtual void SetMoveToLocation_Implementation(FVector& OutDestination) override;
 
-public:
 	virtual int32 GetPlayerLevel_Implementation() override;
 	
 
@@ -119,3 +119,8 @@ protected:
 #pragma endregion
 	
 };
+
+inline void AAuroraEnemy::SetMoveToLocation_Implementation(FVector& OutDestination)
+{
+	// DO NOT change OutDestination
+}
