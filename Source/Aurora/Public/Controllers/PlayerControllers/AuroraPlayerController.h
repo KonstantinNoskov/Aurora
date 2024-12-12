@@ -3,10 +3,9 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "GameFramework/PlayerController.h"
-#include "Interfaces/Interaction/TargetInterface.h"
 #include "AuroraPlayerController.generated.h"
 
-
+class IHighlightInterface;
 class AMagicCircle;
 class UNiagaraSystem;
 class UDamageTextComponent;
@@ -18,6 +17,13 @@ struct FInputActionValue;
 class UInputAction;
 class UInputMappingContext;
 class UAuroraInputConfig;
+
+enum class ETargetingStatus : uint8
+{
+	TargetingEnemy,
+	TargetingNonEnemy,
+	NotTargeting
+};
 
 UCLASS()
 class AURORA_API AAuroraPlayerController : public APlayerController
@@ -134,20 +140,20 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USplineComponent> Spline;
-
-	UPROPERTY()
-	bool bTargeting = false;
+	
+	ETargetingStatus TargetingStatus = ETargetingStatus::NotTargeting;
 	
 	void AutoRun();
 	
 #pragma endregion
 	
 	void CursorTrace();
+
+	static void HighlightActor(AActor* InActor);
+	static void UnHighlightActor(AActor* InActor);
 	
-	TScriptInterface<ITargetInterface> LastActor;
-	TScriptInterface<ITargetInterface> ThisActor;
+	TObjectPtr<AActor> LastActor;
+	TObjectPtr<AActor> ThisActor;
 
 	FHitResult CursorHit;
-
-	
 };

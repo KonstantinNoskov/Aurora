@@ -29,39 +29,52 @@ void ASpawnPoint::BeginPlay()
 	HandleSpawnEnemy();
 }
 
+#pragma region PostEdit Properies Changes
+
 #if WITH_EDITOR
+
 void ASpawnPoint::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
-
+	
 	const FName ChangedPropertyName = PropertyChangedEvent.Property ? PropertyChangedEvent.Property->GetFName() : NAME_None;
-
+	
+	UpdatePreviewMesh(ChangedPropertyName);
+}
+void ASpawnPoint::UpdatePreviewMesh(const FName ChangedPropertyName)
+{
 	if (ChangedPropertyName == GET_MEMBER_NAME_CHECKED(ASpawnPoint, EnemySpawnClass))
 	{
+		// If enemy class set to "None" 
 		if (!EnemySpawnClass)
-		{
-			PreviewMesh->SetSkeletalMeshAsset(nullptr);
-			BillBoard->SetSprite(InitialSprite);
+		{	
+			PreviewMesh->SetSkeletalMeshAsset(nullptr); // disable preview mesh
+			BillBoard->SetSprite(InitialSprite); // enable billboard sprite
 		}
-		
+
+		// If set existing enemy class
 		if (EnemySpawnClass)
 		{
+			// Adjust Capsule size corresponding to an enemy size
 			AAuroraEnemy* Enemy = EnemySpawnClass->GetDefaultObject<AAuroraEnemy>();
 			Root->SetCapsuleHalfHeight(Enemy->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
 			Root->SetCapsuleRadius(Enemy->GetCapsuleComponent()->GetScaledCapsuleRadius());
 
-			// Preview Mesh Location
+			// Set Enemy preview mesh, locate and rotate it accordingly to a spawn point 
 			const FVector PreviewMeshLocation = Root->GetComponentLocation() - FVector(0.f,0.f, Root->GetScaledCapsuleHalfHeight());
 			PreviewMesh->SetSkeletalMeshAsset(Enemy->GetMesh()->GetSkeletalMeshAsset());
 			PreviewMesh->SetWorldLocation(GetActorLocation());
 			PreviewMesh->SetWorldLocation(PreviewMeshLocation);
 
-			// Disable Billboard Sprite
+			// Disable Billboard Sprite. You don't see the sprite behind the enemy preview mesh anyway. 
 			BillBoard->SetSprite(nullptr);
 		}
 	}
 }
+
 #endif
+
+#pragma endregion
 
 void ASpawnPoint::HandleSpawnEnemy()	
 {	

@@ -6,6 +6,7 @@
 #include "UI/WidgetController/AuroraWidgetController.h"
 #include "Debug/DebugMacros.h"
 #include "Interfaces/SaveInterface.h"
+#include "Interfaces/Interaction/HighlightInterface.h"
 #include "AuroraEnemy.generated.h"
 
 class AAuroraAIController;
@@ -13,7 +14,11 @@ class UBehaviorTree;
 class UWidgetComponent;
 
 UCLASS()
-class AURORA_API AAuroraEnemy : public AAuroraCharacterBase, public ITargetInterface, public ISaveInterface
+class AURORA_API AAuroraEnemy :
+public AAuroraCharacterBase,
+public ITargetInterface,
+public ISaveInterface,
+public IHighlightInterface
 {
 	GENERATED_BODY()
 
@@ -58,14 +63,12 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Combat")
 	bool bHitReacting = false;
 
-protected:
-
-#pragma region TARGET INTERFACE
+#pragma region Highlight Interface
 
 protected:
 	
-	virtual void HighLightActor() override;
-	virtual void UnHighLightActor() override;
+	virtual void HighLightActor_Implementation() override;
+	virtual void UnHighLightActor_Implementation() override;
 
 public:
 	virtual int32 GetPlayerLevel_Implementation() override;
