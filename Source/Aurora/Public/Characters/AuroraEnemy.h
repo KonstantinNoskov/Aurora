@@ -41,6 +41,11 @@ protected:
 
 #pragma region CHARACTER CLASS DEFAULTS
 
+public:
+
+	UFUNCTION()
+	void SetLevel(int32 InLevel) { Level = InLevel; }
+	
 protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")

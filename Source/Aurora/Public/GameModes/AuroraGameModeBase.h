@@ -28,7 +28,7 @@ public:
 	void TravelToMap(UMVVM_LoadSlot* Slot);
 	void SaveInGameProgressData(ULoadScreenSaveGame* SaveObject);
 	
-	void SaveWorldState(UWorld* World) const;
+	void SaveWorldState(UWorld* World, const FString& DestinationMapAssetName = FString("")) const;
 	void LoadWorldState(UWorld* World) const;
 	
 	ULoadScreenSaveGame* RetrieveInGameSaveData();
@@ -59,4 +59,6 @@ public:
 
 	UPROPERTY(EditDefaultsOnly)
 	TMap<FString, TSoftObjectPtr<UWorld>> Maps;
+
+	FString GetMapNameFromMapAssetName(const FString& MapAssetName) const;
 };

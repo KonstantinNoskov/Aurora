@@ -60,9 +60,14 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
+	
 	virtual void Tick(float DeltaSeconds) override;
+	
+	UFUNCTION()
+	void SetCharacterClass(ECharacterClass InClass) { CharacterClass = InClass; }
 
 protected:
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
 	ECharacterClass CharacterClass = ECharacterClass::Warrior;
 

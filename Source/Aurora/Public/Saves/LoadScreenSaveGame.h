@@ -74,7 +74,7 @@ struct FSavedMap
 
 	UPROPERTY()
 	FString MapAssetName = FString();
-
+	
 	UPROPERTY()
 	TArray<FSavedActor> SavedActors;
 };
@@ -104,7 +104,10 @@ public:
 	bool bFirstTimeLoadIn = true;
 
 	UPROPERTY()
-	FString MapName = FString("");
+	FString MapName = FString("Default Map Name");
+
+	UPROPERTY()
+	FString MapAssetName = FString("Default Map Asset Name");
 
 	UPROPERTY()
 	FName PlayerStartTag;
