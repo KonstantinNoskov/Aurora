@@ -120,7 +120,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TObjectPtr<UAnimMontage> HitReactMontage;
 	
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	bool bDead = false;
 
 	UPROPERTY(EditAnywhere, Category = "Combat")

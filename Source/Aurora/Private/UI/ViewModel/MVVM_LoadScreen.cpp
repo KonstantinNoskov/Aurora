@@ -35,6 +35,7 @@ void UMVVM_LoadScreen::NewSlotButtonPressed(int32 Slot/*, const FText& EnteredNa
 	//LoadSlots[Slot]->SetPlayerName(EnteredName);
 	LoadSlots[Slot]->SlotStatus = Taken;
 	LoadSlots[Slot]->SetMapName(AuroraGameMode->DefaultMapName);
+	LoadSlots[Slot]->MapAssetName = AuroraGameMode->DefaultMap.ToSoftObjectPath().GetAssetName();
 	LoadSlots[Slot]->PlayerStartTag = AuroraGameMode->DefaultPlayerStartTag;
 	LoadSlots[Slot]->SetPlayerLevel(1);
 	

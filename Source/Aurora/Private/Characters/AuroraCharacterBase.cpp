@@ -193,7 +193,7 @@ void AAuroraCharacterBase::MulticastHandleDeath_Implementation(const FVector& In
 	// Play death sound
 	UGameplayStatics::PlaySoundAtLocation(this, DeathSound, GetActorLocation(), GetActorRotation());
 	
-	// Enable "ragdoll mode" 
+	// Enable "Ragdoll Mode" 
 	Weapon->SetSimulatePhysics(true);
 	Weapon->SetEnableGravity(true);
 	Weapon->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
@@ -203,12 +203,8 @@ void AAuroraCharacterBase::MulticastHandleDeath_Implementation(const FVector& In
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
 	GetMesh()->AddImpulse(InDeathImpulse, NAME_None, true);
-	
-	//GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	//
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn,ECR_Ignore);
-
+	
 	// Start to dissolve the died character and his weapon 
 	Dissolve();
 

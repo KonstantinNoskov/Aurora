@@ -1,9 +1,13 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "GameFramework/Character.h"
 #include "GameFramework/GameModeBase.h"
+#include "Kismet/GameplayStatics.h"
+#include "Saves/LoadScreenSaveGame.h"
 #include "AuroraGameModeBase.generated.h"
 
+class UGameplayStatics;
 class ULoadScreenSaveGame;
 class USaveGame;
 class UMVVM_LoadSlot;
@@ -34,6 +38,8 @@ public:
 	ULoadScreenSaveGame* RetrieveInGameSaveData();
 	ULoadScreenSaveGame* GetSaveSlotData(const FString& SlotName, int32 SlotIndex) const;
 
+	void PlayerDied(ACharacter* DeadCharacter);
+	
 	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Character Class Defaults")

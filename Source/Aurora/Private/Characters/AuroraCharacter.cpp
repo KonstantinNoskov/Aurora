@@ -355,6 +355,26 @@ int32 AAuroraCharacter::GetPlayerLevel_Implementation()
 	return AuroraPlayerState->GetPlayerLevel();
 }
 
+void AAuroraCharacter::Die(const FVector& InDeathImpulse)
+{
+	Super::Die(InDeathImpulse);
+
+	FTimerDelegate DeathTimerDelegate;
+	DeathTimerDelegate.BindLambda([this]()
+	{
+		AAuroraGameModeBase* AuroraGM = Cast<AAuroraGameModeBase>(UGameplayStatics::GetGameMode(this));
+		if (AuroraGM)
+		{
+			AuroraGM->PlayerDied(this);
+		}
+	});
+
+	GetWorldTimerManager().SetTimer(DeathTimer, DeathTimerDelegate, DeathTime, false);
+	AuroraCameraComponent->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+
+	GetMovementComponent()->Deactivate();
+}
+
 void AAuroraCharacter::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
