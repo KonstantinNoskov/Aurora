@@ -8,7 +8,6 @@
 
 AMapEntrance::AMapEntrance(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-
 	PrimaryActorTick.bCanEverTick = false;
 	Sphere->SetupAttachment(MoveToComponent);
 }
@@ -32,7 +31,6 @@ void AMapEntrance::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AAc
 
 		if (AAuroraGameModeBase* AuroraGM = Cast<AAuroraGameModeBase>(UGameplayStatics::GetGameMode(this)))
 		{
-			// TODO: Save the World we are traveling to.
 			AuroraGM->SaveWorldState(GetWorld(), DestinationMap.ToSoftObjectPath().GetAssetName());
 		}
 		
