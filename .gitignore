@@ -78,3 +78,5 @@ Content/__ExternalActors__/*
 Content/__ExternalObjects__/*
 
 Assets/*
+
+!AuroraBack.zip
