@@ -65,7 +65,6 @@ void USpellMenuWidgetController::BindCallbacksToDependencies()
 }
 void USpellMenuWidgetController::SpellGlobeSelected(const FGameplayTag& InAbilityTag)
 {
-
 	// Stop playing SelectedAbilityType animation
 	if (bWaitingForEquipSelection)
 	{
@@ -173,6 +172,7 @@ void USpellMenuWidgetController::OnAbilityEquipped(const FGameplayTag& AbilityTa
 
 	StopWaitingForEquip.Broadcast(AbilityInfo->FindAbilityInfoByTag(AbilityTag).AbilityTypeTag);
 	SpellGlobeReAssigned.Broadcast(AbilityTag);
+	
 	GlobeDeselect();
 }
 

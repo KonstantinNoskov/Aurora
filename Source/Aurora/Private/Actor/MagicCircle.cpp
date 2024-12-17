@@ -1,6 +1,7 @@
 ﻿#include "Actor/MagicCircle.h"
 #include "Components/DecalComponent.h"
 #include "Components/SphereComponent.h"
+#include "Interfaces/Interaction/HighlightInterface.h"
 #include "Interfaces/Interaction/TargetInterface.h"
 
 AMagicCircle::AMagicCircle()
@@ -38,17 +39,19 @@ void AMagicCircle::SetTargetingRadius(float InRadius)
 void AMagicCircle::OnMagicCircleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
                                            const FHitResult& SweepResult)
 {
-	if (ITargetInterface* Target = Cast<ITargetInterface>(OtherActor))
+	// Check for Valid Interfaces
+	if (OtherActor->Implements<UHighlightInterface>())
 	{
-		Target->HighLightActor();
+		IHighlightInterface::Execute_HighLightActor(OtherActor);	
 	}
 }
 
 void AMagicCircle::OnMagicCircleEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if (ITargetInterface* Target = Cast<ITargetInterface>(OtherActor))
-	{
-		Target->UnHighLightActor();
+	// Check for Valid Interfaces
+	if (OtherActor->Implements<UHighlightInterface>())
+	{	
+		IHighlightInterface::Execute_UnHighLightActor(OtherActor);
 	}
 }
 

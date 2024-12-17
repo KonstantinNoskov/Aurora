@@ -3,7 +3,9 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AuroraAbilityTypes.h"
+#include "AuroraColors.h"
 #include "AuroraGameplayTags.h"
+#include "AuroraLibrary.h"
 #include "GameplayEffectExtension.h"
 #include "AbilitySystem/AuroraAbilitySystemLibrary.h"
 #include "Aurora/AuroraLogChannels.h"
@@ -147,7 +149,6 @@ void UAuroraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCall
 
 void UAuroraAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 {
-	
 	// Store Incoming damage in local variable so we can reset Incoming damage attribute value
 	const float LocalIncomingDamage = GetIncomingDamage();
 
@@ -343,15 +344,14 @@ void UAuroraAttributeSet::ShowFloatingText(const FEffectProperties& Props, const
 	if (Props.SourceCharacter != Props.TargetCharacter)
 	{
 		if (AAuroraPlayerController* PC = Cast<AAuroraPlayerController>(Props.SourceCharacter->Controller))
-		{	
-			PC->ShowDamageNumber(Damage, Props.TargetCharacter, bBlockedHit, bCriticalHit);
-			return;
+		{
+
+			// Get Damage Type Tag to pass it in to the Damage Floating Text
+			const FGameplayTag DamageTypeTag = UAuroraAbilitySystemLibrary::GetDamageType(Props.EffectContextHandle);
+			
+			PC->ShowDamageNumber(Damage, Props.TargetCharacter, bBlockedHit, bCriticalHit, DamageTypeTag);
+			//return;
 		}
-		if (AAuroraPlayerController* PC = Cast<AAuroraPlayerController>(Props.TargetCharacter->Controller))
-		{	
-			PC->ShowDamageNumber(Damage, Props.TargetCharacter, bBlockedHit, bCriticalHit);
-		}
-		
 	}
 }
 void UAuroraAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const

@@ -55,6 +55,12 @@ public class Aurora : ModuleRules
 		{
 			"AIModule"
 		});
+		
+		// MVVM
+		PrivateDependencyModuleNames.AddRange(new string[]
+		{
+			"ModelViewViewModel"
+		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 		

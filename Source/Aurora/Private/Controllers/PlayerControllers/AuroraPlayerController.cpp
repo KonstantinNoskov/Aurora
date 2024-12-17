@@ -1,6 +1,7 @@
 ﻿#include "Controllers/PlayerControllers/AuroraPlayerController.h"
 
 #include "GameFramework/Character.h"
+#include "Interfaces/Interaction/HighlightInterface.h"
 
 // Enhanced Input
 #include "EnhancedInputSubsystems.h"
@@ -18,9 +19,6 @@
 // UI
 #include "UI/Widgets/DamageTextComponent.h"
 
-// Interaction
-#include "Interfaces/Interaction/TargetInterface.h"
-
 // Debug
 #include "NavigationPath.h"
 #include "NiagaraFunctionLibrary.h"
@@ -28,6 +26,8 @@
 #include "Aurora/Aurora.h"
 #include "Components/DecalComponent.h"
 #include "Components/SphereComponent.h"
+#include "Interfaces/Interaction/TargetInterface.h"
+
 
 AAuroraPlayerController::AAuroraPlayerController()
 {
@@ -105,6 +105,79 @@ void AAuroraPlayerController::Move(const FInputActionValue& InputActionValue)
 	}
 }
 
+void AAuroraPlayerController::CursorTrace()
+{
+	if (GetASC() && GetASC()->HasMatchingGameplayTag(FAuroraGameplayTags::Get().Player_Block_CursorTrace))
+	{
+		UnHighlightActor(LastActor);
+		UnHighlightActor(ThisActor);
+		
+		LastActor = nullptr;
+		ThisActor = nullptr;
+		
+		return;
+	}
+
+	const ECollisionChannel TraceChannel = IsValid(MagicCircle) ? ECC_ExcludePlayers : ECC_Visibility;
+	GetHitResultUnderCursor(TraceChannel, false, CursorHit);
+	
+	if (!CursorHit.bBlockingHit) return;
+	
+	LastActor = ThisActor;
+
+	// Does ThisActor has a Highlight Interface
+	if (IsValid(CursorHit.GetActor()) && CursorHit.GetActor()->Implements<UHighlightInterface>()) 
+	{
+		ThisActor = CursorHit.GetActor();
+	}
+	else
+	{
+		ThisActor = nullptr;
+	}
+	
+	/*	We have to take care of several cases:
+	 *	
+	 *  1. LastActor is null && ThisActor is null. (Hovering cursor over something else than enemy)
+	 *		- Do nothing
+	 *
+	 *	2. LastActor is Target && ThisActor is Target and they are the same target. (Keep hovering cursor over the same enemy)
+	 *		- Do nothing
+	 *	
+	 *  3. LastActor is null && ThisActor is Target. (Start hovering cursor over the enemy)
+	 *		- HighLight this Target.
+	 *		
+	 *  4. LastActor is Target && ThisActor is null. (Stop hovering cursor over the enemy)
+	 *		- Unhighlight last Target.
+	 *		
+	 *  5. LastActor is Target && ThisActor is Target, but LastActor != ThisActor. (Different enemies)
+	 *		- Unhighlight LastActor and Highlight ThisActor.
+	 */
+	
+	if (LastActor == ThisActor) return;							// Case #1 and Case #2	 			
+	if (!LastActor && ThisActor) HighlightActor(ThisActor);	// Case #3		
+	if (LastActor && !ThisActor) UnHighlightActor(LastActor);	// Case #4			
+	if (LastActor && ThisActor && LastActor != ThisActor)		// Case #5 	 
+	{
+		HighlightActor(ThisActor);
+		UnHighlightActor(LastActor);
+	}
+}
+
+void AAuroraPlayerController::HighlightActor(AActor* InActor)
+{
+	if (IsValid(InActor) && InActor->Implements<UHighlightInterface>())
+	{
+		IHighlightInterface::Execute_HighLightActor(InActor);
+	}
+}
+void AAuroraPlayerController::UnHighlightActor(AActor* InActor)
+{
+	if (IsValid(InActor) && InActor->Implements<UHighlightInterface>())
+	{
+		IHighlightInterface::Execute_UnHighLightActor(InActor);	 
+	}
+}
+
 void AAuroraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 {
 	// Blocking Tags Check
@@ -112,8 +185,15 @@ void AAuroraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 	
 	if (InputTag.MatchesTagExact(FAuroraGameplayTags::Get().InputTag_LMB))
 	{
-		bTargeting = ThisActor ? true : false;
-		bAutoRunning = false;
+		if (IsValid(ThisActor))
+		{
+			TargetingStatus = ThisActor->Implements<UTargetInterface>() ? ETargetingStatus::TargetingEnemy : ETargetingStatus::TargetingNonEnemy;
+			bAutoRunning = false;
+		}
+		else
+		{
+			TargetingStatus = ETargetingStatus::NotTargeting;
+		}
 	}
 	if (GetASC())
 	{
@@ -122,7 +202,6 @@ void AAuroraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 }
 void AAuroraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 {
-
 	// Blocking Tags Check
 	if (GetASC() && GetASC()->HasMatchingGameplayTag(FAuroraGameplayTags::Get().Player_Block_InputHeld)) return;
 	
@@ -137,9 +216,9 @@ void AAuroraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 	}
 
 	// Case #2: Holding LMB over target object (enemy, barrel, etc.). Try to use ability bind to LMB
-	if (bTargeting || bShiftKeyDown)
+	if (TargetingStatus == ETargetingStatus::TargetingEnemy || bShiftKeyDown)
 	{
-		if (GetASC())
+		if (GetASC()) 
 		{
 			GetASC()->AbilityInputTagHeld(InputTag);
 		}
@@ -183,14 +262,24 @@ void AAuroraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 	}
 	
 	// Case #2: 
-	if (!bTargeting && !bShiftKeyDown)
+	if (TargetingStatus != ETargetingStatus::TargetingEnemy && !bShiftKeyDown)
 	{
 		APawn* ControlledPawn = GetPawn();
 		if (FollowTime <= ShortPressThreshold && ControlledPawn)
 		{
+			if (IsValid(ThisActor) && ThisActor->Implements<UHighlightInterface>())
+			{
+				IHighlightInterface::Execute_SetMoveToLocation(ThisActor, CachedDestination);
+			}
+			else if (GetASC() && !GetASC()->HasMatchingGameplayTag(FAuroraGameplayTags::Get().Player_Block_InputReleased))
+			{
+				// Spawn Destination Particles
+				UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ClickNiagaraSystem, CachedDestination);
+			}
+			
 			const FVector PathStartPoint = ControlledPawn->GetActorLocation();
 			const FVector PathEndPoint = CachedDestination;
-
+			
 			if (UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, PathStartPoint, PathEndPoint))
 			{
 				Spline->ClearSplinePoints();
@@ -204,19 +293,12 @@ void AAuroraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 					CachedDestination = NavPath->PathPoints[NavPath->PathPoints.Num() - 1];
 				}
 				
-				bTargeting = false;
 				bAutoRunning = true;
-			}
-
-			// Blocking Tags Check
-			if (GetASC() && !GetASC()->HasMatchingGameplayTag(FAuroraGameplayTags::Get().Player_Block_InputReleased))
-			{
-				UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ClickNiagaraSystem, CachedDestination);
 			}
 		}
 
 		FollowTime = 0.f;
-		bTargeting = false;
+		TargetingStatus = ETargetingStatus::NotTargeting;
 	}
 }
 void AAuroraPlayerController::AutoRun()
@@ -280,7 +362,7 @@ void AAuroraPlayerController::UpdateMagicCircleLocation()
 
 #pragma region DAMAGE
 
-void AAuroraPlayerController::ShowDamageNumber_Implementation(float DamageAmount, ACharacter* TargetCharacter, bool bBlockedHit, bool bCriticalHit)
+void AAuroraPlayerController::ShowDamageNumber_Implementation(float DamageAmount, ACharacter* TargetCharacter, bool bBlockedHit, bool bCriticalHit, const FGameplayTag& DamageType)
 {
 	if (IsValid(TargetCharacter) && DamageTextComponentClass && IsLocalController())
 	{
@@ -292,59 +374,14 @@ void AAuroraPlayerController::ShowDamageNumber_Implementation(float DamageAmount
 		DamageText->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
 	
 		// Set Damage value
-		DamageText->SetDamageText(DamageAmount, bBlockedHit, bCriticalHit);
+		DamageText->SetDamageText(DamageAmount, bBlockedHit, bCriticalHit, DamageType);
+		
 	}
 }
 
 #pragma endregion
 
-void AAuroraPlayerController::CursorTrace()
-{
-	if (GetASC() && GetASC()->HasMatchingGameplayTag(FAuroraGameplayTags::Get().Player_Block_CursorTrace))
-	{
-		if (LastActor) LastActor->UnHighLightActor();
-		if (ThisActor) ThisActor->UnHighLightActor();
-		LastActor = nullptr;
-		ThisActor = nullptr;
-		
-		return;
-	}
 
-	const ECollisionChannel TraceChannel = IsValid(MagicCircle) ? ECC_ExcludePlayers : ECC_Visibility;
-	GetHitResultUnderCursor(TraceChannel, false, CursorHit);
-	
-	if (!CursorHit.bBlockingHit) return;
-	
-	LastActor = ThisActor;
-	ThisActor = CursorHit.GetActor();
-		
-	/*	We have to take care of several cases:
-	 *	
-	 *  1. LastActor is null && ThisActor is null. (Hovering cursor over something else than enemy)
-	 *		- Do nothing
-	 *
-	 *	2. LastActor is Target && ThisActor is Target and they are the same target. (Keep hovering cursor over the same enemy)
-	 *		- Do nothing
-	 *	
-	 *  3. LastActor is null && ThisActor is Target. (Start hovering cursor over the enemy)
-	 *		- HighLight this Target.
-	 *		
-	 *  4. LastActor is Target && ThisActor is null. (Stop hovering cursor over the enemy)
-	 *		- Unhighlight last Target.
-	 *		
-	 *  5. LastActor is Target && ThisActor is Target, but LastActor != ThisActor. (Different enemies)
-	 *		- Unhighlight LastActor and Highlight ThisActor.
-	 */
-
-	if (LastActor == ThisActor) return;							// Case #1 and Case #2
-	if (!LastActor && ThisActor) ThisActor->HighLightActor();	// Case #3
-	if (LastActor && !ThisActor) LastActor->UnHighLightActor(); // Case #4
-	if (LastActor && ThisActor && LastActor != ThisActor)		// Case #5  
-		{
-			LastActor->UnHighLightActor();
-			ThisActor->HighLightActor();
-		}
-}
 UAuroraAbilitySystemComponent* AAuroraPlayerController::GetASC()
 {
 	if (!AuroraAbilitySystemComponent)

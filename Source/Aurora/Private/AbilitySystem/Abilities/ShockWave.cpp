@@ -10,7 +10,7 @@ FString UShockWave::GetDescription(int32 Level)
 	{
 		return FString::Printf(TEXT(
 			// TITLE
-			"<Title>SHOCK WAVE</>\n\n"
+			"<AbilityName.Lightning>SHOCK WAVE</>\n\n"
 
 			// Requirements
 			"<Level>Level: %d</>\n" // Level
@@ -22,7 +22,7 @@ FString UShockWave::GetDescription(int32 Level)
 			"connecting with the target, repeatedly causing: "
 
 			// Damage
-			"</><Damage>%d</>"
+			"</><DamageType.Lightning>%d</>"
 			"<Default> lightning damage with chance to shock</>\n\n"
 			),
 
@@ -36,7 +36,7 @@ FString UShockWave::GetDescription(int32 Level)
 	{
 		return FString::Printf(TEXT(
 			// TITLE
-			"<Title>SHOCK WAVE</>\n\n"
+			"<AbilityName.Lightning>SHOCK WAVE</>\n\n"
 
 			// Requirements
 			"<Level>Level: %d</>\n" // Level
@@ -48,7 +48,7 @@ FString UShockWave::GetDescription(int32 Level)
 			"propagating to %d additional targets nearby, causing: "
 
 			// Damage
-			"</><Damage>%d</>"
+			"</><DamageType.Lightning>%d</>"
 			"<Default> lightning damage with chance to shock</>\n\n"
 			),
 
@@ -69,7 +69,7 @@ FString UShockWave::GetNextLevelDescription(int32 Level)
 	
 	return FString::Printf(TEXT(
 			// TITLE
-			"<Title>NEXT LEVEL</>\n\n"
+			"<AbilityName.Lightning>NEXT LEVEL</>\n\n"
 
 			// Requirements
 			"<Level>Level: %d</>\n" // Level
@@ -81,7 +81,7 @@ FString UShockWave::GetNextLevelDescription(int32 Level)
 			"propagating to %d additional targets nearby, causing: "
 
 			// Damage
-			"</><Damage>%d</>"
+			"</><DamageType.Lightning>%d</>"
 			"<Default> lightning damage with chance to shock</>\n\n"
 			),
 

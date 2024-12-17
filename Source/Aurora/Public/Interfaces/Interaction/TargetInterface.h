@@ -16,13 +16,6 @@ class AURORA_API ITargetInterface
 
 public:
 
-#pragma region HIGHLIGHT TARGET
-	
-	virtual void HighLightActor() = 0;
-	virtual void UnHighLightActor() = 0;
-
-#pragma endregion
-
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void SetCombatTarget(AActor* InCombatTarget);
 

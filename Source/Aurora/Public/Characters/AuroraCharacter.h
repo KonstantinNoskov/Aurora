@@ -18,11 +18,24 @@ class AURORA_API AAuroraCharacter : public AAuroraCharacterBase, public IPlayerI
 public:
 	AAuroraCharacter();
 
+protected:
+	virtual void BeginPlay() override;
+
+public:
+	
+	virtual void Tick(float DeltaTime) override;
+
+protected:
+	void LoadProgress();
+
 #pragma region Combat Interface overriden functions
 
 	UFUNCTION()
 	virtual int32 GetPlayerLevel_Implementation() override;
-	
+
+	UFUNCTION()
+	virtual void Die(const FVector& InDeathImpulse) override;
+
 #pragma endregion
 #pragma region Player Interface overriden functions
 
@@ -52,14 +65,11 @@ public:
 	virtual AMagicCircle* ShowMagicCircle_Implementation(UMaterialInterface* DecalMaterial, float InMagicCircleRadius) override;
 	virtual void HideMagicCircle_Implementation() override;
 
+	// Save Progress
+	virtual void SaveProgress_Implementation(const FName& CheckPointTag) override;
+
 #pragma endregion
-
-protected:
-	virtual void BeginPlay() override;
-
-public:
 	
-	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
@@ -89,5 +99,11 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UNiagaraComponent> LevelUpNiagaraComponent;
+
+	UPROPERTY(EditDefaultsOnly)
+	float DeathTime = 5.f;
+
+	UPROPERTY()
+	FTimerHandle DeathTimer;
 	
 };

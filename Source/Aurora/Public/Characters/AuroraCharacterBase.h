@@ -60,9 +60,14 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
+	
 	virtual void Tick(float DeltaSeconds) override;
+	
+	UFUNCTION()
+	void SetCharacterClass(ECharacterClass InClass) { CharacterClass = InClass; }
 
 protected:
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
 	ECharacterClass CharacterClass = ECharacterClass::Warrior;
 
@@ -76,7 +81,8 @@ protected:
 public:
 	
 	FOnDamageSignature OnDamageDelegate;
-	
+
+
 protected:
 	
 	UFUNCTION(NetMulticast, Reliable)
@@ -114,7 +120,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TObjectPtr<UAnimMontage> HitReactMontage;
 	
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	bool bDead = false;
 
 	UPROPERTY(EditAnywhere, Category = "Combat")

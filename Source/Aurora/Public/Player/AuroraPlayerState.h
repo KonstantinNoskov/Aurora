@@ -8,7 +8,8 @@
 class ULevelUpInfo;
 class UAttributeSet;
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerStatChangedSignature, int32);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerStatChangedSignature, int32 /*StatValue*/);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnLevelChanged, int32 /*StatValue*/, bool /*bLevelUp*/);
 
 UCLASS()
 class AURORA_API AAuroraPlayerState : public APlayerState, public IAbilitySystemInterface
@@ -45,7 +46,7 @@ public:
 public:
 	
 	FOnPlayerStatChangedSignature OnXPChanged;
-	FOnPlayerStatChangedSignature OnLevelChanged;
+	FOnLevelChanged OnLevelChanged;
 	FOnPlayerStatChangedSignature OnAttributePointsChanged;
 	FOnPlayerStatChangedSignature OnSpellPointsChanged;
 

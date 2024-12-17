@@ -5,6 +5,8 @@
 #include "Interfaces/Interaction/TargetInterface.h"
 #include "UI/WidgetController/AuroraWidgetController.h"
 #include "Debug/DebugMacros.h"
+#include "Interfaces/SaveInterface.h"
+#include "Interfaces/Interaction/HighlightInterface.h"
 #include "AuroraEnemy.generated.h"
 
 class AAuroraAIController;
@@ -12,7 +14,11 @@ class UBehaviorTree;
 class UWidgetComponent;
 
 UCLASS()
-class AURORA_API AAuroraEnemy : public AAuroraCharacterBase, public ITargetInterface
+class AURORA_API AAuroraEnemy :
+public AAuroraCharacterBase,
+public ITargetInterface,
+public ISaveInterface,
+public IHighlightInterface
 {
 	GENERATED_BODY()
 
@@ -35,40 +41,35 @@ protected:
 
 #pragma region CHARACTER CLASS DEFAULTS
 
-protected:
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
-	int32 Level = 1;
-	
+public:
+
+	UFUNCTION()
+	void SetLevel(int32 InLevel) { Level = InLevel; }
+
 #pragma endregion
 
 	void BindingHealthBarCallbacks();
-	
 
 public:
 
 	void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 	
-	UPROPERTY(BlueprintReadOnly, Category = "Combat")
-	bool bHitReacting = false;
-
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void SetHitReacting(bool NewHitReacting) { bHitReacting = NewHitReacting;}
 
-	
+protected:
 
-public:
-	UFUNCTION(BlueprintCallable)
-	void MyFunction() { DEBUG_MESSAGE_TEXT("Hello World!")}
+	UFUNCTION(BlueprintImplementableEvent)
+	void SpawnLoot();
 	
-#pragma region TARGET INTERFACE
+#pragma region Highlight Interface
 
 protected:
 	
-	virtual void HighLightActor() override;
-	virtual void UnHighLightActor() override;
+	virtual void HighLightActor_Implementation() override;
+	virtual void UnHighLightActor_Implementation() override;
+	virtual void SetMoveToLocation_Implementation(FVector& OutDestination) override;
 
-public:
 	virtual int32 GetPlayerLevel_Implementation() override;
 	
 
@@ -115,5 +116,22 @@ protected:
 	TObjectPtr<AAuroraAIController> AuroraAIController;
 
 #pragma endregion
+
+protected:
 	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
+	int32 Level = 1;
+
+public:
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Combat")
+	bool bHitReacting = false;
 };
+
+inline void AAuroraEnemy::SetMoveToLocation_Implementation(FVector& OutDestination)
+{
+	// DO NOT change OutDestination
+}
+
+
+	

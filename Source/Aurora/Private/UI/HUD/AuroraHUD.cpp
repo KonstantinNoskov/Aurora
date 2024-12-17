@@ -9,8 +9,7 @@
 
 #pragma region OVERLAY WIDGET CONTROLLER
 
-void AAuroraHUD::InitOverlay(APlayerController* PC, APlayerState* PS,
-							 UAbilitySystemComponent* ASC, UAttributeSet* AS)
+void AAuroraHUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS)
 {
 	checkf(OverlayWidgetClass,				TEXT("Overlay Widget Class uninitialized, fill out BP_AuroraHUD"));
 	checkf(OverlayWidgetControllerClass,	TEXT("Overlay Widget Controller Class uninitialized, fill out BP_AuroraHUD"));
