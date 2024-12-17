@@ -7,6 +7,7 @@
 #include "Saves/LoadScreenSaveGame.h"
 #include "AuroraGameModeBase.generated.h"
 
+class ULootTiers;
 class UGameplayStatics;
 class ULoadScreenSaveGame;
 class USaveGame;
@@ -47,6 +48,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Ability Info")
 	TObjectPtr<UAbilityInfo> AbilityInfo;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Ability Info")
+	TObjectPtr<ULootTiers> LootTiers;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Aurora Colors", DisplayName = "Aurora Colors")
 	TObjectPtr<UAuroraColors> AuroraColorsMap;

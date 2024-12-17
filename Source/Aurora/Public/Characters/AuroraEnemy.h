@@ -45,12 +45,7 @@ public:
 
 	UFUNCTION()
 	void SetLevel(int32 InLevel) { Level = InLevel; }
-	
-protected:
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
-	int32 Level = 1;
-	
+
 #pragma endregion
 
 	void BindingHealthBarCallbacks();
@@ -61,13 +56,12 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void SetHitReacting(bool NewHitReacting) { bHitReacting = NewHitReacting;}
+
+protected:
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void SpawnLoot();
 	
-	UFUNCTION(BlueprintCallable)
-	void MyFunction() { DEBUG_MESSAGE_TEXT("Hello World!")}
-
-	UPROPERTY(BlueprintReadOnly, Category = "Combat")
-	bool bHitReacting = false;
-
 #pragma region Highlight Interface
 
 protected:
@@ -122,10 +116,22 @@ protected:
 	TObjectPtr<AAuroraAIController> AuroraAIController;
 
 #pragma endregion
+
+protected:
 	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
+	int32 Level = 1;
+
+public:
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Combat")
+	bool bHitReacting = false;
 };
 
 inline void AAuroraEnemy::SetMoveToLocation_Implementation(FVector& OutDestination)
 {
 	// DO NOT change OutDestination
 }
+
+
+	
