@@ -60,10 +60,12 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void StartRotation();
 
+	UFUNCTION(BlueprintCallable)
+	void SetInitialTransform();
+
 private:
 
 	void ItemMovement(float DeltaTime);
-
 
 protected:
 	
@@ -99,19 +101,19 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Applied Effects")
 	float ActorLevel = 1.f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pickup Movement")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hover Movement")
 	bool bRotates = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pickup Movement")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hover Movement")
 	float RotationRate = 45.f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pickup Movement")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hover Movement")
 	bool bSinusoidalMovement = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pickup Movement")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hover Movement")
 	float SineAmplitude = 1.f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pickup Movement")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hover Movement")
 	float SinePeriodConstant = 1.f;
 	
 	UPROPERTY(BlueprintReadOnly)
