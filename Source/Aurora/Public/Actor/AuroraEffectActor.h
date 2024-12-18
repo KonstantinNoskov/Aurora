@@ -31,15 +31,41 @@ class AURORA_API AAuroraEffectActor : public AActor
 	GENERATED_BODY()
 
 public:
-	AAuroraEffectActor();
 	
+	AAuroraEffectActor();
+
+	virtual void Tick(float DeltaSeconds) override;
+
 protected:
+	
 	virtual void BeginPlay() override;
 
-#pragma region Gameplay effect
+	UFUNCTION(BlueprintCallable)
+	void OnOverlap(AActor* TargetActor); 
+
+	/***
+	 *  Applies effect to target OnEndOverlap Event for Instant, Duration and Infinite effect if exists.
+	 *
+	 *  @param TargetActor - Ability System Owner which effect should be applied to.
+	 */
+	UFUNCTION(BlueprintCallable)
+	void OnEndOverlap(AActor* TargetActor);
+	
+	UFUNCTION(BlueprintCallable)
+	void ApplyEffectToTarget(AActor* TargetActor, TSubclassOf<UGameplayEffect> GameplayEffectClass);
 
 	UFUNCTION(BlueprintCallable)
-	void ApplyEffectToTarget(AActor* TargetActor, TSubclassOf<UGameplayEffect> GameplayEffectClass); 
+	void StartSinusoidalMovement();
+
+	UFUNCTION(BlueprintCallable)
+	void StartRotation();
+
+private:
+
+	void ItemMovement(float DeltaTime);
+
+
+protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Applied Effects")
 	TSubclassOf<UGameplayEffect> InstantGameplayEffectClass;
@@ -73,18 +99,31 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Applied Effects")
 	float ActorLevel = 1.f;
 
-#pragma endregion
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pickup Movement")
+	bool bRotates = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pickup Movement")
+	float RotationRate = 45.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pickup Movement")
+	bool bSinusoidalMovement = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pickup Movement")
+	float SineAmplitude = 1.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pickup Movement")
+	float SinePeriodConstant = 1.f;
 	
-	UFUNCTION(BlueprintCallable)
-	void OnOverlap(AActor* TargetActor); 
+	UPROPERTY(BlueprintReadOnly)
+	FVector CalculatedLocation;
 
-	/*
-	 *  Applies effect to target OnEndOverlap Event for Instant, Duration and Infinite effect if exists.
-	 *
-	 *  @param TargetActor - Ability System Owner which effect should be applied to.
-	 */
-	UFUNCTION(BlueprintCallable)
-	void OnEndOverlap(AActor* TargetActor);
+	UPROPERTY(BlueprintReadOnly)
+	FRotator CalculatedRotation;
+
+private:
+
+	FVector InitialLocation;
+	
+	float RunningTime = 0.f;
 	
 };

@@ -2,7 +2,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
-#include "Debug/DebugMacros.h"
+#include "Kismet/KismetMathLibrary.h"
 
 AAuroraEffectActor::AAuroraEffectActor()
 {
@@ -14,6 +14,23 @@ AAuroraEffectActor::AAuroraEffectActor()
 void AAuroraEffectActor::BeginPlay()
 {
 	Super::BeginPlay();
+
+	/*InitialLocation = GetActorLocation();
+	CalculatedLocation = InitialLocation;
+	CalculatedRotation = GetActorRotation();*/
+}
+
+void AAuroraEffectActor::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	/*RunningTime += DeltaSeconds;
+	if (RunningTime > SinePeriod) SinePeriod = 0;*/
+
+	const float SinePeriod = PI * 2 / SinePeriodConstant;
+	RunningTime = RunningTime > SinePeriod ? 0 : RunningTime + DeltaSeconds;
+
+	ItemMovement(DeltaSeconds);
 }
 
 void AAuroraEffectActor::ApplyEffectToTarget(AActor* TargetActor, TSubclassOf<UGameplayEffect> GameplayEffectClass)
@@ -120,6 +137,31 @@ void AAuroraEffectActor::OnEndOverlap(AActor* TargetActor)
 		{
 			ActiveEffectHandlesMap.FindAndRemoveChecked(Handle);
 		}
+	}
+}
+void AAuroraEffectActor::StartSinusoidalMovement()
+{
+	bSinusoidalMovement = true;
+	InitialLocation = GetActorLocation();
+	CalculatedLocation = InitialLocation;
+}
+void AAuroraEffectActor::StartRotation()
+{
+	bRotates = true;
+	CalculatedRotation = GetActorRotation();
+}
+void AAuroraEffectActor::ItemMovement(float DeltaTime)
+{
+	if (bRotates)
+	{
+		const FRotator DeltaRotation(0.f, DeltaTime * RotationRate, 0.f);
+		CalculatedRotation = UKismetMathLibrary::ComposeRotators(CalculatedRotation, DeltaRotation);
+	}
+
+	if (bSinusoidalMovement)
+	{
+		const float Sine = SineAmplitude * FMath::Sin(RunningTime * SinePeriodConstant);
+		CalculatedLocation = InitialLocation + FVector(0.f, 0.f, Sine);
 	}
 }
 
