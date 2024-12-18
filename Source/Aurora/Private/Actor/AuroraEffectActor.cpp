@@ -14,9 +14,8 @@ AAuroraEffectActor::AAuroraEffectActor()
 void AAuroraEffectActor::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	SetInitialTransform();
-		
 }
 
 void AAuroraEffectActor::Tick(float DeltaSeconds)
@@ -134,24 +133,22 @@ void AAuroraEffectActor::OnEndOverlap(AActor* TargetActor)
 }
 void AAuroraEffectActor::StartSinusoidalMovement()
 {
-	//bSinusoidalMovement = true;
+	bSinusoidalMovement = true;
 	InitialLocation = GetActorLocation();
 	CalculatedLocation = InitialLocation;
 }
 void AAuroraEffectActor::StartRotation()
 {
-	//bRotates = true;
+	bRotates = true;
 	CalculatedRotation = GetActorRotation();
 }
 
 void AAuroraEffectActor::SetInitialTransform()
 {
-	if (bRotates) CalculatedRotation = GetActorRotation();
-	if (bSinusoidalMovement)
-	{
-		InitialLocation = GetActorLocation();
-		CalculatedLocation = InitialLocation;
-	}
+	CalculatedRotation = GetActorRotation();
+	InitialLocation = GetActorLocation();
+	CalculatedLocation = InitialLocation;
+	
 }
 
 void AAuroraEffectActor::ItemMovement(float DeltaTime)
@@ -163,18 +160,13 @@ void AAuroraEffectActor::ItemMovement(float DeltaTime)
 	{
 		const FRotator DeltaRotation(0.f, DeltaTime * RotationRate, 0.f);
 		CalculatedRotation = UKismetMathLibrary::ComposeRotators(CalculatedRotation, DeltaRotation);
-
-		SetActorRotation(CalculatedRotation);
 	}
 
 	if (bSinusoidalMovement)
 	{
 		const float Sine = SineAmplitude * FMath::Sin(RunningTime * SinePeriodConstant);
 		CalculatedLocation = InitialLocation + FVector(0.f, 0.f, Sine);
-
-		SetActorLocation(CalculatedLocation);
 	}
-	
 }
 
 

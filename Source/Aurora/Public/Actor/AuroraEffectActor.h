@@ -116,15 +116,16 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hover Movement")
 	float SinePeriodConstant = 1.f;
 	
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadWrite)
 	FVector CalculatedLocation;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadWrite)
 	FRotator CalculatedRotation;
 
-private:
-
+	UPROPERTY(BlueprintReadWrite)
 	FVector InitialLocation;
+
+private:
 	
 	float RunningTime = 0.f;
 	
