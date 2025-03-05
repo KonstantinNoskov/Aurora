@@ -152,7 +152,7 @@ void UAuroraAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 	// Store Incoming damage in local variable so we can reset Incoming damage attribute value
 	const float LocalIncomingDamage = GetIncomingDamage();
 
-	// Reset incoming damage
+	// Reset incoming damage. From now on we use LocalIncomingDamage only.
 	SetIncomingDamage(0.f);
 
 	// Apply incoming damage if > 0
@@ -340,7 +340,6 @@ void UAuroraAttributeSet::Debuff(const FEffectProperties& InProps)
 
 void UAuroraAttributeSet::ShowFloatingText(const FEffectProperties& Props, const float Damage, bool bBlockedHit, bool bCriticalHit) const
 {
-	//if (!IsValid(Props.SourceCharacter) || !IsValid(Props.TargetCharacter)) return;
 	if (Props.SourceCharacter != Props.TargetCharacter)
 	{
 		if (AAuroraPlayerController* PC = Cast<AAuroraPlayerController>(Props.SourceCharacter->Controller))
@@ -350,7 +349,6 @@ void UAuroraAttributeSet::ShowFloatingText(const FEffectProperties& Props, const
 			const FGameplayTag DamageTypeTag = UAuroraAbilitySystemLibrary::GetDamageType(Props.EffectContextHandle);
 			
 			PC->ShowDamageNumber(Damage, Props.TargetCharacter, bBlockedHit, bCriticalHit, DamageTypeTag);
-			//return;
 		}
 	}
 }
